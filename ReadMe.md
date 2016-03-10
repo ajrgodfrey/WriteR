@@ -14,3 +14,9 @@ Time to get the main script out there for consumption and contributions.
 - The wholly self contained executable called WriteR.exe can be used instead of the set of files in the Program folder. It is suggested that this may load more slowly but I couldn't see the difference. Take it alone and put in a folder that is on the path.
 
 
+
+# 8 March 2016
+
+Python development is now  just being handled by Jonathan Godfrey. Look for progress via C++ scripts instead.
+
+
