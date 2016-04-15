@@ -1,0 +1,9 @@
+RDirectory: C:\Program Files\R\R-3.2.4\bin\i386\Rscript.exe
+buildcommand: rmarkdown::render("{}", output_format="all")
+dirname: none
+filename: untitled.Rmd
+knit2htmlcommand: knitr::knit2html("{}")
+lastdir: C:\Users\ajgodfre\Documents\Research\WriteR\testing
+newText: Use WriteR to edit your R markdown files
+repo: http://cran.stat.auckland.ac.nz/
+template: none

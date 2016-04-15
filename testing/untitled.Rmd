@@ -1,0 +1,32 @@
+---
+output:
+    html_document:
+        toc: true
+    pdf_document:
+        toc: true
+---
+
+# a small test with a new command!!!! which worked until we used it.
+
+but doesn't work now that I tampered with the rendering command. We need to work out when we can add output_format="all"
+
+
+
+
+```{r start}
+mean(sample(40,6))
+```
+
+which version though?
+
+and what happened?
+# Let's start again.
+
+and try to save... 
+
+```{r test}
+1:4
+```
+
+R-`r version$major`.`r version$minor`  being used
+
