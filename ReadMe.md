@@ -19,4 +19,11 @@ Time to get the main script out there for consumption and contributions.
 
 Python development is now  just being handled by Jonathan Godfrey. Look for progress via C++ scripts instead.
 
+# 15 April 2016
+
+JG met with Timothy Bilton and we added some consideration for alternativ build methods
+
+# 17 April 2016
+
+JG added Greek menu for insertion of Greek letters via LaTeX source.
 

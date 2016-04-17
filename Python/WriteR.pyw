@@ -24,6 +24,31 @@ ID_BUILD = wx.NewId()
 ID_KNIT2HTML = wx.NewId()
 ID_SETTINGS = wx.NewId()
 
+ID_GREEK_ALPHA = wx.NewId() 
+ID_GREEK_BETA = wx.NewId() 
+ID_GREEK_GAMMA = wx.NewId() 
+ID_GREEK_DELTA = wx.NewId() 
+ID_GREEK_EPSILON = wx.NewId() 
+ID_GREEK_ZETA = wx.NewId() 
+ID_GREEK_ETA = wx.NewId() 
+ID_GREEK_THETA = wx.NewId() 
+ID_GREEK_IOTA = wx.NewId() 
+ID_GREEK_KAPPA = wx.NewId() 
+ID_GREEK_LAMBDA = wx.NewId() 
+ID_GREEK_MU = wx.NewId() 
+ID_GREEK_NU = wx.NewId() 
+ID_GREEK_XI = wx.NewId() 
+ID_GREEK_OMICRON = wx.NewId() 
+ID_GREEK_PI = wx.NewId() 
+ID_GREEK_RHO = wx.NewId() 
+ID_GREEK_SIGMA = wx.NewId() 
+ID_GREEK_TAU = wx.NewId() 
+ID_GREEK_UPSILON = wx.NewId() 
+ID_GREEK_PHI = wx.NewId() 
+ID_GREEK_CHI = wx.NewId() 
+ID_GREEK_PSI = wx.NewId() 
+ID_GREEK_OMEGA = wx.NewId()
+
 # set up global text strings
 SBText = "This program is for editing R Markdown files"
 
@@ -294,6 +319,42 @@ class MainWindow(wx.Frame):
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(buildMenu, "Build")  # Add the Build Menu to the MenuBar
 
+        GreekMenu = wx.Menu()
+        for id, label, helpText, handler in \
+                [
+                 (ID_GREEK_ALPHA, "alpha\tAlt+Shift+a", "insert greek letter alpha", self.OnGreek_alpha), 
+                 (ID_GREEK_BETA, "beta\tAlt+Shift+b", "insert greek letter beta", self.OnGreek_beta), 
+                 (ID_GREEK_GAMMA, "gamma\tAlt+Shift+g", "insert greek letter gamma", self.OnGreek_gamma), 
+                 (ID_GREEK_DELTA, "delta\tAlt+Shift+d", "insert greek letter delta", self.OnGreek_delta), 
+                 (ID_GREEK_EPSILON, "epsilon\tAlt+Shift+e", "insert greek letter epsilon", self.OnGreek_epsilon), 
+                 (ID_GREEK_ZETA, "zeta\tAlt+Shift+z", "insert greek letter zeta", self.OnGreek_zeta), 
+                 (ID_GREEK_ETA, "eta\tAlt+Shift+w", "insert greek letter eta", self.OnGreek_eta), 
+                 (ID_GREEK_THETA, "theta\tAlt+Shift+/", "insert greek letter theta", self.OnGreek_theta), 
+                 (ID_GREEK_IOTA, "iota\tAlt+Shift+i", "insert greek letter iota", self.OnGreek_iota), 
+                 (ID_GREEK_KAPPA, "kappa\tAlt+Shift+k", "insert greek letter kappa", self.OnGreek_kappa), 
+                 (ID_GREEK_LAMBDA, "lambda\tAlt+Shift+l", "insert greek letter lambda", self.OnGreek_lambda), 
+                 (ID_GREEK_MU, "mu\tAlt+Shift+m", "insert greek letter mu", self.OnGreek_mu), 
+                 (ID_GREEK_NU, "nu\tAlt+Shift+n", "insert greek letter nu", self.OnGreek_nu), 
+                 (ID_GREEK_XI, "xi\tAlt+Shift+x", "insert greek letter xi", self.OnGreek_xi), 
+                 (ID_GREEK_OMICRON, "omicron\tAlt+Shift+o", "insert greek letter omicron", self.OnGreek_omicron), 
+                 (ID_GREEK_PI, "pi\tAlt+Shift+p", "insert greek letter pi", self.OnGreek_pi), 
+                 (ID_GREEK_RHO, "rho\tAlt+Shift+r", "insert greek letter rho", self.OnGreek_rho), 
+                 (ID_GREEK_SIGMA, "sigma\tAlt+Shift+s", "insert greek letter sigma", self.OnGreek_sigma), 
+                 (ID_GREEK_TAU, "tau\tAlt+Shift+t", "insert greek letter tau", self.OnGreek_tau), 
+                 (ID_GREEK_UPSILON, "upsilon\tAlt+Shift+u", "insert greek letter upsilon", self.OnGreek_upsilon), 
+                 (ID_GREEK_PHI, "phi\tAlt+Shift+f", "insert greek letter phi", self.OnGreek_phi), 
+                 (ID_GREEK_CHI, "chi\tAlt+Shift+c", "insert greek letter chi", self.OnGreek_chi), 
+                 (ID_GREEK_PSI, "psi\tAlt+Shift+y", "insert greek letter psi", self.OnGreek_psi), 
+                 (ID_GREEK_OMEGA, "omega\tAlt+Shift+.", "insert greek letter omega", self.OnGreek_omega)]:
+            if id == None:
+                GreekMenu.AppendSeparator()
+            else:
+                item = GreekMenu.Append(id, label, helpText)
+                self.Bind(wx.EVT_MENU, handler, item)
+        menuBar.Append(GreekMenu, "Greek")  # Add the Greek Menu to the MenuBar
+
+
+
         helpMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [(wx.ID_ABOUT, "About", "Information about this program", self.OnAbout)]:
@@ -436,6 +497,55 @@ class MainWindow(wx.Frame):
                               self.settings['repo']) +
                           self.settings['knit2htmlcommand'].format(
                               join(self.dirname, self.filename).replace('\\', '\\\\'))])
+
+    def OnGreek_alpha(self, event):
+        self.editor.WriteText("\\alpha{}") 
+    def OnGreek_beta(self, event):
+        self.editor.WriteText("\\beta{}") 
+    def OnGreek_gamma(self, event):
+        self.editor.WriteText("\\gamma{}") 
+    def OnGreek_delta(self, event):
+        self.editor.WriteText("\\delta{}") 
+    def OnGreek_epsilon(self, event):
+        self.editor.WriteText("\\epsilon{}") 
+    def OnGreek_zeta(self, event):
+        self.editor.WriteText("\\zeta{}") 
+    def OnGreek_eta(self, event):
+        self.editor.WriteText("\\eta{}") 
+    def OnGreek_theta(self, event):
+        self.editor.WriteText("\\theta{}") 
+    def OnGreek_iota(self, event):
+        self.editor.WriteText("\\iota{}") 
+    def OnGreek_kappa(self, event):
+        self.editor.WriteText("\\kappa{}") 
+    def OnGreek_lambda(self, event):
+        self.editor.WriteText("\\lambda{}") 
+    def OnGreek_mu(self, event):
+        self.editor.WriteText("\\mu{}") 
+    def OnGreek_nu(self, event):
+        self.editor.WriteText("\\nu{}") 
+    def OnGreek_xi(self, event):
+        self.editor.WriteText("\\xi{}") 
+    def OnGreek_omicron(self, event):
+        self.editor.WriteText("\\omicron{}") 
+    def OnGreek_pi(self, event):
+        self.editor.WriteText("\\pi{}") 
+    def OnGreek_rho(self, event):
+        self.editor.WriteText("\\rho{}") 
+    def OnGreek_sigma(self, event):
+        self.editor.WriteText("\\sigma{}") 
+    def OnGreek_tau(self, event):
+        self.editor.WriteText("\\tau{}") 
+    def OnGreek_upsilon(self, event):
+        self.editor.WriteText("\\upsilon{}") 
+    def OnGreek_phi(self, event):
+        self.editor.WriteText("\\phi{}") 
+    def OnGreek_chi(self, event):
+        self.editor.WriteText("\\chi{}") 
+    def OnGreek_psi(self, event):
+        self.editor.WriteText("\\psi{}") 
+    def OnGreek_omega(self, event):
+        self.editor.WriteText("\\omega{}")
 
 
     def OnClose(self, event):
