@@ -1,7 +1,8 @@
-# WriteR Version 0.160310.2
+# WriteR Version 0.160415.0
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version will commence development in parallel, led by James Curtis.
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
+# assistance from T.Bilton on 15 April 2016 to add knit command. More to come.
 
 
 import wx 
@@ -20,6 +21,7 @@ print_option = False
 # set up some ID tags
 ID_STATUSBAR = wx.NewId()
 ID_BUILD = wx.NewId()
+ID_KNIT2HTML = wx.NewId()
 ID_SETTINGS = wx.NewId()
 
 # set up global text strings
@@ -91,6 +93,7 @@ class MyInterpretor(object):
 ID_DIRECTORY_CHANGE = wx.NewId()
 ID_R_PATH = wx.NewId()
 ID_BUILD_COMMAND = wx.NewId()
+ID_KNIT2HTML_COMMAND = wx.NewId()
 
 
 class SettingsDialog(wx.Dialog):
@@ -131,13 +134,21 @@ class SettingsDialog(wx.Dialog):
         s4.Add((1, 1), 1, wx.EXPAND)
         s4.SetItemMinSize(1, (180, 60))
         s5 = wx.BoxSizer(wx.HORIZONTAL)
-        self._window_text = wx.TextCtrl(self, ID_BUILD_COMMAND, parent.settings['newText'],
-                                        wx.Point(0, 0), wx.Size(350, 60), wx.TE_MULTILINE)
+        self._knit2html_command = wx.TextCtrl(self, ID_KNIT2HTML_COMMAND, parent.settings['knit2htmlcommand'],
+                                          wx.Point(0, 0), wx.Size(350, 60), wx.TE_MULTILINE)
         s5.Add((1, 1), 1, wx.EXPAND)
-        s5.Add(wx.StaticText(self, -1, "The default text included in all new files."))
-        s5.Add(self._window_text)
+        s5.Add(wx.StaticText(self, -1, "Knit2html command\n(The braces {} denote\nthe file path placeholder.)"))
+        s5.Add(self._knit2html_command)
         s5.Add((1, 1), 1, wx.EXPAND)
         s5.SetItemMinSize(1, (180, 60))
+        s6 = wx.BoxSizer(wx.HORIZONTAL)
+        self._window_text = wx.TextCtrl(self, ID_BUILD_COMMAND, parent.settings['newText'],
+                                        wx.Point(0, 0), wx.Size(350, 60), wx.TE_MULTILINE)
+        s6.Add((1, 1), 1, wx.EXPAND)
+        s6.Add(wx.StaticText(self, -1, "The default text included in all new files."))
+        s6.Add(self._window_text)
+        s6.Add((1, 1), 1, wx.EXPAND)
+        s6.SetItemMinSize(1, (180, 60))
         grid_sizer = wx.GridSizer(cols=1)
         grid_sizer.SetHGap(5)
         grid_sizer.Add(s1)
@@ -145,8 +156,9 @@ class SettingsDialog(wx.Dialog):
         grid_sizer.Add(s3)
         grid_sizer.Add(s4)
         grid_sizer.Add(s5)
+        grid_sizer.Add(s6)
         cont_sizer = wx.BoxSizer(wx.VERTICAL)
-        cont_sizer.Add(grid_sizer, 1, wx.EXPAND | wx.ALL, 5)
+        cont_sizer.Add(grid_sizer, 1, wx.EXPAND | wx.ALL, 6)
         btn_sizer = wx.StdDialogButtonSizer()
         if wx.Platform != "__WXMSW__":
             btn = wx.ContextHelpButton(self)
@@ -159,7 +171,7 @@ class SettingsDialog(wx.Dialog):
         btn.SetHelpText("The Cancel button cancels the dialog. (Cool, huh?)")
         btn_sizer.AddButton(btn)
         btn_sizer.Realize()
-        cont_sizer.Add(btn_sizer, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        cont_sizer.Add(btn_sizer, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 6)
         self.SetSizer(cont_sizer)
         cont_sizer.Fit(self)
 
@@ -184,7 +196,8 @@ class MainWindow(wx.Frame):
                          'filename': 'none',
                          'newText': "Use WriteR to edit your R markdown files",
                          'RDirectory': self.GetRDirectory(),
-                         'buildcommand': '''rmarkdown::render("{}")'''}
+                         'buildcommand': '''rmarkdown::render("{}")''',
+                         'knit2htmlcommand': '''knitr::knit2html("{}")'''}
         self.settings = self.getSettings(self.settingsFile, self.settings)
         if len(sys.argv) > 1:
             self.settings['lastdir'], self.settings['filename'] = split(realpath(sys.argv[-1]))
@@ -272,7 +285,8 @@ class MainWindow(wx.Frame):
         buildMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
-                 (ID_BUILD, "Build\tF5", "Build the script", self.OnBuild)]:
+                 (ID_BUILD, "Build\tF5", "Build the script", self.OnBuild),
+                 (ID_KNIT2HTML, "Knit to html\tF6", "Knit the script to HTML", self.OnKnit2html)]:
             if id == None:
                 buildMenu.AppendSeparator()
             else:
@@ -411,6 +425,18 @@ class MainWindow(wx.Frame):
                           self.settings['buildcommand'].format(
                               join(self.dirname, self.filename).replace('\\', '\\\\'))])
 
+    def OnKnit2html(self, event):
+        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
+        self._mgr.Update()
+        # This allows the file to be up to date for the build
+        self.OnSave(event)
+        self.StartThread([self.settings['RDirectory'], "-e",
+                          '''if (!is.element('knitr', installed.packages()[,1])){{'''.format() +
+                          '''install.packages('knitr', repos="{0}")}};require(knitr);'''.format(
+                              self.settings['repo']) +
+                          self.settings['knit2htmlcommand'].format(
+                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
+
 
     def OnClose(self, event):
         self.settings['filename'] = self.filename
@@ -511,7 +537,8 @@ class MainWindow(wx.Frame):
                                               'filename': self.settings['filename'],
                                               'newText': dlg._window_text.GetValue(),
                                               'RDirectory': dlg._r_path.GetValue(),
-                                              'buildcommand': dlg._build_command.GetValue()})
+                                              'buildcommand': dlg._build_command.GetValue(),
+                                              'knit2htmlcommand': dlg._knit2html_command.GetValue()})
         dlg.Destroy()
 
 # manditory lines to get program running.
