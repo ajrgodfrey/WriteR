@@ -24,6 +24,7 @@ ID_BUILD = wx.NewId()
 ID_KNIT2HTML = wx.NewId()
 ID_SETTINGS = wx.NewId()
 
+# Greek menu for Greek letters
 ID_GREEK_ALPHA = wx.NewId() 
 ID_GREEK_BETA = wx.NewId() 
 ID_GREEK_GAMMA = wx.NewId() 
@@ -48,6 +49,11 @@ ID_GREEK_PHI = wx.NewId()
 ID_GREEK_CHI = wx.NewId() 
 ID_GREEK_PSI = wx.NewId() 
 ID_GREEK_OMEGA = wx.NewId()
+
+# format menu items
+ID_BOLD = wx.NewId()
+ID_ITALIC = wx.NewId()
+ID_MATH = wx.NewId()
 
 # set up global text strings
 SBText = "This program is for editing R Markdown files"
@@ -319,6 +325,20 @@ class MainWindow(wx.Frame):
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(buildMenu, "Build")  # Add the Build Menu to the MenuBar
 
+        formatMenu = wx.Menu()
+        for id, label, helpText, handler in \
+                [
+                 (ID_BOLD, "Bold\tCtrl+b", "move to bold face font", self.OnBold),
+                 (ID_ITALIC, "Italic\tCtrl+i", "move to italic face font", self.OnItalic),
+                 (ID_MATH, "Maths mode\tCtrl+Shift+$", "move text to maths mode", self.OnMath)]:
+            if id == None:
+                formatMenu.AppendSeparator()
+            else:
+                item = formatMenu.Append(id, label, helpText)
+                self.Bind(wx.EVT_MENU, handler, item)
+        menuBar.Append(formatMenu, "F&ormat")  # Add the format Menu to the MenuBar
+
+
         GreekMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
@@ -546,6 +566,33 @@ class MainWindow(wx.Frame):
         self.editor.WriteText("\\psi{}") 
     def OnGreek_omega(self, event):
         self.editor.WriteText("\\omega{}")
+
+    # format menu events
+    def OnMath(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("$")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText("$")
+        self.editor.SetInsertionPoint(to + 2)
+
+    def OnBold(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("*")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText("*")
+        self.editor.SetInsertionPoint(to + 2)
+
+
+    def OnItalic(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("**")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText("**")
+        self.editor.SetInsertionPoint(to + 4)
+
 
 
     def OnClose(self, event):
