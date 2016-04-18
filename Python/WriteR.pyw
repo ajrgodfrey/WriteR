@@ -55,6 +55,14 @@ ID_BOLD = wx.NewId()
 ID_ITALIC = wx.NewId()
 ID_MATH = wx.NewId()
 
+# IDs for headings
+ID_H1 = wx.NewId() 
+ID_H2 = wx.NewId() 
+ID_H3 = wx.NewId() 
+ID_H4 = wx.NewId() 
+ID_H5 = wx.NewId() 
+ID_H6 = wx.NewId()
+
 # set up global text strings
 SBText = "This program is for editing R Markdown files"
 
@@ -325,6 +333,22 @@ class MainWindow(wx.Frame):
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(buildMenu, "Build")  # Add the Build Menu to the MenuBar
 
+        insertMenu = wx.Menu()
+        for id, label, helpText, handler in \
+                [
+                 (ID_H1, "heading &1\tAlt+1", "insert heading level 1", self.OnHeading1), 
+                 (ID_H2, "heading &2\tAlt+2", "insert heading level 2", self.OnHeading2), 
+                 (ID_H3, "heading &3\tAlt+3", "insert heading level 3", self.OnHeading3), 
+                 (ID_H4, "heading &4\tAlt+4", "insert heading level 4", self.OnHeading4), 
+                 (ID_H5, "heading &5\tAlt+5", "insert heading level 5", self.OnHeading5), 
+                 (ID_H6, "heading &6\tAlt+6", "insert heading level 6", self.OnHeading6)]:
+            if id == None:
+                insertMenu.AppendSeparator()
+            else:
+                item = insertMenu.Append(id, label, helpText)
+                self.Bind(wx.EVT_MENU, handler, item)
+        menuBar.Append(insertMenu, "Insert")  # Add the Insert Menu to the MenuBar
+
         formatMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
@@ -592,6 +616,20 @@ class MainWindow(wx.Frame):
         self.editor.SetInsertionPoint(frm)
         self.editor.WriteText("**")
         self.editor.SetInsertionPoint(to + 4)
+
+
+    def OnHeading1(self, event):
+        self.editor.WriteText("\n# ") 
+    def OnHeading2(self, event):
+        self.editor.WriteText("\n## ") 
+    def OnHeading3(self, event):
+        self.editor.WriteText("\n### ") 
+    def OnHeading4(self, event):
+        self.editor.WriteText("\n#### ") 
+    def OnHeading5(self, event):
+        self.editor.WriteText("\n##### ") 
+    def OnHeading6(self, event):
+        self.editor.WriteText("\n###### ")
 
 
 
