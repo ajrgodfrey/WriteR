@@ -1,4 +1,4 @@
-# WriteR Version 0.160415.0
+# WriteR Version 0.160419.0
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version will commence development in parallel, led by James Curtis.
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -334,19 +334,26 @@ class MainWindow(wx.Frame):
         menuBar.Append(buildMenu, "Build")  # Add the Build Menu to the MenuBar
 
         insertMenu = wx.Menu()
+        AddURL = insertMenu.Append(-1, "URL")
+        self.Bind(wx.EVT_MENU, self.OnAddURL, AddURL)
+        AddFigure = insertMenu.Append(-1, "Figure")
+        self.Bind(wx.EVT_MENU, self.OnAddFigure, AddFigure)
+        headingsMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
-                 (ID_H1, "heading &1\tAlt+1", "insert heading level 1", self.OnHeading1), 
-                 (ID_H2, "heading &2\tAlt+2", "insert heading level 2", self.OnHeading2), 
-                 (ID_H3, "heading &3\tAlt+3", "insert heading level 3", self.OnHeading3), 
-                 (ID_H4, "heading &4\tAlt+4", "insert heading level 4", self.OnHeading4), 
-                 (ID_H5, "heading &5\tAlt+5", "insert heading level 5", self.OnHeading5), 
-                 (ID_H6, "heading &6\tAlt+6", "insert heading level 6", self.OnHeading6)]:
+                 (ID_H1, "level &1\tAlt+1", "insert heading level 1", self.OnHeading1), 
+                 (ID_H2, "level &2\tAlt+2", "insert heading level 2", self.OnHeading2), 
+                 (ID_H3, "level &3\tAlt+3", "insert heading level 3", self.OnHeading3), 
+                 (ID_H4, "level &4\tAlt+4", "insert heading level 4", self.OnHeading4), 
+                 (ID_H5, "level &5\tAlt+5", "insert heading level 5", self.OnHeading5), 
+                 (ID_H6, "level &6\tAlt+6", "insert heading level 6", self.OnHeading6)]:
             if id == None:
-                insertMenu.AppendSeparator()
+                headingsMenu.AppendSeparator()
             else:
-                item = insertMenu.Append(id, label, helpText)
+                item = headingsMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
+        insertMenu.AppendMenu(-1, "Heading", headingsMenu)
+
         menuBar.Append(insertMenu, "Insert")  # Add the Insert Menu to the MenuBar
 
         formatMenu = wx.Menu()
@@ -363,6 +370,7 @@ class MainWindow(wx.Frame):
         menuBar.Append(formatMenu, "F&ormat")  # Add the format Menu to the MenuBar
 
 
+        mathsMenu = wx.Menu()
         GreekMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
@@ -395,7 +403,8 @@ class MainWindow(wx.Frame):
             else:
                 item = GreekMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        menuBar.Append(GreekMenu, "Greek")  # Add the Greek Menu to the MenuBar
+        mathsMenu.AppendMenu(-1, "Greek letters", GreekMenu)
+        menuBar.Append(mathsMenu, "Maths")  # Add the maths Menu to the MenuBar
 
 
 
@@ -617,6 +626,10 @@ class MainWindow(wx.Frame):
         self.editor.WriteText("**")
         self.editor.SetInsertionPoint(to + 4)
 
+    def OnAddURL(self, event):
+        self.editor.WriteText(" [alt text](http://) ") 
+    def OnAddFigure(self, event):
+        self.editor.WriteText(" ![alt tag](filename) ") 
 
     def OnHeading1(self, event):
         self.editor.WriteText("\n# ") 
