@@ -1,4 +1,4 @@
-# WriteR Version 0.160419.1
+# WriteR Version 0.160419.2
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version will commence development in parallel, led by James Curtis.
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -35,6 +35,7 @@ ID_SYMBOL_RIGHTSQUARE = wx.NewId()
 ID_SYMBOL_LEFTCURLY = wx.NewId() 
 ID_SYMBOL_RIGHTCURLY = wx.NewId()
 
+ID_RCHUNK = wx.NewId()
 
 # Greek menu for Greek letters
 ID_GREEK_ALPHA = wx.NewId() 
@@ -435,6 +436,17 @@ class MainWindow(wx.Frame):
         mathsMenu.AppendMenu(-1, "Greek letters", GreekMenu)
         menuBar.Append(mathsMenu, "Maths")  # Add the maths Menu to the MenuBar
 
+        statsMenu = wx.Menu()
+        for id, label, helpText, handler in \
+                [
+                 (ID_RCHUNK, "Insert R code chunk\tAlt+R", "insert standard R code chunk", self.OnRChunk)
+]:
+            if id == None:
+                statsMenu.AppendSeparator()
+            else:
+                item = statsMenu.Append(id, label, helpText)
+                self.Bind(wx.EVT_MENU, handler, item)
+        menuBar.Append(statsMenu, "stats")  # Add the stats Menu to the MenuBar
 
 
         helpMenu = wx.Menu()
@@ -579,6 +591,14 @@ class MainWindow(wx.Frame):
                               self.settings['repo']) +
                           self.settings['knit2htmlcommand'].format(
                               join(self.dirname, self.filename).replace('\\', '\\\\'))])
+    def OnRChunk(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("\n```\n\n")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText("\n```{r }\n")
+        self.editor.SetInsertionPoint(frm + 8)
+
 
     def OnSymbol_infinity(self, event):
         self.editor.WriteText("\\infty{}") 
