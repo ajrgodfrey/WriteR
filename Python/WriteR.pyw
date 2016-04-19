@@ -1,4 +1,4 @@
-# WriteR Version 0.160419.0
+# WriteR Version 0.160419.1
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version will commence development in parallel, led by James Curtis.
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -23,6 +23,18 @@ ID_STATUSBAR = wx.NewId()
 ID_BUILD = wx.NewId()
 ID_KNIT2HTML = wx.NewId()
 ID_SETTINGS = wx.NewId()
+
+# symbols menu for mathematical symbols
+ID_SYMBOL_INFINITY = wx.NewId() 
+ID_SYMBOL_TIMES = wx.NewId() 
+ID_SYMBOL_PARTIAL = wx.NewId() 
+ID_SYMBOL_LEFTPAREN = wx.NewId() 
+ID_SYMBOL_RIGHTPAREN = wx.NewId() 
+ID_SYMBOL_LEFTSQUARE = wx.NewId() 
+ID_SYMBOL_RIGHTSQUARE = wx.NewId() 
+ID_SYMBOL_LEFTCURLY = wx.NewId() 
+ID_SYMBOL_RIGHTCURLY = wx.NewId()
+
 
 # Greek menu for Greek letters
 ID_GREEK_ALPHA = wx.NewId() 
@@ -353,7 +365,6 @@ class MainWindow(wx.Frame):
                 item = headingsMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         insertMenu.AppendMenu(-1, "Heading", headingsMenu)
-
         menuBar.Append(insertMenu, "Insert")  # Add the Insert Menu to the MenuBar
 
         formatMenu = wx.Menu()
@@ -371,6 +382,24 @@ class MainWindow(wx.Frame):
 
 
         mathsMenu = wx.Menu()
+        symbolsMenu = wx.Menu()
+        for id, label, helpText, handler in \
+                [
+                 (ID_SYMBOL_INFINITY, "infinity\tCtrl+Shift+i", "insert infinity", self.OnSymbol_infinity), 
+                 (ID_SYMBOL_TIMES, "times\tCtrl+8", "insert times", self.OnSymbol_times), 
+                 (ID_SYMBOL_PARTIAL, "partial\tCtrl+Shift+d", "insert partial", self.OnSymbol_partial), 
+                 (ID_SYMBOL_LEFTPAREN, "LeftParen\tCtrl+9", "insert left parenthesis", self.OnSymbol_LeftParen), 
+                 (ID_SYMBOL_RIGHTPAREN, "RightParen\tCtrl+0", "insert right parenthesis", self.OnSymbol_RightParen), 
+                 (ID_SYMBOL_LEFTSQUARE, "LeftSquare\tCtrl+[", "insert left square bracket", self.OnSymbol_LeftSquare), 
+                 (ID_SYMBOL_RIGHTSQUARE, "RightSquare\tCtrl+]", "insert right square bracket", self.OnSymbol_RightSquare), 
+                 (ID_SYMBOL_LEFTCURLY, "LeftCurly\tCtrl+Shift+{", "insert left curly bracket", self.OnSymbol_LeftCurly), 
+                 (ID_SYMBOL_RIGHTCURLY, "RightCurly\tCtrl+Shift+}", "insert right curly bracket", self.OnSymbol_RightCurly)]:
+            if id == None:
+                symbolsMenu.AppendSeparator()
+            else:
+                item = symbolsMenu.Append(id, label, helpText)
+                self.Bind(wx.EVT_MENU, handler, item)
+        mathsMenu.AppendMenu(-1, "Symbols", symbolsMenu)
         GreekMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
@@ -550,6 +579,25 @@ class MainWindow(wx.Frame):
                               self.settings['repo']) +
                           self.settings['knit2htmlcommand'].format(
                               join(self.dirname, self.filename).replace('\\', '\\\\'))])
+
+    def OnSymbol_infinity(self, event):
+        self.editor.WriteText("\\infty{}") 
+    def OnSymbol_times(self, event):
+        self.editor.WriteText("\\times{}") 
+    def OnSymbol_partial(self, event):
+        self.editor.WriteText("\\partial{}") 
+    def OnSymbol_LeftParen(self, event):
+        self.editor.WriteText("\\left(") 
+    def OnSymbol_RightParen(self, event):
+        self.editor.WriteText("\\right)") 
+    def OnSymbol_LeftSquare(self, event):
+        self.editor.WriteText("\\left[") 
+    def OnSymbol_RightSquare(self, event):
+        self.editor.WriteText("\\right]") 
+    def OnSymbol_LeftCurly(self, event):
+        self.editor.WriteText("\\left Curly{}") 
+    def OnSymbol_RightCurly(self, event):
+        self.editor.WriteText("\\right Curly{}")
 
     def OnGreek_alpha(self, event):
         self.editor.WriteText("\\alpha{}") 
