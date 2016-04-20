@@ -1,4 +1,4 @@
-# WriteR Version 0.160419.2
+# WriteR Version 0.160420.1
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version will commence development in parallel, led by James Curtis.
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -35,7 +35,9 @@ ID_SYMBOL_RIGHTSQUARE = wx.NewId()
 ID_SYMBOL_LEFTCURLY = wx.NewId() 
 ID_SYMBOL_RIGHTCURLY = wx.NewId()
 
+ID_RCOMMAND = wx.NewId()
 ID_RCHUNK = wx.NewId()
+ID_RGRAPH = wx.NewId()
 
 # Greek menu for Greek letters
 ID_GREEK_ALPHA = wx.NewId() 
@@ -439,7 +441,9 @@ class MainWindow(wx.Frame):
         statsMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
-                 (ID_RCHUNK, "Insert R code chunk\tAlt+R", "insert standard R code chunk", self.OnRChunk)
+                 (ID_RCOMMAND, "Insert inline R command", "insert an in-line R command", self.OnRCommand),
+                 (ID_RCHUNK, "Insert R code chunk\tAlt+R", "insert standard R code chunk", self.OnRChunk),
+                 (ID_RGRAPH, "Insert R code chunk for a graph\tAlt+g", "insert R code chunk for a graph", self.OnRGraph)
 ]:
             if id == None:
                 statsMenu.AppendSeparator()
@@ -591,12 +595,31 @@ class MainWindow(wx.Frame):
                               self.settings['repo']) +
                           self.settings['knit2htmlcommand'].format(
                               join(self.dirname, self.filename).replace('\\', '\\\\'))])
+
+
+    def OnRCommand(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("`")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText("`r ")
+        self.editor.SetInsertionPoint(frm + 3)
+
+
     def OnRChunk(self, event):
         frm, to = self.editor.GetSelection()
         self.editor.SetInsertionPoint(to)
         self.editor.WriteText("\n```\n\n")
         self.editor.SetInsertionPoint(frm)
         self.editor.WriteText("\n```{r }\n")
+        self.editor.SetInsertionPoint(frm + 8)
+
+    def OnRGraph(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("\n```\n\n")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText("\n```{r , fig.height=5, fig.width=5, fig.cap=\"\"}\n")
         self.editor.SetInsertionPoint(frm + 8)
 
 

@@ -21,9 +21,15 @@ Python development is now  just being handled by Jonathan Godfrey. Look for prog
 
 # 15 April 2016
 
-JG met with Timothy Bilton and we added some consideration for alternativ build methods
+AJRG met with Timothy Bilton and we added some consideration for alternativ build methods
 
-# 17 April 2016
+# 17-20 April 2016
 
-JG added Greek menu for insertion of Greek letters via LaTeX source.
+AJRG added Greek menu for insertion of Greek letters via LaTeX source and a few other menu items.
+AJRG altered some menu items to be submenus and continued to add more R markdown and LaTeX shortcuts.
+
+
+# Work to do
+
+A find/replace dialogue is desperately needed.
 
