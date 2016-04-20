@@ -1,4 +1,4 @@
-# WriteR Version 0.160420.4
+# WriteR Version 0.160420.5
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version will commence development in parallel, led by James Curtis.
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -20,6 +20,7 @@ print_option = False
 
 # set up some ID tags
 ID_STATUSBAR = wx.NewId()
+ID_TOGGLESTATUSBAR = wx.NewId()
 ID_BUILD = wx.NewId()
 ID_KNIT2HTML = wx.NewId()
 ID_SETTINGS = wx.NewId()
@@ -343,6 +344,17 @@ class MainWindow(wx.Frame):
                 item = editMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(editMenu, "&Edit")  # Add the editMenu to the MenuBar
+
+        viewMenu = wx.Menu()
+        for id, label, helpText, handler in \
+                [
+                 (ID_TOGGLESTATUSBAR, "Status bar on/off", "turn off the status bar", self.ToggleStatusBar)]:
+            if id == None:
+                viewMenu.AppendSeparator()
+            else:
+                item = viewMenu.Append(id, label, helpText)
+                self.Bind(wx.EVT_MENU, handler, item)
+        menuBar.Append(viewMenu, "view")  # Add the view Menu to the MenuBar
 
 
         buildMenu = wx.Menu()
@@ -779,6 +791,15 @@ class MainWindow(wx.Frame):
         self.editor.WriteText("\n##### ") 
     def OnHeading6(self, event):
         self.editor.WriteText("\n###### ")
+
+    # view menu events
+    def ToggleStatusBar(self, event):
+        if self.statusbar.IsShown():
+            self.statusbar.Hide()
+        else:
+            self.statusbar.Show()
+            self.SetStatusText(SBText)
+
 
 
 

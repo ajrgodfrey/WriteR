@@ -1,8 +1,0 @@
-    # view menu events
-    def ToggleStatusBar(self, event):
-        if self.statusbar.IsShown():
-            self.statusbar.Hide()
-        else:
-            self.statusbar.Show()
-            self.SetStatusText(SBText)
-
