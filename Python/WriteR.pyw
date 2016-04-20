@@ -1,4 +1,4 @@
-# WriteR Version 0.160420.1
+# WriteR Version 0.160420.4
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version will commence development in parallel, led by James Curtis.
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -38,6 +38,15 @@ ID_SYMBOL_RIGHTCURLY = wx.NewId()
 ID_RCOMMAND = wx.NewId()
 ID_RCHUNK = wx.NewId()
 ID_RGRAPH = wx.NewId()
+
+ID_SQUAREROOT = wx.NewId() 
+ID_FRACTION = wx.NewId() 
+ID_SUMMATION = wx.NewId() 
+ID_INTEGRAL = wx.NewId() 
+ID_PRODUCT = wx.NewId() 
+ID_LIMIT = wx.NewId() 
+ID_DOUBLESUMMATION = wx.NewId() 
+ID_DOUBLEINTEGRAL = wx.NewId()
 
 # Greek menu for Greek letters
 ID_GREEK_ALPHA = wx.NewId() 
@@ -233,7 +242,7 @@ class SettingsDialog(wx.Dialog):
 # get on with the program
 class MainWindow(wx.Frame):
     def __init__(self, parent=None, id=-1, title="", pos=wx.DefaultPosition,
-                 size=(400, 300), style=wx.DEFAULT_FRAME_STYLE |
+                 size=wx.DefaultSize, style=wx.DEFAULT_FRAME_STYLE |
                                         wx.SUNKEN_BORDER |
                                         wx.CLIP_CHILDREN, filename="untitled.Rmd"):
         super(MainWindow, self).__init__(parent, id, title, pos, size, style)
@@ -403,6 +412,23 @@ class MainWindow(wx.Frame):
                 item = symbolsMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         mathsMenu.AppendMenu(-1, "Symbols", symbolsMenu)
+        structuresMenu = wx.Menu()
+        for id, label, helpText, handler in \
+                [
+                 (ID_SQUAREROOT, "Square root\tAlt+Ctrl+Shift+r", "insert a square root", self.OnSquareRoot), 
+                 (ID_FRACTION, "Fraction\tCtrl+Shift+/", "insert a fraction", self.OnFraction), 
+                 (ID_SUMMATION, "Summation\tAlt+Ctrl+Shift+s", "insert a summation", self.OnSummation), 
+                 (ID_INTEGRAL, "Integral\tAlt+Ctrl+Shift+i", "insert an integral", self.Onintegral), 
+                 (ID_PRODUCT, "Product\tAlt+Ctrl+Shift+p", "insert a product", self.OnProduct), 
+                 (ID_LIMIT, "Limit\tAlt+Ctrl+Shift+l", "insert a limit", self.OnLimit), 
+                 (ID_DOUBLESUMMATION, "Double summation\tAlt+Ctrl+Shift+d", "insert a double summation", self.OnDoubleSummation), 
+                 (ID_DOUBLEINTEGRAL, "Double integral", "insert a double integral", self.OnDoubleIntegral)]:
+            if id == None:
+                structuresMenu.AppendSeparator()
+            else:
+                item = structuresMenu.Append(id, label, helpText)
+                self.Bind(wx.EVT_MENU, handler, item)
+        mathsMenu.AppendMenu(-1, "structures", structuresMenu)# Add the structures Menu as a submenu to the main menu
         GreekMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
@@ -641,6 +667,25 @@ class MainWindow(wx.Frame):
         self.editor.WriteText("\\left Curly{}") 
     def OnSymbol_RightCurly(self, event):
         self.editor.WriteText("\\right Curly{}")
+
+
+
+    def OnSquareRoot(self, event):
+        self.editor.WriteText("\\sqrt{}") 
+    def OnFraction(self, event):
+        self.editor.WriteText("\\frac{ num }{ den }") 
+    def OnSummation(self, event):
+        self.editor.WriteText("\\sum_{ lower }^{ upper }{ what }") 
+    def Onintegral(self, event):
+        self.editor.WriteText("\\int_{ lower }^{ upper }{ what }") 
+    def OnProduct(self, event):
+        self.editor.WriteText("\\prod_{ lower }^{ upper }{ what }") 
+    def OnLimit(self, event):
+        self.editor.WriteText("\\lim_{ what \\to where }{is}") 
+    def OnDoubleSummation(self, event):
+        self.editor.WriteText("\\sum_{ lower }^{ upper }{\\sum_{ lower }^{ upper }{ what }}") 
+    def OnDoubleIntegral(self, event):
+        self.editor.WriteText("\\int_{ lower }^{ upper }{\\int_{ lower }^{ upper }{ what }}") 
 
     def OnGreek_alpha(self, event):
         self.editor.WriteText("\\alpha{}") 
