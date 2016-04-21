@@ -1,4 +1,4 @@
-# WriteR Version 0.160421.2
+# WriteR Version 0.160421.4
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version will commence development in parallel, led by James Curtis.
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -14,13 +14,10 @@ from subprocess import Popen, PIPE, STDOUT
 from os.path import join, split, isdir, expanduser, realpath
 from os import walk
 from time import asctime, sleep
-#from FormatMenuEvents import *
 
 print_option = False
 
 # set up some ID tags
-ID_STATUSBAR = wx.NewId()
-ID_TOGGLESTATUSBAR = wx.NewId()
 ID_BUILD = wx.NewId()
 ID_KNIT2HTML = wx.NewId()
 ID_SETTINGS = wx.NewId()
@@ -363,6 +360,14 @@ class MainWindow(wx.Frame):
             else:
                 item = buildMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
+ 
+        # Create builder menu
+        builderMenu = wx.Menu()
+        self.ChooseRender = builderMenu.Append(wx.ID_ANY, "Render first format", "Use the rmarkdown package and render function to create HTML or only the first of multiple formats", wx.ITEM_RADIO)
+        self.Bind(wx.EVT_MENU, self.ToggleStatusBar, self.ChooseRender)#fix
+        self.ChooseKnit2html = builderMenu.Append(wx.ID_ANY, "knit to HTML", "use the knitr package and knit2html function to create an HTML document", wx.ITEM_RADIO)
+        self.Bind(wx.EVT_MENU, self.ToggleStatusBar, self.ChooseKnit2html) #fix
+        buildMenu.AppendMenu(-1, "Set build process to...", builderMenu) # Add the builder Menu as a submenu to the build menu
         menuBar.Append(buildMenu, "Build")  # Add the Build Menu to the MenuBar
 
         insertMenu = wx.Menu()
@@ -534,8 +539,8 @@ class MainWindow(wx.Frame):
     # Event handlers:
     def OnAbout(self, event):
         dialog = wx.MessageDialog(self, "WriteR is a  first attempt  at developing an R Markdown editor\n"
-                                        "using wxPython, developed by Jonathan Godfrey\n"
-                                        "and James Curtis in 2015.\nVersion: 0.150302",
+                                        "using wxPython. Development started by Jonathan Godfrey\n"
+                                        "and James Curtis in 2015.\nContinued development assisted by Timothy Bilton in 2016.\nSend all feedback to Jonathan Godfrey at a.j.godfrey@massey.ac.nz\nVersion: 0.160421.2 (or later)",
                                   "About this R Markdown Editor", wx.OK)
         dialog.ShowModal()
         dialog.Destroy()
