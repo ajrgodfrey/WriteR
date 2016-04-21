@@ -1,6 +1,6 @@
-# WriteR Version 0.160421.4
+# WriteR Version 0.160421.6
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
-# a C++ version will commence development in parallel, led by James Curtis.
+# a C++ version has been proposed for development in parallel, (led by James Curtis).
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
 # assistance from T.Bilton on 15 April 2016 to add knit command. More to come.
 
@@ -76,6 +76,7 @@ ID_GREEK_OMEGA = wx.NewId()
 ID_BOLD = wx.NewId()
 ID_ITALIC = wx.NewId()
 ID_MATH = wx.NewId()
+ID_CODE = wx.NewId()
 
 # IDs for headings
 ID_H1 = wx.NewId() 
@@ -397,6 +398,7 @@ class MainWindow(wx.Frame):
                 [
                  (ID_BOLD, "Bold\tCtrl+b", "move to bold face font", self.OnBold),
                  (ID_ITALIC, "Italic\tCtrl+i", "move to italic face font", self.OnItalic),
+                 (ID_CODE, "Code\tCtrl+`", "present using a typewriter font commonly seen when showing code", self.OnCode),
                  (ID_MATH, "Maths mode\tCtrl+Shift+$", "move text to maths mode", self.OnMath)]:
             if id == None:
                 formatMenu.AppendSeparator()
@@ -540,7 +542,7 @@ class MainWindow(wx.Frame):
     def OnAbout(self, event):
         dialog = wx.MessageDialog(self, "WriteR is a  first attempt  at developing an R Markdown editor\n"
                                         "using wxPython. Development started by Jonathan Godfrey\n"
-                                        "and James Curtis in 2015.\nContinued development assisted by Timothy Bilton in 2016.\nSend all feedback to Jonathan Godfrey at a.j.godfrey@massey.ac.nz\nVersion: 0.160421.2 (or later)",
+                                        "and James Curtis in 2015.\nContinued development assisted by Timothy Bilton in 2016.\nSend all feedback to Jonathan Godfrey at a.j.godfrey@massey.ac.nz\nVersion: 0.160421.6 (or later)",
                                   "About this R Markdown Editor", wx.OK)
         dialog.ShowModal()
         dialog.Destroy()
@@ -775,6 +777,15 @@ class MainWindow(wx.Frame):
         self.editor.WriteText("**")
         self.editor.SetInsertionPoint(to + 4)
 
+    def OnCode(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("`")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText("`")
+        self.editor.SetInsertionPoint(to + 2)
+
+
     def OnAddURL(self, event):
         self.editor.WriteText(" [alt text](http://) ") 
     def OnAddFigure(self, event):
@@ -809,7 +820,7 @@ class MainWindow(wx.Frame):
         self.settings['lastdir'] = self.dirname
         self.setSettings(self.settingsFile, self.settings)
         if event.CanVeto() and self.editor.IsModified():
-            hold = wx.MessageBox("Your file has not been saved. Would you like to save your work?",
+            hold = wx.MessageBox("Would you like to save your work?",
                                  "Save before exit?",
                                  wx.ICON_QUESTION | wx.YES_NO | wx.CANCEL | wx.YES_DEFAULT)
             if hold == wx.YES:
@@ -907,7 +918,7 @@ class MainWindow(wx.Frame):
                                               'knit2htmlcommand': dlg._knit2html_command.GetValue()})
         dlg.Destroy()
 
-# manditory lines to get program running.
+# mandatory lines to get program running.
 if __name__ == "__main__":
     app = wx.App()
     frame = MainWindow()
