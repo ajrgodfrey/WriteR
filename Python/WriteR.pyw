@@ -1,4 +1,4 @@
-# WriteR Version 0.160420.5
+# WriteR Version 0.160421.2
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version will commence development in parallel, led by James Curtis.
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -346,14 +346,10 @@ class MainWindow(wx.Frame):
         menuBar.Append(editMenu, "&Edit")  # Add the editMenu to the MenuBar
 
         viewMenu = wx.Menu()
-        for id, label, helpText, handler in \
-                [
-                 (ID_TOGGLESTATUSBAR, "Status bar on/off", "turn off the status bar", self.ToggleStatusBar)]:
-            if id == None:
-                viewMenu.AppendSeparator()
-            else:
-                item = viewMenu.Append(id, label, helpText)
-                self.Bind(wx.EVT_MENU, handler, item)
+        self.ShowStatusBar = viewMenu.Append(wx.ID_ANY, "Show status bar", 
+            "Show Status bar", kind=wx.ITEM_CHECK)
+        viewMenu.Check(self.ShowStatusBar.GetId(), True)
+        self.Bind(wx.EVT_MENU, self.ToggleStatusBar, self.ShowStatusBar)
         menuBar.Append(viewMenu, "view")  # Add the view Menu to the MenuBar
 
 
@@ -670,15 +666,15 @@ class MainWindow(wx.Frame):
     def OnSymbol_LeftParen(self, event):
         self.editor.WriteText("\\left(") 
     def OnSymbol_RightParen(self, event):
-        self.editor.WriteText("\\right)") 
+        self.editor.WriteText("\\right) ") 
     def OnSymbol_LeftSquare(self, event):
         self.editor.WriteText("\\left[") 
     def OnSymbol_RightSquare(self, event):
-        self.editor.WriteText("\\right]") 
+        self.editor.WriteText("\\right] ") 
     def OnSymbol_LeftCurly(self, event):
-        self.editor.WriteText("\\left Curly{}") 
+        self.editor.WriteText("\\left\\{") 
     def OnSymbol_RightCurly(self, event):
-        self.editor.WriteText("\\right Curly{}")
+        self.editor.WriteText("\\right\\} ")
 
 
 
