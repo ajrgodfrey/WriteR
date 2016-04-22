@@ -1,4 +1,4 @@
-# WriteR Version 0.160422.9
+# WriteR Version 0.160422.13
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version has been proposed for development in parallel, (led by James Curtis).
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -164,85 +164,6 @@ ID_KNIT2PDF_COMMAND = wx.NewId()
 ID_NEWTEXT = wx.NewId()
 
 
-class SettingsDialog(wx.Dialog):
-    def __init__(self, parent, ID, title, size=wx.DefaultSize, pos=wx.DefaultPosition,
-                 style=wx.DEFAULT_DIALOG_STYLE):
-        wx.Dialog.__init__(self, parent, wx.ID_ANY, "Settings", pos, size, style)
-        self._frame = parent
-        s1 = wx.BoxSizer(wx.HORIZONTAL)
-        self._default_directory = wx.TextCtrl(self, ID_DIRECTORY_CHANGE, parent.settings['dirname'],
-                                              wx.Point(0, 0), wx.Size(350, 20))
-        s1.Add((1, 1), 1, wx.EXPAND)
-        s1.Add(wx.StaticText(self, -1, "Default directory"))
-        s1.Add(self._default_directory)
-        s1.Add((1, 1), 1, wx.EXPAND)
-        s1.SetItemMinSize(1, (180, 20))
-        s2 = wx.BoxSizer(wx.HORIZONTAL)
-        self._default_CRAN = wx.TextCtrl(self, ID_CRAN, parent.settings['repo'],
-                                         wx.Point(0, 0), wx.Size(350, 20))
-        s2.Add((1, 1), 1, wx.EXPAND)
-        s2.Add(wx.StaticText(self, -1, "Default CRAN server"))
-        s2.Add(self._default_CRAN)
-        s2.Add((1, 1), 1, wx.EXPAND)
-        s2.SetItemMinSize(1, (180, 20))
-        s3 = wx.BoxSizer(wx.HORIZONTAL)
-        self._r_path = wx.TextCtrl(self, ID_R_PATH, parent.settings['RDirectory'],
-                                   wx.Point(0, 0), wx.Size(350, 20))
-        s3.Add((1, 1), 1, wx.EXPAND)
-        s3.Add(wx.StaticText(self, -1, "Rscript executable"))
-        s3.Add(self._r_path)
-        s3.Add((1, 1), 1, wx.EXPAND)
-        s3.SetItemMinSize(1, (180, 20))
-        s4 = wx.BoxSizer(wx.HORIZONTAL)
-        self._build_command = wx.TextCtrl(self, ID_BUILD_COMMAND, parent.settings['buildcommand'],
-                                          wx.Point(0, 0), wx.Size(350, 60), wx.TE_MULTILINE)
-        s4.Add((1, 1), 1, wx.EXPAND)
-        s4.Add(wx.StaticText(self, -1, "Built command\n(The braces {} denote\nthe file path placeholder.)"))
-        s4.Add(self._build_command)
-        s4.Add((1, 1), 1, wx.EXPAND)
-        s4.SetItemMinSize(1, (180, 60))
-        s5 = wx.BoxSizer(wx.HORIZONTAL)
-        self._knit2html_command = wx.TextCtrl(self, ID_KNIT2HTML_COMMAND, parent.settings['knit2htmlcommand'],
-                                          wx.Point(0, 0), wx.Size(350, 60), wx.TE_MULTILINE)
-        s5.Add((1, 1), 1, wx.EXPAND)
-        s5.Add(wx.StaticText(self, -1, "Knit2html command\n(The braces {} denote\nthe file path placeholder.)"))
-        s5.Add(self._knit2html_command)
-        s5.Add((1, 1), 1, wx.EXPAND)
-        s5.SetItemMinSize(1, (180, 60))
-        s6 = wx.BoxSizer(wx.HORIZONTAL)
-        self._window_text = wx.TextCtrl(self, ID_NEWTEXT, parent.settings['newText'],
-                                        wx.Point(0, 0), wx.Size(350, 60), wx.TE_MULTILINE)
-        s6.Add((1, 1), 1, wx.EXPAND)
-        s6.Add(wx.StaticText(self, -1, "The default text included in all new files."))
-        s6.Add(self._window_text)
-        s6.Add((1, 1), 1, wx.EXPAND)
-        s6.SetItemMinSize(1, (180, 60))
-        grid_sizer = wx.GridSizer(cols=1)
-        grid_sizer.SetHGap(5)
-        grid_sizer.Add(s1)
-        grid_sizer.Add(s2)
-        grid_sizer.Add(s3)
-        grid_sizer.Add(s4)
-        grid_sizer.Add(s5)
-        grid_sizer.Add(s6)
-        cont_sizer = wx.BoxSizer(wx.VERTICAL)
-        cont_sizer.Add(grid_sizer, 1, wx.EXPAND | wx.ALL, 6)
-        btn_sizer = wx.StdDialogButtonSizer()
-        if wx.Platform != "__WXMSW__":
-            btn = wx.ContextHelpButton(self)
-            btn_sizer.AddButton(btn)
-        btn = wx.Button(self, wx.ID_OK)
-        btn.SetHelpText("The OK button completes the dialog")
-        btn.SetDefault()
-        btn_sizer.AddButton(btn)
-        btn = wx.Button(self, wx.ID_CANCEL)
-        btn.SetHelpText("The Cancel button cancels the dialog. (Cool, huh?)")
-        btn_sizer.AddButton(btn)
-        btn_sizer.Realize()
-        cont_sizer.Add(btn_sizer, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 6)
-        self.SetSizer(cont_sizer)
-        cont_sizer.Fit(self)
-
 
 # get on with the program
 class MainWindow(wx.Frame):
@@ -256,17 +177,25 @@ class MainWindow(wx.Frame):
         self._mgr.SetManagedWindow(self)
         self.font = wx.Font(14, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas')
         # self.font.SetPointSize(int) # to change the font size
+        self.hardsettings = {'repo': "http://cran.stat.auckland.ac.nz/",
+                             'rendercommand': '''rmarkdown::render("{}")''',
+                             'renderallcommand': '''rmarkdown::render("{}", output_format="all")''',
+                             'renderwordcommand': '''rmarkdown::render("{}", output_format="word_document")''',
+                             'renderhtmlcommand': '''rmarkdown::render("{}", output_format="html_document")''',
+                             'knit2mdcommand': '''knitr::knit("{}")''',
+                             'knit2htmlcommand': '''knitr::knit2html("{}")''',
+                             'knit2pdfcommand': '''knitr::knit2pdf("{}")'''}
         self.settingsFile = "WriteROptions"
-        self.settings = {'repo': "http://cran.stat.auckland.ac.nz/",
+        self.settings = {#'repo': "http://cran.stat.auckland.ac.nz/",
                          'dirname': 'none',
                          'templates': 'none',
                          'lastdir': expanduser('~'),
                          'filename': 'none',
                          'newText': "Use WriteR to edit your R markdown files",
                          'RDirectory': self.GetRDirectory(),
-                         'buildcommand': '''rmarkdown::render("{}")''',
-                         'knit2htmlcommand': '''knitr::knit2html("{}")''',
-                         'knit2pdfcommand': '''knitr::knit2pdf("{}")'''}
+                         'buildcommand': '''rmarkdown::render("{}")'''}#,
+#                         'knit2htmlcommand': '''knitr::knit2html("{}")''',
+#                         'knit2pdfcommand': '''knitr::knit2pdf("{}")'''}
         self.settings = self.getSettings(self.settingsFile, self.settings)
         if len(sys.argv) > 1:
             self.settings['lastdir'], self.settings['filename'] = split(realpath(sys.argv[-1]))
@@ -605,7 +534,7 @@ class MainWindow(wx.Frame):
         self.editor.SelectAll()
 
 
-    # view menu events (removed)
+    # view menu events
     def StatusBar(self):
         self.statusbar = self.CreateStatusBar()
         self.statusbar.SetFieldsCount(3)
@@ -631,8 +560,8 @@ class MainWindow(wx.Frame):
         self.StartThread([self.settings['RDirectory'], "-e",
                           '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
                           '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
-                              self.settings['repo']) +
-                          self.settings['buildcommand'].format(
+                              self.hardsettings['repo']) +
+                          self.hardsettings['rendercommand'].format(
                               join(self.dirname, self.filename).replace('\\', '\\\\'))])
 
     # set default build 
@@ -663,8 +592,8 @@ class MainWindow(wx.Frame):
         self.StartThread([self.settings['RDirectory'], "-e",
                           '''if (!is.element('knitr', installed.packages()[,1])){{'''.format() +
                           '''install.packages('knitr', repos="{0}")}};require(knitr);'''.format(
-                              self.settings['repo']) +
-                          self.settings['knit2htmlcommand'].format(
+                              self.hardsettings['repo']) +
+                          self.hardsettings['knit2htmlcommand'].format(
                               join(self.dirname, self.filename).replace('\\', '\\\\'))])
 
     def OnKnit2pdf(self, event):
@@ -675,8 +604,8 @@ class MainWindow(wx.Frame):
         self.StartThread([self.settings['RDirectory'], "-e",
                           '''if (!is.element('knitr', installed.packages()[,1])){{'''.format() +
                           '''install.packages('knitr', repos="{0}")}};require(knitr);'''.format(
-                              self.settings['repo']) +
-                          self.settings['knit2pdfcommand'].format(
+                              self.hardsettings['repo']) +
+                          self.hardsettings['knit2pdfcommand'].format(
                               join(self.dirname, self.filename).replace('\\', '\\\\'))])
 
 
@@ -942,26 +871,7 @@ class MainWindow(wx.Frame):
         return settings
 
     def OnSettings(self, event):
-        dlg = SettingsDialog(self, -1, "Sample Dialog", size=(350, 200),
-                             style=wx.DEFAULT_DIALOG_STYLE)
-        dlg.CenterOnScreen()
-        # this does not return until the dialog is closed.
-        val = dlg.ShowModal()
-        if val == wx.ID_OK:
-            self.settings = self.setSettings(self.settingsFile,
-                                             {'repo': dlg._default_CRAN.GetValue(),
-                                              'dirname': dlg._default_directory.GetValue(),
-                                              'lastdir': dlg._default_directory.GetValue(),
-                                              'template': dlg._default_directory.GetValue(),
-                                              'filename': self.settings['filename'],
-                                              'newText': dlg._window_text.GetValue(),
-                                              'RDirectory': dlg._r_path.GetValue(),
-                                              'buildcommand': dlg._build_command.GetValue(),
-                                              'rendercommand': dlg._render_command.GetValue(),
-                                              'renderallcommand': dlg._renderall_command.GetValue(),
-                                              'knit2htmlcommand': dlg._knit2html_command.GetValue(),
-                                              'knit2pdfcommand': dlg._knit2pdf_command.GetValue()})
-        dlg.Destroy()
+        wx.MessageBox("You wanted to see the settings")
 
 # mandatory lines to get program running.
 if __name__ == "__main__":
