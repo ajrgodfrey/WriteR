@@ -1,4 +1,4 @@
-# WriteR Version 0.160421.6
+# WriteR Version 0.160422.9
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version has been proposed for development in parallel, (led by James Curtis).
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -20,6 +20,7 @@ print_option = False
 # set up some ID tags
 ID_BUILD = wx.NewId()
 ID_KNIT2HTML = wx.NewId()
+ID_KNIT2PDF = wx.NewId()
 ID_SETTINGS = wx.NewId()
 
 # symbols menu for mathematical symbols
@@ -153,9 +154,14 @@ class MyInterpretor(object):
     #- def push(self, command):
 
 ID_DIRECTORY_CHANGE = wx.NewId()
+ID_CRAN = wx.NewId()
 ID_R_PATH = wx.NewId()
 ID_BUILD_COMMAND = wx.NewId()
+ID_RENDER_COMMAND = wx.NewId()
+ID_RENDERALL_COMMAND = wx.NewId()
 ID_KNIT2HTML_COMMAND = wx.NewId()
+ID_KNIT2PDF_COMMAND = wx.NewId()
+ID_NEWTEXT = wx.NewId()
 
 
 class SettingsDialog(wx.Dialog):
@@ -172,7 +178,7 @@ class SettingsDialog(wx.Dialog):
         s1.Add((1, 1), 1, wx.EXPAND)
         s1.SetItemMinSize(1, (180, 20))
         s2 = wx.BoxSizer(wx.HORIZONTAL)
-        self._default_CRAN = wx.TextCtrl(self, ID_DIRECTORY_CHANGE, parent.settings['repo'],
+        self._default_CRAN = wx.TextCtrl(self, ID_CRAN, parent.settings['repo'],
                                          wx.Point(0, 0), wx.Size(350, 20))
         s2.Add((1, 1), 1, wx.EXPAND)
         s2.Add(wx.StaticText(self, -1, "Default CRAN server"))
@@ -204,7 +210,7 @@ class SettingsDialog(wx.Dialog):
         s5.Add((1, 1), 1, wx.EXPAND)
         s5.SetItemMinSize(1, (180, 60))
         s6 = wx.BoxSizer(wx.HORIZONTAL)
-        self._window_text = wx.TextCtrl(self, ID_BUILD_COMMAND, parent.settings['newText'],
+        self._window_text = wx.TextCtrl(self, ID_NEWTEXT, parent.settings['newText'],
                                         wx.Point(0, 0), wx.Size(350, 60), wx.TE_MULTILINE)
         s6.Add((1, 1), 1, wx.EXPAND)
         s6.Add(wx.StaticText(self, -1, "The default text included in all new files."))
@@ -259,7 +265,8 @@ class MainWindow(wx.Frame):
                          'newText': "Use WriteR to edit your R markdown files",
                          'RDirectory': self.GetRDirectory(),
                          'buildcommand': '''rmarkdown::render("{}")''',
-                         'knit2htmlcommand': '''knitr::knit2html("{}")'''}
+                         'knit2htmlcommand': '''knitr::knit2html("{}")''',
+                         'knit2pdfcommand': '''knitr::knit2pdf("{}")'''}
         self.settings = self.getSettings(self.settingsFile, self.settings)
         if len(sys.argv) > 1:
             self.settings['lastdir'], self.settings['filename'] = split(realpath(sys.argv[-1]))
@@ -316,8 +323,7 @@ class MainWindow(wx.Frame):
                  (wx.ID_SAVE, "&Save\tCtrl+S", "Save the current file", self.OnSave),
                  (wx.ID_SAVEAS, "Save &As\tCtrl+Shift+S", "Save the file under a different name", self.OnSaveAs),
                  (None,) * 4,
-                 (
-                 wx.ID_EXIT, "Quit && save\tCtrl+Q", "Saves the current file and closes the program", self.OnSafeExit)]:
+                 (wx.ID_EXIT, "Quit && save\tCtrl+Q", "Saves the current file and closes the program", self.OnSafeExit)]:
             if id == None:
                 fileMenu.AppendSeparator()
             else:
@@ -348,27 +354,33 @@ class MainWindow(wx.Frame):
             "Show Status bar", kind=wx.ITEM_CHECK)
         viewMenu.Check(self.ShowStatusBar.GetId(), True)
         self.Bind(wx.EVT_MENU, self.ToggleStatusBar, self.ShowStatusBar)
-        menuBar.Append(viewMenu, "view")  # Add the view Menu to the MenuBar
-
+        menuBar.Append(viewMenu, "View")  # Add the view Menu to the MenuBar
 
         buildMenu = wx.Menu()
+        self.Render = buildMenu.Append(wx.ID_ANY, "Render the document\tF6", "Use the rmarkdown package to render the document into the chosen format")
+        self.Bind(wx.EVT_MENU, self.OnRenderNull, self.Render)
+        # Create render menu
+        renderMenu = wx.Menu()
+        self.ChooseRenderNull = renderMenu.Append(wx.ID_ANY, "Render using defaults", "Use the rmarkdown package and render function to create HTML or only the first of multiple formats specified in YAML header", wx.ITEM_RADIO)
+        self.Bind(wx.EVT_MENU, self.OnSelectRenderNull, self.ChooseRenderNull)
+        self.ChooseRenderHtml = renderMenu.Append(wx.ID_ANY, "Render into HTML only", "Use the rmarkdown package and render function to create HTML", wx.ITEM_RADIO)
+        self.Bind(wx.EVT_MENU, self.OnSelectRenderHtml, self.ChooseRenderHtml) 
+        self.ChooseRenderWord = renderMenu.Append(wx.ID_ANY, "Render into Microsoft Word only", "Use the rmarkdown package and render function to create Microsoft Word", wx.ITEM_RADIO)
+        self.Bind(wx.EVT_MENU, self.OnSelectRenderWord, self.ChooseRenderWord) 
+        self.ChooseRenderAll = renderMenu.Append(wx.ID_ANY, "Render into all specified formats", "Use the rmarkdown package and render function to create multiple output documents", wx.ITEM_RADIO)
+        self.Bind(wx.EVT_MENU, self.OnSelectRenderAll, self.ChooseRenderAll) 
+        buildMenu.AppendMenu(-1, "Set render process to...", renderMenu) # Add the render Menu as a submenu to the build menu
         for id, label, helpText, handler in \
                 [
                  (ID_BUILD, "Build\tF5", "Build the script", self.OnBuild),
-                 (ID_KNIT2HTML, "Knit to html\tF6", "Knit the script to HTML", self.OnKnit2html)]:
+                 (ID_KNIT2HTML, "Knit to html\tF7", "Knit the script to HTML", self.OnKnit2html),
+                 (ID_KNIT2PDF, "Knit to pdf\tShift+F6", "Knit the script to a pdf file using LaTeX", self.OnKnit2pdf)]:
             if id == None:
                 buildMenu.AppendSeparator()
             else:
                 item = buildMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
  
-        # Create builder menu
-        builderMenu = wx.Menu()
-        self.ChooseRender = builderMenu.Append(wx.ID_ANY, "Render first format", "Use the rmarkdown package and render function to create HTML or only the first of multiple formats", wx.ITEM_RADIO)
-        self.Bind(wx.EVT_MENU, self.ToggleStatusBar, self.ChooseRender)#fix
-        self.ChooseKnit2html = builderMenu.Append(wx.ID_ANY, "knit to HTML", "use the knitr package and knit2html function to create an HTML document", wx.ITEM_RADIO)
-        self.Bind(wx.EVT_MENU, self.ToggleStatusBar, self.ChooseKnit2html) #fix
-        buildMenu.AppendMenu(-1, "Set build process to...", builderMenu) # Add the builder Menu as a submenu to the build menu
         menuBar.Append(buildMenu, "Build")  # Add the Build Menu to the MenuBar
 
         insertMenu = wx.Menu()
@@ -396,8 +408,8 @@ class MainWindow(wx.Frame):
         formatMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
-                 (ID_BOLD, "Bold\tCtrl+b", "move to bold face font", self.OnBold),
-                 (ID_ITALIC, "Italic\tCtrl+i", "move to italic face font", self.OnItalic),
+                 (ID_BOLD, "Bold\tCtrl+B", "move to bold face font", self.OnBold),
+                 (ID_ITALIC, "Italic\tCtrl+I", "move to italic face font", self.OnItalic),
                  (ID_CODE, "Code\tCtrl+`", "present using a typewriter font commonly seen when showing code", self.OnCode),
                  (ID_MATH, "Maths mode\tCtrl+Shift+$", "move text to maths mode", self.OnMath)]:
             if id == None:
@@ -412,9 +424,9 @@ class MainWindow(wx.Frame):
         symbolsMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
-                 (ID_SYMBOL_INFINITY, "infinity\tCtrl+Shift+i", "insert infinity", self.OnSymbol_infinity), 
+                 (ID_SYMBOL_INFINITY, "infinity\tCtrl+Shift+I", "insert infinity", self.OnSymbol_infinity), 
                  (ID_SYMBOL_TIMES, "times\tCtrl+8", "insert times", self.OnSymbol_times), 
-                 (ID_SYMBOL_PARTIAL, "partial\tCtrl+Shift+d", "insert partial", self.OnSymbol_partial), 
+                 (ID_SYMBOL_PARTIAL, "partial\tCtrl+Shift+D", "insert partial", self.OnSymbol_partial), 
                  (ID_SYMBOL_LEFTPAREN, "LeftParen\tCtrl+9", "insert left parenthesis", self.OnSymbol_LeftParen), 
                  (ID_SYMBOL_RIGHTPAREN, "RightParen\tCtrl+0", "insert right parenthesis", self.OnSymbol_RightParen), 
                  (ID_SYMBOL_LEFTSQUARE, "LeftSquare\tCtrl+[", "insert left square bracket", self.OnSymbol_LeftSquare), 
@@ -430,46 +442,46 @@ class MainWindow(wx.Frame):
         structuresMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
-                 (ID_SQUAREROOT, "Square root\tAlt+Ctrl+Shift+r", "insert a square root", self.OnSquareRoot), 
+                 (ID_SQUAREROOT, "Square root\tAlt+Ctrl+Shift+R", "insert a square root", self.OnSquareRoot), 
                  (ID_FRACTION, "Fraction\tCtrl+Shift+/", "insert a fraction", self.OnFraction), 
-                 (ID_SUMMATION, "Summation\tAlt+Ctrl+Shift+s", "insert a summation", self.OnSummation), 
-                 (ID_INTEGRAL, "Integral\tAlt+Ctrl+Shift+i", "insert an integral", self.Onintegral), 
-                 (ID_PRODUCT, "Product\tAlt+Ctrl+Shift+p", "insert a product", self.OnProduct), 
-                 (ID_LIMIT, "Limit\tAlt+Ctrl+Shift+l", "insert a limit", self.OnLimit), 
-                 (ID_DOUBLESUMMATION, "Double summation\tAlt+Ctrl+Shift+d", "insert a double summation", self.OnDoubleSummation), 
+                 (ID_SUMMATION, "Summation\tAlt+Ctrl+Shift+S", "insert a summation", self.OnSummation), 
+                 (ID_INTEGRAL, "Integral\tAlt+Ctrl+Shift+I", "insert an integral", self.Onintegral), 
+                 (ID_PRODUCT, "Product\tAlt+Ctrl+Shift+P", "insert a product", self.OnProduct), 
+                 (ID_LIMIT, "Limit\tAlt+Ctrl+Shift+L", "insert a limit", self.OnLimit), 
+                 (ID_DOUBLESUMMATION, "Double summation\tAlt+Ctrl+Shift+D", "insert a double summation", self.OnDoubleSummation), 
                  (ID_DOUBLEINTEGRAL, "Double integral", "insert a double integral", self.OnDoubleIntegral)]:
             if id == None:
                 structuresMenu.AppendSeparator()
             else:
                 item = structuresMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        mathsMenu.AppendMenu(-1, "structures", structuresMenu)# Add the structures Menu as a submenu to the main menu
+        mathsMenu.AppendMenu(-1, "Structures", structuresMenu)# Add the structures Menu as a submenu to the main menu
         GreekMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
-                 (ID_GREEK_ALPHA, "alpha\tAlt+Shift+a", "insert greek letter alpha", self.OnGreek_alpha), 
-                 (ID_GREEK_BETA, "beta\tAlt+Shift+b", "insert greek letter beta", self.OnGreek_beta), 
-                 (ID_GREEK_GAMMA, "gamma\tAlt+Shift+g", "insert greek letter gamma", self.OnGreek_gamma), 
-                 (ID_GREEK_DELTA, "delta\tAlt+Shift+d", "insert greek letter delta", self.OnGreek_delta), 
-                 (ID_GREEK_EPSILON, "epsilon\tAlt+Shift+e", "insert greek letter epsilon", self.OnGreek_epsilon), 
-                 (ID_GREEK_ZETA, "zeta\tAlt+Shift+z", "insert greek letter zeta", self.OnGreek_zeta), 
-                 (ID_GREEK_ETA, "eta\tAlt+Shift+w", "insert greek letter eta", self.OnGreek_eta), 
+                 (ID_GREEK_ALPHA, "alpha\tAlt+Shift+A", "insert greek letter alpha", self.OnGreek_alpha), 
+                 (ID_GREEK_BETA, "beta\tAlt+Shift+B", "insert greek letter beta", self.OnGreek_beta), 
+                 (ID_GREEK_GAMMA, "gamma\tAlt+Shift+G", "insert greek letter gamma", self.OnGreek_gamma), 
+                 (ID_GREEK_DELTA, "delta\tAlt+Shift+D", "insert greek letter delta", self.OnGreek_delta), 
+                 (ID_GREEK_EPSILON, "epsilon\tAlt+Shift+E", "insert greek letter epsilon", self.OnGreek_epsilon), 
+                 (ID_GREEK_ZETA, "zeta\tAlt+Shift+Z", "insert greek letter zeta", self.OnGreek_zeta), 
+                 (ID_GREEK_ETA, "eta\tAlt+Shift+W", "insert greek letter eta", self.OnGreek_eta), 
                  (ID_GREEK_THETA, "theta\tAlt+Shift+/", "insert greek letter theta", self.OnGreek_theta), 
-                 (ID_GREEK_IOTA, "iota\tAlt+Shift+i", "insert greek letter iota", self.OnGreek_iota), 
-                 (ID_GREEK_KAPPA, "kappa\tAlt+Shift+k", "insert greek letter kappa", self.OnGreek_kappa), 
-                 (ID_GREEK_LAMBDA, "lambda\tAlt+Shift+l", "insert greek letter lambda", self.OnGreek_lambda), 
-                 (ID_GREEK_MU, "mu\tAlt+Shift+m", "insert greek letter mu", self.OnGreek_mu), 
-                 (ID_GREEK_NU, "nu\tAlt+Shift+n", "insert greek letter nu", self.OnGreek_nu), 
-                 (ID_GREEK_XI, "xi\tAlt+Shift+x", "insert greek letter xi", self.OnGreek_xi), 
-                 (ID_GREEK_OMICRON, "omicron\tAlt+Shift+o", "insert greek letter omicron", self.OnGreek_omicron), 
-                 (ID_GREEK_PI, "pi\tAlt+Shift+p", "insert greek letter pi", self.OnGreek_pi), 
-                 (ID_GREEK_RHO, "rho\tAlt+Shift+r", "insert greek letter rho", self.OnGreek_rho), 
-                 (ID_GREEK_SIGMA, "sigma\tAlt+Shift+s", "insert greek letter sigma", self.OnGreek_sigma), 
-                 (ID_GREEK_TAU, "tau\tAlt+Shift+t", "insert greek letter tau", self.OnGreek_tau), 
-                 (ID_GREEK_UPSILON, "upsilon\tAlt+Shift+u", "insert greek letter upsilon", self.OnGreek_upsilon), 
-                 (ID_GREEK_PHI, "phi\tAlt+Shift+f", "insert greek letter phi", self.OnGreek_phi), 
-                 (ID_GREEK_CHI, "chi\tAlt+Shift+c", "insert greek letter chi", self.OnGreek_chi), 
-                 (ID_GREEK_PSI, "psi\tAlt+Shift+y", "insert greek letter psi", self.OnGreek_psi), 
+                 (ID_GREEK_IOTA, "iota\tAlt+Shift+I", "insert greek letter iota", self.OnGreek_iota), 
+                 (ID_GREEK_KAPPA, "kappa\tAlt+Shift+K", "insert greek letter kappa", self.OnGreek_kappa), 
+                 (ID_GREEK_LAMBDA, "lambda\tAlt+Shift+L", "insert greek letter lambda", self.OnGreek_lambda), 
+                 (ID_GREEK_MU, "mu\tAlt+Shift+M", "insert greek letter mu", self.OnGreek_mu), 
+                 (ID_GREEK_NU, "nu\tAlt+Shift+N", "insert greek letter nu", self.OnGreek_nu), 
+                 (ID_GREEK_XI, "xi\tAlt+Shift+X", "insert greek letter xi", self.OnGreek_xi), 
+                 (ID_GREEK_OMICRON, "omicron\tAlt+Shift+O", "insert greek letter omicron", self.OnGreek_omicron), 
+                 (ID_GREEK_PI, "pi\tAlt+Shift+P", "insert greek letter pi", self.OnGreek_pi), 
+                 (ID_GREEK_RHO, "rho\tAlt+Shift+R", "insert greek letter rho", self.OnGreek_rho), 
+                 (ID_GREEK_SIGMA, "sigma\tAlt+Shift+S", "insert greek letter sigma", self.OnGreek_sigma), 
+                 (ID_GREEK_TAU, "tau\tAlt+Shift+T", "insert greek letter tau", self.OnGreek_tau), 
+                 (ID_GREEK_UPSILON, "upsilon\tAlt+Shift+U", "insert greek letter upsilon", self.OnGreek_upsilon), 
+                 (ID_GREEK_PHI, "phi\tAlt+Shift+F", "insert greek letter phi", self.OnGreek_phi), 
+                 (ID_GREEK_CHI, "chi\tAlt+Shift+C", "insert greek letter chi", self.OnGreek_chi), 
+                 (ID_GREEK_PSI, "psi\tAlt+Shift+Y", "insert greek letter psi", self.OnGreek_psi), 
                  (ID_GREEK_OMEGA, "omega\tAlt+Shift+.", "insert greek letter omega", self.OnGreek_omega)]:
             if id == None:
                 GreekMenu.AppendSeparator()
@@ -484,15 +496,13 @@ class MainWindow(wx.Frame):
                 [
                  (ID_RCOMMAND, "Insert inline R command", "insert an in-line R command", self.OnRCommand),
                  (ID_RCHUNK, "Insert R code chunk\tAlt+R", "insert standard R code chunk", self.OnRChunk),
-                 (ID_RGRAPH, "Insert R code chunk for a graph\tAlt+g", "insert R code chunk for a graph", self.OnRGraph)
-]:
+                 (ID_RGRAPH, "Insert R code chunk for a graph\tAlt+G", "insert R code chunk for a graph", self.OnRGraph)]:
             if id == None:
                 statsMenu.AppendSeparator()
             else:
                 item = statsMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        menuBar.Append(statsMenu, "stats")  # Add the stats Menu to the MenuBar
-
+        menuBar.Append(statsMenu, "Stats")  # Add the stats Menu to the MenuBar
 
         helpMenu = wx.Menu()
         for id, label, helpText, handler in \
@@ -613,7 +623,7 @@ class MainWindow(wx.Frame):
         self.comp_thread = BashProcessThread(self.sub_flag, input_object, self.console.WriteText)
         self.comp_thread.start()
 
-    def OnBuild(self, event):
+    def OnRenderNull(self, event):
         self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
         self._mgr.Update()
         # This allows the file to be up to date for the build
@@ -625,6 +635,26 @@ class MainWindow(wx.Frame):
                           self.settings['buildcommand'].format(
                               join(self.dirname, self.filename).replace('\\', '\\\\'))])
 
+    # set default build 
+    OnBuild = OnRenderNull
+
+    def OnRenderHtml(self, event):
+        wx.MessageBox("You selected the render to html option")
+    def OnRenderAll(self, event):
+        wx.MessageBox("You selected the render all option")
+    def OnRenderWord(self, event):
+        wx.MessageBox("You selected to render your document to the Microsoft Word format")
+
+    def OnSelectRenderNull(self, event):
+        self.Bind(wx.EVT_MENU, self.OnRenderNull, self.Render)
+    def OnSelectRenderHtml(self, event):
+        self.Bind(wx.EVT_MENU, self.OnRenderHtml, self.Render)
+    def OnSelectRenderAll(self, event):
+        self.Bind(wx.EVT_MENU, self.OnRenderAll, self.Render)
+    def OnSelectRenderWord(self, event):
+        self.Bind(wx.EVT_MENU, self.OnRenderWord, self.Render)
+
+
     def OnKnit2html(self, event):
         self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
         self._mgr.Update()
@@ -635,6 +665,18 @@ class MainWindow(wx.Frame):
                           '''install.packages('knitr', repos="{0}")}};require(knitr);'''.format(
                               self.settings['repo']) +
                           self.settings['knit2htmlcommand'].format(
+                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
+
+    def OnKnit2pdf(self, event):
+        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
+        self._mgr.Update()
+        # This allows the file to be up to date for the build
+        self.OnSave(event)
+        self.StartThread([self.settings['RDirectory'], "-e",
+                          '''if (!is.element('knitr', installed.packages()[,1])){{'''.format() +
+                          '''install.packages('knitr', repos="{0}")}};require(knitr);'''.format(
+                              self.settings['repo']) +
+                          self.settings['knit2pdfcommand'].format(
                               join(self.dirname, self.filename).replace('\\', '\\\\'))])
 
 
@@ -915,7 +957,10 @@ class MainWindow(wx.Frame):
                                               'newText': dlg._window_text.GetValue(),
                                               'RDirectory': dlg._r_path.GetValue(),
                                               'buildcommand': dlg._build_command.GetValue(),
-                                              'knit2htmlcommand': dlg._knit2html_command.GetValue()})
+                                              'rendercommand': dlg._render_command.GetValue(),
+                                              'renderallcommand': dlg._renderall_command.GetValue(),
+                                              'knit2htmlcommand': dlg._knit2html_command.GetValue(),
+                                              'knit2pdfcommand': dlg._knit2pdf_command.GetValue()})
         dlg.Destroy()
 
 # mandatory lines to get program running.
