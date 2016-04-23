@@ -1,4 +1,4 @@
-# WriteR Version 0.160422.13
+# WriteR Version 0.160423.2
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version has been proposed for development in parallel, (led by James Curtis).
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -22,6 +22,10 @@ ID_BUILD = wx.NewId()
 ID_KNIT2HTML = wx.NewId()
 ID_KNIT2PDF = wx.NewId()
 ID_SETTINGS = wx.NewId()
+
+ID_FINDONLY = wx.NewId()
+ID_FINDREPLACE = wx.NewId()
+
 
 # symbols menu for mathematical symbols
 ID_SYMBOL_INFINITY = wx.NewId() 
@@ -157,25 +161,23 @@ ID_DIRECTORY_CHANGE = wx.NewId()
 ID_CRAN = wx.NewId()
 ID_R_PATH = wx.NewId()
 ID_BUILD_COMMAND = wx.NewId()
-ID_RENDER_COMMAND = wx.NewId()
-ID_RENDERALL_COMMAND = wx.NewId()
 ID_KNIT2HTML_COMMAND = wx.NewId()
 ID_KNIT2PDF_COMMAND = wx.NewId()
 ID_NEWTEXT = wx.NewId()
 
 
 
-# get on with the program
+# get on with the program wx.DefaultSize
 class MainWindow(wx.Frame):
     def __init__(self, parent=None, id=-1, title="", pos=wx.DefaultPosition,
-                 size=wx.DefaultSize, style=wx.DEFAULT_FRAME_STYLE |
+                 size=(1200,700), style=wx.DEFAULT_FRAME_STYLE |
                                         wx.SUNKEN_BORDER |
                                         wx.CLIP_CHILDREN, filename="untitled.Rmd"):
         super(MainWindow, self).__init__(parent, id, title, pos, size, style)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self._mgr = AuiManager()
         self._mgr.SetManagedWindow(self)
-        self.font = wx.Font(14, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas')
+        self.font = wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas')
         # self.font.SetPointSize(int) # to change the font size
         self.hardsettings = {'repo': "http://cran.stat.auckland.ac.nz/",
                              'rendercommand': '''rmarkdown::render("{}")''',
@@ -222,6 +224,12 @@ class MainWindow(wx.Frame):
         # create a flag for exiting subthreads
         self.sub_flag = Event()
         self.comp_thread = None
+        # for find and find/replace dialogues we need...
+        self.Bind(wx.EVT_FIND, self.OnFind)
+        self.Bind(wx.EVT_FIND_NEXT, self.OnFind)
+        self.Bind(wx.EVT_FIND_REPLACE, self.OnFind)
+        self.Bind(wx.EVT_FIND_REPLACE_ALL, self.OnFind)
+        self.Bind(wx.EVT_FIND_CLOSE, self.OnFindClose)
 
     def CreateInteriorWindowComponents(self):
         self.editor = self.CreateTextCtrl(self.settings['newText'])
@@ -269,6 +277,9 @@ class MainWindow(wx.Frame):
                  (wx.ID_PASTE, "&Paste\tCtrl+V", "Paste text from clipboard", self.OnPaste),
                  (wx.ID_SELECTALL, "Select all\tCtrl+A", "Highlight entire text", self.OnSelectAll),
                  (wx.ID_DELETE, "&Delete", "Delete highlighted text", self.OnDelete),
+                 (None,) * 4,
+                 (ID_FINDONLY, "Find\tCtrl+F", "Open a standard find dialog box", self.OnShowFindToFix),
+                 (ID_FINDREPLACE, "Find/replace\tCtrl+H", "Open a find /replace dialog box", self.OnShowFindReplaceToFix),
                  (None,) * 4,
                  (ID_SETTINGS, 'Settings', "Setup the editor to your liking", self.OnSettings)]:
             if id == None:
@@ -444,6 +455,8 @@ class MainWindow(wx.Frame):
         menuBar.Append(helpMenu, "&Help")  # Add the helpMenu to the MenuBar
         self.SetMenuBar(menuBar)  # Add the menuBar to the Frame
 
+
+
     def CreateShellCtrl(self):
         shell = Shell(self, -1, wx.Point(0, 0), wx.Size(150, 90),
                       wx.NO_BORDER | wx.TE_MULTILINE, InterpClass=MyInterpretor)
@@ -570,7 +583,16 @@ class MainWindow(wx.Frame):
     def OnRenderHtml(self, event):
         wx.MessageBox("You selected the render to html option")
     def OnRenderAll(self, event):
-        wx.MessageBox("You selected the render all option")
+        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
+        self._mgr.Update()
+        # This allows the file to be up to date for the build
+        self.OnSave(event)
+        self.StartThread([self.settings['RDirectory'], "-e",
+                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
+                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
+                              self.hardsettings['repo']) +
+                          self.hardsettings['renderallcommand'].format(
+                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
     def OnRenderWord(self, event):
         wx.MessageBox("You selected to render your document to the Microsoft Word format")
 
@@ -872,6 +894,44 @@ class MainWindow(wx.Frame):
 
     def OnSettings(self, event):
         wx.MessageBox("You wanted to see the settings")
+
+    def OnShowFindToFix(self, event):
+        wx.MessageBox("This feature is not fully implemented as yet.")
+    def OnShowFindReplaceToFix(self, event):
+        wx.MessageBox("This feature is not fully implemented as yet.")
+
+    def OnShowFind(self, event):
+        data = wx.FindReplaceData()
+        dlg = wx.FindReplaceDialog(self, data, "Find")
+        dlg.data = data  # save a reference to it...
+        dlg.Show(True)
+
+    def OnShowFindReplace(self, event):
+        data = wx.FindReplaceData()
+        dlg = wx.FindReplaceDialog(self, data, "Find & Replace", wx.FR_REPLACEDIALOG)
+        dlg.data = data  # save a reference to it...
+        dlg.Show(True)
+
+    def OnFind(self, event):
+        map = {
+            wx.wxEVT_COMMAND_FIND : "FIND",
+            wx.wxEVT_COMMAND_FIND_NEXT : "FIND_NEXT",
+            wx.wxEVT_COMMAND_FIND_REPLACE : "REPLACE",
+            wx.wxEVT_COMMAND_FIND_REPLACE_ALL : "REPLACE_ALL",
+            }
+        et = event.GetEventType()
+        if et in map:
+            evtType = map[et]
+        else:
+            evtType = "**Unknown Event Type**"
+        if et in [wx.wxEVT_COMMAND_FIND_REPLACE, wx.wxEVT_COMMAND_FIND_REPLACE_ALL]:
+            replaceTxt = "Replace text: %s" % event.GetReplaceString()
+        else:
+            replaceTxt = ""
+
+    def OnFindClose(self, event):
+        event.GetDialog().Destroy()
+        
 
 # mandatory lines to get program running.
 if __name__ == "__main__":
