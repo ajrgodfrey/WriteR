@@ -1,4 +1,4 @@
-# WriteR Version 0.160424.4
+# WriteR Version 0.160425.2
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version has been proposed for development in parallel, (led by James Curtis).
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -176,9 +176,9 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self._mgr = AuiManager()
         self._mgr.SetManagedWindow(self)
-        self.ChosenFontSize = 18
+        self.ChosenFontSize = 14
         self.font = wx.Font(self.ChosenFontSize, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas')
-        #self.font.SetPointSize(self.ChosenFontSize) # to change the font size
+        self.curFont = self.font
         self.hardsettings = {'repo': "http://cran.stat.auckland.ac.nz/",
                              'rendercommand': '''rmarkdown::render("{}")''',
                              'renderallcommand': '''rmarkdown::render("{}", output_format="all")''',
@@ -295,9 +295,9 @@ class MainWindow(wx.Frame):
         viewMenu.Check(self.ShowStatusBar.GetId(), True)
         self.Bind(wx.EVT_MENU, self.ToggleStatusBar, self.ShowStatusBar)
         self.IncreaseFont = viewMenu.Append(wx.ID_ANY, "Increase the font size\tCtrl+=", "Increase the font size")
-        self.Bind(wx.EVT_MENU, self.OnIncreaseFontSizeToFix, self.IncreaseFont) 
+        self.Bind(wx.EVT_MENU, self.OnIncreaseFontSize, self.IncreaseFont) 
         self.DecreaseFont = viewMenu.Append(wx.ID_ANY, "Decrease the font size\tCtrl+-", "Decrease the font size")
-        self.Bind(wx.EVT_MENU, self.OnDecreaseFontSizeToFix, self.DecreaseFont) 
+        self.Bind(wx.EVT_MENU, self.OnDecreaseFontSize, self.DecreaseFont) 
         self.ChooseFont = viewMenu.Append(wx.ID_ANY, "Choose font\tCtrl+D", "Choose the font size and other details")
         self.Bind(wx.EVT_MENU, self.OnSelectFont, self.ChooseFont )
         menuBar.Append(viewMenu, "View")  # Add the view Menu to the MenuBar
@@ -823,7 +823,7 @@ class MainWindow(wx.Frame):
                                  "Save before exit?",
                                  wx.ICON_QUESTION | wx.YES_NO | wx.CANCEL | wx.YES_DEFAULT)
             if hold == wx.YES:
-                self.OnSaveAs(event)
+                self.OnSave(event)
                 self.Destroy()
             elif hold == wx.NO:
                 self.Destroy()
@@ -938,11 +938,12 @@ class MainWindow(wx.Frame):
     def OnFindClose(self, event):
         event.GetDialog().Destroy()
         
-    def OnIncreaseFontSizeToFix(self, event):
-        wx.MessageBox("This feature is not fully implemented as yet.")
-        #self.font.SetPointSize(self.font.GetPointSize()+1)
-    def OnDecreaseFontSizeToFix(self, event):
-        wx.MessageBox("This feature is not fully implemented as yet.")
+    def OnIncreaseFontSize(self, event):
+        self.font.SetPointSize(self.font.GetPointSize()+1)
+        self.UpdateUI()
+    def OnDecreaseFontSize(self, event):
+        self.font.SetPointSize(self.font.GetPointSize()-1)
+        self.UpdateUI()
 
     def UpdateUI(self):
         self.editor.SetFont(self.curFont)
@@ -958,16 +959,16 @@ class MainWindow(wx.Frame):
 
     def OnSelectFont(self, evt):
         data = wx.FontData()
-        data.EnableEffects(True)
+        data.EnableEffects(False)
         #data.SetColour(self.curClr)         # set colour
-        #data.SetInitialFont(self.curFont)
+        data.SetInitialFont(self.curFont)
         dlg = wx.FontDialog(self, data)
         if dlg.ShowModal() == wx.ID_OK:
             data = dlg.GetFontData()
             font = data.GetChosenFont()
-            colour = data.GetColour()
+            #colour = data.GetColour()
             self.curFont = font
-            self.curClr = colour
+            #self.curClr = colour
             self.UpdateUI()
         # Don't destroy the dialog until you get everything you need from the
         # dialog!
