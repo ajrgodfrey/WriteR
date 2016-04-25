@@ -1,4 +1,4 @@
-# WriteR Version 0.160425.2
+# WriteR Version 0.160425.3
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version has been proposed for development in parallel, (led by James Curtis).
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -178,7 +178,6 @@ class MainWindow(wx.Frame):
         self._mgr.SetManagedWindow(self)
         self.ChosenFontSize = 14
         self.font = wx.Font(self.ChosenFontSize, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas')
-        self.curFont = self.font
         self.hardsettings = {'repo': "http://cran.stat.auckland.ac.nz/",
                              'rendercommand': '''rmarkdown::render("{}")''',
                              'renderallcommand': '''rmarkdown::render("{}", output_format="all")''',
@@ -195,9 +194,7 @@ class MainWindow(wx.Frame):
                          'filename': 'none',
                          'newText': "Use WriteR to edit your R markdown files",
                          'RDirectory': self.GetRDirectory(),
-                         'buildcommand': '''rmarkdown::render("{}")'''}#,
-#                         'knit2htmlcommand': '''knitr::knit2html("{}")''',
-#                         'knit2pdfcommand': '''knitr::knit2pdf("{}")'''}
+                         'buildcommand': '''rmarkdown::render("{}")'''}
         self.settings = self.getSettings(self.settingsFile, self.settings)
         if len(sys.argv) > 1:
             self.settings['lastdir'], self.settings['filename'] = split(realpath(sys.argv[-1]))
@@ -946,14 +943,14 @@ class MainWindow(wx.Frame):
         self.UpdateUI()
 
     def UpdateUI(self):
-        self.editor.SetFont(self.curFont)
+        self.editor.SetFont(self.font)
         #self.editor.SetForegroundColour(self.curClr)
-        #self.ps.SetLabel(str(self.curFont.GetPointSize()))
-        #self.family.SetLabel(self.curFont.GetFamilyString())
-        #self.style.SetLabel(self.curFont.GetStyleString())
-        #self.weight.SetLabel(self.curFont.GetWeightString())
-        #self.face.SetLabel(self.curFont.GetFaceName())
-        #self.nfi.SetLabel(self.curFont.GetNativeFontInfo().ToString())
+        #self.ps.SetLabel(str(self.font.GetPointSize()))
+        #self.family.SetLabel(self.font.GetFamilyString())
+        #self.style.SetLabel(self.font.GetStyleString())
+        #self.weight.SetLabel(self.font.GetWeightString())
+        #self.face.SetLabel(self.font.GetFaceName())
+        #self.nfi.SetLabel(self.font.GetNativeFontInfo().ToString())
         self.Layout()
 
 
@@ -961,13 +958,13 @@ class MainWindow(wx.Frame):
         data = wx.FontData()
         data.EnableEffects(False)
         #data.SetColour(self.curClr)         # set colour
-        data.SetInitialFont(self.curFont)
+        data.SetInitialFont(self.font)
         dlg = wx.FontDialog(self, data)
         if dlg.ShowModal() == wx.ID_OK:
             data = dlg.GetFontData()
             font = data.GetChosenFont()
             #colour = data.GetColour()
-            self.curFont = font
+            self.font = font
             #self.curClr = colour
             self.UpdateUI()
         # Don't destroy the dialog until you get everything you need from the
