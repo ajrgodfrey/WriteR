@@ -1,4 +1,4 @@
-# WriteR Version 0.160425.7
+# WriteR Version 0.160528.4
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version has been proposed for development in parallel, (led by James Curtis).
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -191,11 +191,11 @@ class MainWindow(wx.Frame):
                              'knit2htmlcommand': '''knitr::knit2html("{}")''',
                              'knit2pdfcommand': '''knitr::knit2pdf("{}")'''}
         self.settingsFile = "WriteROptions"
-        self.settings = {'dirname': 'none',
-                         'templates': 'none',
-                         'lastdir': expanduser('~'),
+        self.settings = {#'dirname': 'none',
+#                         'templates': 'none',
+                         'lastdir': '.',
                          'filename': 'none',
-                         'newText': "Use WriteR to edit your R markdown files",
+                         'newText': "Use WriteR to edit your R markdown files, perhaps by starting from a template file",
                          'RDirectory': self.GetRDirectory()}
         self.settings = self.getSettings(self.settingsFile, self.settings)
         if len(sys.argv) > 1:
