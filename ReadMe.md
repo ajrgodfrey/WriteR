@@ -28,6 +28,8 @@ AJRG met with Timothy Bilton and we added some consideration for alternativ buil
 AJRG added Greek menu for insertion of Greek letters via LaTeX source and a few other menu items.
 AJRG altered some menu items to be submenus and continued to add more R markdown and LaTeX shortcuts.
 
+# 28 May 2016
+AJRG added some more R shortcuts.
 
 # Work to do
 

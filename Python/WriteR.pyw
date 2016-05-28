@@ -1,8 +1,8 @@
-# WriteR Version 0.160425.3
+# WriteR Version 0.160425.7
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version has been proposed for development in parallel, (led by James Curtis).
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
-# assistance from T.Bilton on 15 April 2016 to add knit command. More to come.
+# assistance from T.Bilton on 15 April 2016 to think about additions. More to come.
 
 
 import wx 
@@ -41,6 +41,9 @@ ID_SYMBOL_RIGHTCURLY = wx.NewId()
 ID_RCOMMAND = wx.NewId()
 ID_RCHUNK = wx.NewId()
 ID_RGRAPH = wx.NewId()
+ID_RPIPE = wx.NewId()
+ID_RLASSIGN = wx.NewId()
+ID_RRASSIGN = wx.NewId()
 
 ID_SQUAREROOT = wx.NewId() 
 ID_FRACTION = wx.NewId() 
@@ -181,20 +184,19 @@ class MainWindow(wx.Frame):
         self.hardsettings = {'repo': "http://cran.stat.auckland.ac.nz/",
                              'rendercommand': '''rmarkdown::render("{}")''',
                              'renderallcommand': '''rmarkdown::render("{}", output_format="all")''',
+                             'renderpdfcommand': '''rmarkdown::render("{}", output_format="pdf_document")''',
                              'renderwordcommand': '''rmarkdown::render("{}", output_format="word_document")''',
                              'renderhtmlcommand': '''rmarkdown::render("{}", output_format="html_document")''',
                              'knit2mdcommand': '''knitr::knit("{}")''',
                              'knit2htmlcommand': '''knitr::knit2html("{}")''',
                              'knit2pdfcommand': '''knitr::knit2pdf("{}")'''}
         self.settingsFile = "WriteROptions"
-        self.settings = {#'repo': "http://cran.stat.auckland.ac.nz/",
-                         'dirname': 'none',
+        self.settings = {'dirname': 'none',
                          'templates': 'none',
                          'lastdir': expanduser('~'),
                          'filename': 'none',
                          'newText': "Use WriteR to edit your R markdown files",
-                         'RDirectory': self.GetRDirectory(),
-                         'buildcommand': '''rmarkdown::render("{}")'''}
+                         'RDirectory': self.GetRDirectory()}
         self.settings = self.getSettings(self.settingsFile, self.settings)
         if len(sys.argv) > 1:
             self.settings['lastdir'], self.settings['filename'] = split(realpath(sys.argv[-1]))
@@ -310,6 +312,8 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnSelectRenderHtml, self.ChooseRenderHtml) 
         self.ChooseRenderWord = renderMenu.Append(wx.ID_ANY, "Render into Microsoft Word only", "Use the rmarkdown package and render function to create Microsoft Word", wx.ITEM_RADIO)
         self.Bind(wx.EVT_MENU, self.OnSelectRenderWord, self.ChooseRenderWord) 
+        self.ChooseRenderPdf = renderMenu.Append(wx.ID_ANY, "Render into pdf only", "Use the rmarkdown package and render function to create pdf", wx.ITEM_RADIO)
+        self.Bind(wx.EVT_MENU, self.OnSelectRenderPdf, self.ChooseRenderPdf) 
         self.ChooseRenderAll = renderMenu.Append(wx.ID_ANY, "Render into all specified formats", "Use the rmarkdown package and render function to create multiple output documents", wx.ITEM_RADIO)
         self.Bind(wx.EVT_MENU, self.OnSelectRenderAll, self.ChooseRenderAll) 
         buildMenu.AppendMenu(-1, "Set render process to...", renderMenu) # Add the render Menu as a submenu to the build menu
@@ -439,7 +443,10 @@ class MainWindow(wx.Frame):
                 [
                  (ID_RCOMMAND, "Insert inline R command", "insert an in-line R command", self.OnRCommand),
                  (ID_RCHUNK, "Insert R code chunk\tAlt+R", "insert standard R code chunk", self.OnRChunk),
-                 (ID_RGRAPH, "Insert R code chunk for a graph\tAlt+G", "insert R code chunk for a graph", self.OnRGraph)]:
+                 (ID_RGRAPH, "Insert R code chunk for a graph\tAlt+G", "insert R code chunk for a graph", self.OnRGraph),
+                 (ID_RLASSIGN, "Insert a left assignment\tCtrl+<", "insert R code for the left assignment <-", self.OnRLAssign),
+                 (ID_RRASSIGN, "Insert a right assignment\tCtrl+>", "insert R code for the right assignment ->", self.OnRRAssign),
+                 (ID_RPIPE, "Insert a pipe operator\tCtrl+Shift+>", "insert R code for the pipe operator %>%", self.OnRPipe)]:
             if id == None:
                 statsMenu.AppendSeparator()
             else:
@@ -493,7 +500,8 @@ class MainWindow(wx.Frame):
         dialog.Destroy()
         return userProvidedFilename
 
-    # Event handlers:
+# Event handlers:
+# help menu events
     def OnAbout(self, event):
         dialog = wx.MessageDialog(self, "WriteR is a  first attempt  at developing an R Markdown editor\n"
                                         "using wxPython. Development started by Jonathan Godfrey\n"
@@ -502,6 +510,7 @@ class MainWindow(wx.Frame):
         dialog.ShowModal()
         dialog.Destroy()
 
+# file menu events
     def OnSafeExit(self, event):
         self.OnSave(event)
         self.OnExit(event)
@@ -536,7 +545,7 @@ class MainWindow(wx.Frame):
         if self.askUserForFilename(defaultFile=self.filename, style=wx.SAVE, **self.defaultFileDialogOptions()):
             self.OnSave(event)
 
-            # edit menu events
+# edit menu events
     def OnCut(self, event):
         self.editor.Cut()
     def OnCopy(self, event):
@@ -550,13 +559,55 @@ class MainWindow(wx.Frame):
         self.editor.SelectAll()
 
 
-    # view menu events
+# view menu events
     def StatusBar(self):
         self.statusbar = self.CreateStatusBar()
         self.statusbar.SetFieldsCount(3)
         self.statusbar.SetStatusWidths([-5, -2, -1])
         self.SetStatusText(SBText)
 
+
+       
+    def OnIncreaseFontSize(self, event):
+        self.font.SetPointSize(self.font.GetPointSize()+1)
+        self.UpdateUI()
+    def OnDecreaseFontSize(self, event):
+        self.font.SetPointSize(self.font.GetPointSize()-1)
+        self.UpdateUI()
+
+    def UpdateUI(self):
+        self.editor.SetFont(self.font)
+        #self.editor.SetForegroundColour(self.curClr)
+        #self.ps.SetLabel(str(self.font.GetPointSize()))
+        #self.family.SetLabel(self.font.GetFamilyString())
+        #self.style.SetLabel(self.font.GetStyleString())
+        #self.weight.SetLabel(self.font.GetWeightString())
+        #self.face.SetLabel(self.font.GetFaceName())
+        #self.nfi.SetLabel(self.font.GetNativeFontInfo().ToString())
+        self.Layout()
+
+
+    def OnSelectFont(self, evt):
+        data = wx.FontData()
+        data.EnableEffects(False)
+        #data.SetColour(self.curClr)         # set colour
+        data.SetInitialFont(self.font)
+        dlg = wx.FontDialog(self, data)
+        if dlg.ShowModal() == wx.ID_OK:
+            data = dlg.GetFontData()
+            font = data.GetChosenFont()
+            #colour = data.GetColour()
+            self.font = font
+            #self.curClr = colour
+            self.UpdateUI()
+        # Don't destroy the dialog until you get everything you need from the
+        # dialog!
+        dlg.Destroy()
+
+
+
+
+# general events
     def StartThread(self, input_object):
         if self.sub_flag.isSet(): return
         if self.comp_thread is not None:
@@ -584,7 +635,16 @@ class MainWindow(wx.Frame):
     OnBuild = OnRenderNull
 
     def OnRenderHtml(self, event):
-        wx.MessageBox("You selected the render to html option")
+        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
+        self._mgr.Update()
+        # This allows the file to be up to date for the build
+        self.OnSave(event)
+        self.StartThread([self.settings['RDirectory'], "-e",
+                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
+                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
+                              self.hardsettings['repo']) +
+                          self.hardsettings['renderhtmlcommand'].format(
+                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
     def OnRenderAll(self, event):
         self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
         self._mgr.Update()
@@ -597,7 +657,28 @@ class MainWindow(wx.Frame):
                           self.hardsettings['renderallcommand'].format(
                               join(self.dirname, self.filename).replace('\\', '\\\\'))])
     def OnRenderWord(self, event):
-        wx.MessageBox("You selected to render your document to the Microsoft Word format")
+        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
+        self._mgr.Update()
+        # This allows the file to be up to date for the build
+        self.OnSave(event)
+        self.StartThread([self.settings['RDirectory'], "-e",
+                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
+                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
+                              self.hardsettings['repo']) +
+                          self.hardsettings['renderwordcommand'].format(
+                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
+    def OnRenderPdf(self, event):
+        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
+        self._mgr.Update()
+        # This allows the file to be up to date for the build
+        self.OnSave(event)
+        self.StartThread([self.settings['RDirectory'], "-e",
+                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
+                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
+                              self.hardsettings['repo']) +
+                          self.hardsettings['renderpdfcommand'].format(
+                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
+
 
     def OnSelectRenderNull(self, event):
         self.Bind(wx.EVT_MENU, self.OnRenderNull, self.Render)
@@ -607,6 +688,8 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnRenderAll, self.Render)
     def OnSelectRenderWord(self, event):
         self.Bind(wx.EVT_MENU, self.OnRenderWord, self.Render)
+    def OnSelectRenderPdf(self, event):
+        self.Bind(wx.EVT_MENU, self.OnRenderPdf, self.Render)
 
 
     def OnKnit2html(self, event):
@@ -658,6 +741,13 @@ class MainWindow(wx.Frame):
         self.editor.SetInsertionPoint(frm)
         self.editor.WriteText("\n```{r , fig.height=5, fig.width=5, fig.cap=\"\"}\n")
         self.editor.SetInsertionPoint(frm + 8)
+
+    def OnRPipe(self, event):
+        self.editor.WriteText(" %>% ") 
+    def OnRLAssign(self, event):
+        self.editor.WriteText(" <- ") 
+    def OnRRAssign(self, event):
+        self.editor.WriteText(" -> ") 
 
 
     def OnSymbol_infinity(self, event):
@@ -934,45 +1024,7 @@ class MainWindow(wx.Frame):
 
     def OnFindClose(self, event):
         event.GetDialog().Destroy()
-        
-    def OnIncreaseFontSize(self, event):
-        self.font.SetPointSize(self.font.GetPointSize()+1)
-        self.UpdateUI()
-    def OnDecreaseFontSize(self, event):
-        self.font.SetPointSize(self.font.GetPointSize()-1)
-        self.UpdateUI()
-
-    def UpdateUI(self):
-        self.editor.SetFont(self.font)
-        #self.editor.SetForegroundColour(self.curClr)
-        #self.ps.SetLabel(str(self.font.GetPointSize()))
-        #self.family.SetLabel(self.font.GetFamilyString())
-        #self.style.SetLabel(self.font.GetStyleString())
-        #self.weight.SetLabel(self.font.GetWeightString())
-        #self.face.SetLabel(self.font.GetFaceName())
-        #self.nfi.SetLabel(self.font.GetNativeFontInfo().ToString())
-        self.Layout()
-
-
-    def OnSelectFont(self, evt):
-        data = wx.FontData()
-        data.EnableEffects(False)
-        #data.SetColour(self.curClr)         # set colour
-        data.SetInitialFont(self.font)
-        dlg = wx.FontDialog(self, data)
-        if dlg.ShowModal() == wx.ID_OK:
-            data = dlg.GetFontData()
-            font = data.GetChosenFont()
-            #colour = data.GetColour()
-            self.font = font
-            #self.curClr = colour
-            self.UpdateUI()
-        # Don't destroy the dialog until you get everything you need from the
-        # dialog!
-        dlg.Destroy()
-
-
-# mandatory lines to get program running.
+ # mandatory lines to get program running.
 if __name__ == "__main__":
     app = wx.App()
     frame = MainWindow()
