@@ -29,7 +29,8 @@ AJRG added Greek menu for insertion of Greek letters via LaTeX source and a few 
 AJRG altered some menu items to be submenus and continued to add more R markdown and LaTeX shortcuts.
 
 # 28 May 2016
-AJRG added some more R shortcuts.
+- AJRG added some more R shortcuts.
+- AJRG fixed some redundant options in WriteROptions
 
 # Work to do
 
