@@ -32,7 +32,11 @@ AJRG altered some menu items to be submenus and continued to add more R markdown
 - AJRG added some more R shortcuts.
 - AJRG fixed some redundant options in WriteROptions
 
+# 30 May 2016
+- AJRG ported this version into the BrailleR package.
+
+
 # Work to do
 
-A find/replace dialogue is desperately needed.
-
+- A find/replace dialogue is desperately needed.
+- Spell checking might then be possible.
