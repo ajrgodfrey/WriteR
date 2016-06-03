@@ -43,8 +43,12 @@ AJRG met with Timothy Bilton and we added some consideration for alternativ buil
 ## 30 May 2016
 - AJRG ported this version into the BrailleR package.
 
+## 2 June 2016
 
-# Work to do
+And so quickly, the world falls apart. The executable seems broken on my machine, as do versions going well back. The pyw script does work as expected though.
+
+
+## Work to do
 
 - A find/replace dialogue is desperately needed.
 - Spell checking might then be possible.
