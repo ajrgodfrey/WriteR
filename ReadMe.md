@@ -47,6 +47,11 @@ AJRG met with Timothy Bilton and we added some consideration for alternativ buil
 
 And so quickly, the world falls apart. The executable seems broken on my machine, as do versions going well back. The pyw script does work as expected though.
 
+## 22 September 2016
+
+- fixed bug that had italics and bold face commands switched.
+- added bracketing to the Format menu. Includes hot keys to wrap highlighted text string in round, square, or curly brackets.
+
 
 ## Work to do
 

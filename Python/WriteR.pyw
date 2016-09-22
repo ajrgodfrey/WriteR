@@ -1,4 +1,4 @@
-# WriteR Version 0.160528.4
+# WriteR Version 0.160922.0
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version has been proposed for development in parallel, (led by James Curtis).
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -85,6 +85,9 @@ ID_BOLD = wx.NewId()
 ID_ITALIC = wx.NewId()
 ID_MATH = wx.NewId()
 ID_CODE = wx.NewId()
+ID_RNDBRK = wx.NewId()
+ID_SQBRK = wx.NewId()
+ID_CRLBRK = wx.NewId()
 
 # IDs for headings
 ID_H1 = wx.NewId() 
@@ -358,7 +361,10 @@ class MainWindow(wx.Frame):
                  (ID_BOLD, "Bold\tCtrl+B", "move to bold face font", self.OnBold),
                  (ID_ITALIC, "Italic\tCtrl+I", "move to italic face font", self.OnItalic),
                  (ID_CODE, "Code\tCtrl+`", "present using a typewriter font commonly seen when showing code", self.OnCode),
-                 (ID_MATH, "Maths mode\tCtrl+Shift+$", "move text to maths mode", self.OnMath)]:
+                 (ID_MATH, "Maths mode\tCtrl+Shift+$", "move text to maths mode", self.OnMath),
+                 (ID_RNDBRK, "Round brackets\tCtrl+Shift+(", "Wrap text in round () brackets", self.OnRoundBrack),
+                 (ID_SQBRK, "Square brackets\tAlt+[", "Wrap text in square brackets", self.OnSquareBrack),
+                 (ID_CRLBRK, "Curly brackets\tAlt+Shift+{", "Wrap text in curly brackets", self.OnCurlyBrack)]:
             if id == None:
                 formatMenu.AppendSeparator()
             else:
@@ -505,7 +511,7 @@ class MainWindow(wx.Frame):
     def OnAbout(self, event):
         dialog = wx.MessageDialog(self, "WriteR is a  first attempt  at developing an R Markdown editor\n"
                                         "using wxPython. Development started by Jonathan Godfrey\n"
-                                        "and James Curtis in 2015.\nContinued development assisted by Timothy Bilton in 2016.\nSend all feedback to Jonathan Godfrey at a.j.godfrey@massey.ac.nz\nVersion: 0.160421.6 (or later)",
+                                        "and James Curtis in 2015.\nContinued development assisted by Timothy Bilton in 2016.\nSend all feedback to Jonathan Godfrey at a.j.godfrey@massey.ac.nz\nVersion: 0.160530.0 (or later)",
                                   "About this R Markdown Editor", wx.OK)
         dialog.ShowModal()
         dialog.Destroy()
@@ -838,6 +844,31 @@ class MainWindow(wx.Frame):
         self.editor.WriteText("\\omega{}")
 
     # format menu events
+    def OnSquareBrack(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("]")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText("[")
+        self.editor.SetInsertionPoint(to + 2)
+
+    def OnCurlyBrack(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("}")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText("{")
+        self.editor.SetInsertionPoint(to + 2)
+
+
+    def OnRoundBrack(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText(")")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText("(")
+        self.editor.SetInsertionPoint(to + 2)
+
     def OnMath(self, event):
         frm, to = self.editor.GetSelection()
         self.editor.SetInsertionPoint(to)
@@ -846,7 +877,7 @@ class MainWindow(wx.Frame):
         self.editor.WriteText("$")
         self.editor.SetInsertionPoint(to + 2)
 
-    def OnBold(self, event):
+    def OnItalic(self, event):
         frm, to = self.editor.GetSelection()
         self.editor.SetInsertionPoint(to)
         self.editor.WriteText("*")
@@ -855,7 +886,7 @@ class MainWindow(wx.Frame):
         self.editor.SetInsertionPoint(to + 2)
 
 
-    def OnItalic(self, event):
+    def OnBold(self, event):
         frm, to = self.editor.GetSelection()
         self.editor.SetInsertionPoint(to)
         self.editor.WriteText("**")
