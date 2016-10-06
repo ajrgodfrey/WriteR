@@ -49,11 +49,23 @@ And so quickly, the world falls apart. The executable seems broken on my machine
 
 ## 22 September 2016
 
-- fixed bug that had italics and bold face commands switched.
-- added bracketing to the Format menu. Includes hot keys to wrap highlighted text string in round, square, or curly brackets.
+- AJRG fixed bug that had italics and bold face commands switched.
+- AJRG added bracketing to the Format menu. Includes hot keys to wrap highlighted text string in round, square, or curly brackets.
+- AJRG added varepsilon and vartheta to Greek letters menu
 
+
+## October 2016
+
+- added documentation folder ad file for hot key assignments
 
 ## Work to do
 
+- want to split the script into more easily managed parts.
+- when we have saved, but done nothing else that alters the document, WriteR still asks us if we want to save our work. 
 - A find/replace dialogue is desperately needed.
 - Spell checking might then be possible.
+-  direct use of pandoc instead of R for *.md files.
+- various symbols need to be added to documentation for hot keys
+- complete documentation for guidance to use
+- more commands such as  div for divide, pm and mp, leq, geq, neq, absolute values, floor and ceiling, angle brackets, nth root (has square brackets), left and right without brackets, hat, bar, and  widehat. 
+

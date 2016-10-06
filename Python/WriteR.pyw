@@ -1,4 +1,4 @@
-# WriteR Version 0.160922.0
+# WriteR Version 0.160927.0
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version has been proposed for development in parallel, (led by James Curtis).
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -60,9 +60,11 @@ ID_GREEK_BETA = wx.NewId()
 ID_GREEK_GAMMA = wx.NewId() 
 ID_GREEK_DELTA = wx.NewId() 
 ID_GREEK_EPSILON = wx.NewId() 
+ID_GREEK_VAREPSILON = wx.NewId() 
 ID_GREEK_ZETA = wx.NewId() 
 ID_GREEK_ETA = wx.NewId() 
 ID_GREEK_THETA = wx.NewId() 
+ID_GREEK_VARTHETA = wx.NewId() 
 ID_GREEK_IOTA = wx.NewId() 
 ID_GREEK_KAPPA = wx.NewId() 
 ID_GREEK_LAMBDA = wx.NewId() 
@@ -88,6 +90,9 @@ ID_CODE = wx.NewId()
 ID_RNDBRK = wx.NewId()
 ID_SQBRK = wx.NewId()
 ID_CRLBRK = wx.NewId()
+ID_BRNDBRK = wx.NewId()
+ID_BSQBRK = wx.NewId()
+ID_BCRLBRK = wx.NewId()
 
 # IDs for headings
 ID_H1 = wx.NewId() 
@@ -334,8 +339,12 @@ class MainWindow(wx.Frame):
         menuBar.Append(buildMenu, "Build")  # Add the Build Menu to the MenuBar
 
         insertMenu = wx.Menu()
+        AddHeadBlock = insertMenu.Append(-1, "preamble")
+        self.Bind(wx.EVT_MENU, self.OnAddHeadBlock, AddHeadBlock)
         AddURL = insertMenu.Append(-1, "URL")
         self.Bind(wx.EVT_MENU, self.OnAddURL, AddURL)
+        AddEMail = insertMenu.Append(-1, "e-mail")
+        self.Bind(wx.EVT_MENU, self.OnAddEMail, AddEMail)
         AddFigure = insertMenu.Append(-1, "Figure")
         self.Bind(wx.EVT_MENU, self.OnAddFigure, AddFigure)
         headingsMenu = wx.Menu()
@@ -361,10 +370,13 @@ class MainWindow(wx.Frame):
                  (ID_BOLD, "Bold\tCtrl+B", "move to bold face font", self.OnBold),
                  (ID_ITALIC, "Italic\tCtrl+I", "move to italic face font", self.OnItalic),
                  (ID_CODE, "Code\tCtrl+`", "present using a typewriter font commonly seen when showing code", self.OnCode),
-                 (ID_MATH, "Maths mode\tCtrl+Shift+$", "move text to maths mode", self.OnMath),
-                 (ID_RNDBRK, "Round brackets\tCtrl+Shift+(", "Wrap text in round () brackets", self.OnRoundBrack),
+                 (ID_MATH, "Maths mode\tCtrl+4", "move text to maths mode", self.OnMath),
+                 (ID_RNDBRK, "Round brackets\tAlt+Shift+(", "Wrap text in round () brackets", self.OnRoundBrack),
                  (ID_SQBRK, "Square brackets\tAlt+[", "Wrap text in square brackets", self.OnSquareBrack),
-                 (ID_CRLBRK, "Curly brackets\tAlt+Shift+{", "Wrap text in curly brackets", self.OnCurlyBrack)]:
+                 (ID_CRLBRK, "Curly brackets\tAlt+Shift+{", "Wrap text in curly brackets", self.OnCurlyBrack),
+                 (ID_BRNDBRK, "Round brackets (math)\tAlt+Shift+)", "Wrap math in round () brackets", self.OnMathRoundBrack),
+                 (ID_BSQBRK, "Square brackets (math)\tAlt+]", "Wrap math in square brackets", self.OnMathSquareBrack),
+                 (ID_BCRLBRK, "Curly brackets (math)\tAlt+Shift+}", "Wrap math in curly brackets", self.OnMathCurlyBrack)]:
             if id == None:
                 formatMenu.AppendSeparator()
             else:
@@ -379,13 +391,13 @@ class MainWindow(wx.Frame):
                 [
                  (ID_SYMBOL_INFINITY, "infinity\tCtrl+Shift+I", "insert infinity", self.OnSymbol_infinity), 
                  (ID_SYMBOL_TIMES, "times\tCtrl+8", "insert times", self.OnSymbol_times), 
-                 (ID_SYMBOL_PARTIAL, "partial\tCtrl+Shift+D", "insert partial", self.OnSymbol_partial), 
-                 (ID_SYMBOL_LEFTPAREN, "LeftParen\tCtrl+9", "insert left parenthesis", self.OnSymbol_LeftParen), 
-                 (ID_SYMBOL_RIGHTPAREN, "RightParen\tCtrl+0", "insert right parenthesis", self.OnSymbol_RightParen), 
-                 (ID_SYMBOL_LEFTSQUARE, "LeftSquare\tCtrl+[", "insert left square bracket", self.OnSymbol_LeftSquare), 
-                 (ID_SYMBOL_RIGHTSQUARE, "RightSquare\tCtrl+]", "insert right square bracket", self.OnSymbol_RightSquare), 
-                 (ID_SYMBOL_LEFTCURLY, "LeftCurly\tCtrl+Shift+{", "insert left curly bracket", self.OnSymbol_LeftCurly), 
-                 (ID_SYMBOL_RIGHTCURLY, "RightCurly\tCtrl+Shift+}", "insert right curly bracket", self.OnSymbol_RightCurly)]:
+                 (ID_SYMBOL_PARTIAL, "partial derivative\tCtrl+Shift+D", "insert partial", self.OnSymbol_partial), 
+                 (ID_SYMBOL_LEFTPAREN, "Left Parenthesis\tCtrl+9", "insert variable size left parenthesis", self.OnSymbol_LeftParen), 
+                 (ID_SYMBOL_RIGHTPAREN, "Right Parenthesis\tCtrl+0", "insert variable size right parenthesis", self.OnSymbol_RightParen), 
+                 (ID_SYMBOL_LEFTSQUARE, "Left Square bracket\tCtrl+[", "insert variable size left square bracket", self.OnSymbol_LeftSquare), 
+                 (ID_SYMBOL_RIGHTSQUARE, "Right Square bracket\tCtrl+]", "insert variable size right square bracket", self.OnSymbol_RightSquare), 
+                 (ID_SYMBOL_LEFTCURLY, "Left Curly bracket\tCtrl+Shift+{", "insert variable size left curly bracket", self.OnSymbol_LeftCurly), 
+                 (ID_SYMBOL_RIGHTCURLY, "Right Curly bracket\tCtrl+Shift+}", "insert variable size right curly bracket", self.OnSymbol_RightCurly)]:
             if id == None:
                 symbolsMenu.AppendSeparator()
             else:
@@ -417,9 +429,11 @@ class MainWindow(wx.Frame):
                  (ID_GREEK_GAMMA, "gamma\tAlt+Shift+G", "insert greek letter gamma", self.OnGreek_gamma), 
                  (ID_GREEK_DELTA, "delta\tAlt+Shift+D", "insert greek letter delta", self.OnGreek_delta), 
                  (ID_GREEK_EPSILON, "epsilon\tAlt+Shift+E", "insert greek letter epsilon", self.OnGreek_epsilon), 
+                 (ID_GREEK_VAREPSILON, "epsilon (variant)\tAlt+Shift+V", "insert variant of greek letter epsilon", self.OnGreek_varepsilon), 
                  (ID_GREEK_ZETA, "zeta\tAlt+Shift+Z", "insert greek letter zeta", self.OnGreek_zeta), 
                  (ID_GREEK_ETA, "eta\tAlt+Shift+W", "insert greek letter eta", self.OnGreek_eta), 
-                 (ID_GREEK_THETA, "theta\tAlt+Shift+/", "insert greek letter theta", self.OnGreek_theta), 
+                 (ID_GREEK_THETA, "theta\tAlt+Shift+H", "insert greek letter theta", self.OnGreek_theta), 
+                 (ID_GREEK_VARTHETA, "theta (variant)\tAlt+Shift+/", "insert variant of greek letter theta", self.OnGreek_vartheta), 
                  (ID_GREEK_IOTA, "iota\tAlt+Shift+I", "insert greek letter iota", self.OnGreek_iota), 
                  (ID_GREEK_KAPPA, "kappa\tAlt+Shift+K", "insert greek letter kappa", self.OnGreek_kappa), 
                  (ID_GREEK_LAMBDA, "lambda\tAlt+Shift+L", "insert greek letter lambda", self.OnGreek_lambda), 
@@ -452,7 +466,7 @@ class MainWindow(wx.Frame):
                  (ID_RGRAPH, "Insert R code chunk for a graph\tAlt+G", "insert R code chunk for a graph", self.OnRGraph),
                  (ID_RLASSIGN, "Insert a left assignment\tCtrl+<", "insert R code for the left assignment <-", self.OnRLAssign),
                  (ID_RRASSIGN, "Insert a right assignment\tCtrl+>", "insert R code for the right assignment ->", self.OnRRAssign),
-                 (ID_RPIPE, "Insert a pipe operator\tCtrl+Shift+>", "insert R code for the pipe operator %>%", self.OnRPipe)]:
+                 (ID_RPIPE, "Insert a pipe operator\tCtrl+Shift+P", "insert R code for the pipe operator %>%", self.OnRPipe)]:
             if id == None:
                 statsMenu.AppendSeparator()
             else:
@@ -804,12 +818,16 @@ class MainWindow(wx.Frame):
         self.editor.WriteText("\\delta{}") 
     def OnGreek_epsilon(self, event):
         self.editor.WriteText("\\epsilon{}") 
+    def OnGreek_varepsilon(self, event):
+        self.editor.WriteText("\\varepsilon{}") 
     def OnGreek_zeta(self, event):
         self.editor.WriteText("\\zeta{}") 
     def OnGreek_eta(self, event):
         self.editor.WriteText("\\eta{}") 
     def OnGreek_theta(self, event):
         self.editor.WriteText("\\theta{}") 
+    def OnGreek_vartheta(self, event):
+        self.editor.WriteText("\\vartheta{}") 
     def OnGreek_iota(self, event):
         self.editor.WriteText("\\iota{}") 
     def OnGreek_kappa(self, event):
@@ -869,6 +887,30 @@ class MainWindow(wx.Frame):
         self.editor.WriteText("(")
         self.editor.SetInsertionPoint(to + 2)
 
+    def OnMathSquareBrack(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("\\right] ")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText(" \\left[")
+        self.editor.SetInsertionPoint(to + 15)
+
+    def OnMathCurlyBrack(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("\\right} ")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText(" \\left{")
+        self.editor.SetInsertionPoint(to + 15)
+
+    def OnMathRoundBrack(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("\\right) ")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText(" \\left(")
+        self.editor.SetInsertionPoint(to + 15)
+
     def OnMath(self, event):
         frm, to = self.editor.GetSelection()
         self.editor.SetInsertionPoint(to)
@@ -903,8 +945,15 @@ class MainWindow(wx.Frame):
         self.editor.SetInsertionPoint(to + 2)
 
 
+    def OnAddHeadBlock(self, event):
+        self.editor.SetInsertionPoint(0)
+        self.editor.WriteText('---\ntitle: ""\nauthor: ""\ndate: ""\noutput: html_document\n---\n') 
+        self.editor.SetInsertionPoint(13)
+
     def OnAddURL(self, event):
         self.editor.WriteText(" [alt text](http://) ") 
+    def OnAddEMail(self, event):
+        self.editor.WriteText(" [name](Mailto:) ") 
     def OnAddFigure(self, event):
         self.editor.WriteText(" ![alt tag](filename) ") 
 
