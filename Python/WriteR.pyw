@@ -1,4 +1,4 @@
-# WriteR Version 0.160927.0
+# WriteR Version 0.161011.0
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version has been proposed for development in parallel, (led by James Curtis).
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -37,6 +37,9 @@ ID_SYMBOL_LEFTSQUARE = wx.NewId()
 ID_SYMBOL_RIGHTSQUARE = wx.NewId() 
 ID_SYMBOL_LEFTCURLY = wx.NewId() 
 ID_SYMBOL_RIGHTCURLY = wx.NewId()
+ID_SYMBOL_GRTREQL = wx.NewId() 
+ID_SYMBOL_LESSEQL = wx.NewId() 
+ID_SYMBOL_NOTEQL = wx.NewId() 
 
 ID_RCOMMAND = wx.NewId()
 ID_RCHUNK = wx.NewId()
@@ -390,8 +393,11 @@ class MainWindow(wx.Frame):
         for id, label, helpText, handler in \
                 [
                  (ID_SYMBOL_INFINITY, "infinity\tCtrl+Shift+I", "insert infinity", self.OnSymbol_infinity), 
-                 (ID_SYMBOL_TIMES, "times\tCtrl+8", "insert times", self.OnSymbol_times), 
+                 (ID_SYMBOL_TIMES, "times\tCtrl+Shift+*", "insert times", self.OnSymbol_times), 
                  (ID_SYMBOL_PARTIAL, "partial derivative\tCtrl+Shift+D", "insert partial", self.OnSymbol_partial), 
+                 (ID_SYMBOL_LESSEQL, "less than or equal\tCtrl+Shift+<", "insert less than or equal sign", self.OnSymbol_leq), 
+                 (ID_SYMBOL_GRTREQL, "greater than or equal \tCtrl+Shift+>", "insert greater than or equal sign", self.OnSymbol_geq), 
+                 (ID_SYMBOL_NOTEQL, "not equal\tCtrl+Shift+!", "insert not equal sign", self.OnSymbol_neq), 
                  (ID_SYMBOL_LEFTPAREN, "Left Parenthesis\tCtrl+9", "insert variable size left parenthesis", self.OnSymbol_LeftParen), 
                  (ID_SYMBOL_RIGHTPAREN, "Right Parenthesis\tCtrl+0", "insert variable size right parenthesis", self.OnSymbol_RightParen), 
                  (ID_SYMBOL_LEFTSQUARE, "Left Square bracket\tCtrl+[", "insert variable size left square bracket", self.OnSymbol_LeftSquare), 
@@ -769,9 +775,15 @@ class MainWindow(wx.Frame):
     def OnRRAssign(self, event):
         self.editor.WriteText(" -> ") 
 
-
     def OnSymbol_infinity(self, event):
         self.editor.WriteText("\\infty{}") 
+    def OnSymbol_geq(self, event):
+        self.editor.WriteText(" \\geq ") 
+    def OnSymbol_leq(self, event):
+        self.editor.WriteText(" \\leq ") 
+    def OnSymbol_neq(self, event):
+        self.editor.WriteText(" \\ne ") 
+
     def OnSymbol_times(self, event):
         self.editor.WriteText("\\times{}") 
     def OnSymbol_partial(self, event):

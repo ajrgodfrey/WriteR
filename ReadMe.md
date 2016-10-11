@@ -56,7 +56,8 @@ And so quickly, the world falls apart. The executable seems broken on my machine
 
 ## October 2016
 
-- added documentation folder ad file for hot key assignments
+- added documentation folder
+-  aded file for hot key assignments
 
 ## Work to do
 
@@ -67,5 +68,5 @@ And so quickly, the world falls apart. The executable seems broken on my machine
 -  direct use of pandoc instead of R for *.md files.
 - various symbols need to be added to documentation for hot keys
 - complete documentation for guidance to use
-- more commands such as  div for divide, pm and mp, leq, geq, neq, absolute values, floor and ceiling, angle brackets, nth root (has square brackets), left and right without brackets, hat, bar, and  widehat. 
+- more commands such as  div for divide, pm and mp, absolute values, floor and ceiling, angle brackets, nth root (has square brackets), left and right without brackets, hat, bar, and  widehat. 
 
