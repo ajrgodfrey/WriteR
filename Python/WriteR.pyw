@@ -29,6 +29,8 @@ ID_FINDREPLACE = wx.NewId()
 
 # symbols menu for mathematical symbols
 ID_SYMBOL_INFINITY = wx.NewId() 
+ID_SYMBOL_MINUSPLUS = wx.NewId() 
+ID_SYMBOL_PLUSMINUS = wx.NewId() 
 ID_SYMBOL_TIMES = wx.NewId() 
 ID_SYMBOL_PARTIAL = wx.NewId() 
 ID_SYMBOL_LEFTPAREN = wx.NewId() 
@@ -395,6 +397,8 @@ class MainWindow(wx.Frame):
                  (ID_SYMBOL_INFINITY, "infinity\tCtrl+Shift+I", "insert infinity", self.OnSymbol_infinity), 
                  (ID_SYMBOL_TIMES, "times\tCtrl+Shift+*", "insert times", self.OnSymbol_times), 
                  (ID_SYMBOL_PARTIAL, "partial derivative\tCtrl+Shift+D", "insert partial", self.OnSymbol_partial), 
+                 (ID_SYMBOL_PLUSMINUS, "plus or minus\tCtrl+Shift+=", "insert plus or minus sign", self.OnSymbol_plusminus), 
+                 (ID_SYMBOL_MINUSPLUS, "minus or plus\tCtrl+Shift+-", "insert minus or plus sign", self.OnSymbol_minusplus), 
                  (ID_SYMBOL_LESSEQL, "less than or equal\tCtrl+Shift+<", "insert less than or equal sign", self.OnSymbol_leq), 
                  (ID_SYMBOL_GRTREQL, "greater than or equal \tCtrl+Shift+>", "insert greater than or equal sign", self.OnSymbol_geq), 
                  (ID_SYMBOL_NOTEQL, "not equal\tCtrl+Shift+!", "insert not equal sign", self.OnSymbol_neq), 
@@ -777,6 +781,10 @@ class MainWindow(wx.Frame):
 
     def OnSymbol_infinity(self, event):
         self.editor.WriteText("\\infty{}") 
+    def OnSymbol_plusminus(self, event):
+        self.editor.WriteText(" \\pm ") 
+    def OnSymbol_minusplus(self, event):
+        self.editor.WriteText(" \\mp ") 
     def OnSymbol_geq(self, event):
         self.editor.WriteText(" \\geq ") 
     def OnSymbol_leq(self, event):

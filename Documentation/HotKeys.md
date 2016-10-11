@@ -1,7 +1,7 @@
 ---
 title: "Hot keys for use in WriteR"
 author: "A. Jonathan R. Godfrey"
-date: "Last updated: 6 October 2016"
+date: "Last updated: 11 October 2016"
 output: html_document
 ---
 
@@ -49,6 +49,19 @@ I've sorted the hot keys into sets that I think make sense. Some hot keys are ve
 These commands are all intended to produce LaTeX commands that are inserted in between single or double dollar signs for inline and newline based mathemathematical content respectively.
 
 
+### Mathematical symbols
+
+| Hot key | Functionality |
+| --- | --- |
+| Ctrl+Shift+* | common multiplication symbol |
+| Ctrl+Shift+D | partial derivative, pronounced "del" |
+| Ctrl+Shift+I | infinity |
+| Ctrl+Shift+< | less than or equal sign |
+| Ctrl+Shift+> | greater than or equal sign |
+| Ctrl+Shift+! | not equal sign |
+| Ctrl+Shift+- | "minus or plus" sign |
+| Ctrl+Shift+= | "plus or minus" sign |
+
 ### Greek letters 
 
 Lower case Greek letters use  Alt`+Shift` and the initial letter for alpha, beta, gamma, delta etc. Only exceptions to this rule are given in the table below. The hot key assignments  are based on how letters are written, not necessarily which letter of the English alphabet they most closely represent. Upper case Greek is not represented via hot keys, nor are the variants varrho, varsigma, and varphi.
@@ -79,7 +92,7 @@ These commands are all intended to produce LaTeX commands that are inserted in b
 
 ## Bracketing functions
 
-The first set of hot keys  is for inserting mathematical brackets one by one, and are used in math mode.
+The first set of hot keys  is for inserting mathematical brackets one by one, and are used in math mode. Use of these hot keys ensure the resulting symbols are allowed to vary in size as required by the context.
 
 | Hot key | Functionality |
 | --- | --- |
@@ -90,7 +103,7 @@ The first set of hot keys  is for inserting mathematical brackets one by one, an
 | Ctrl+Shift+{ | Left curly bracket for math |
 | Ctrl+Shift+} | Right curly bracket for math |
 
-The second set of hot keys add bracketing before and after highlighted  text. They are generally expected to be used in math mode.
+The second set of hot keys add bracketing before and after highlighted  text. They are generally expected to be used in math mode. The "left" key in a pair is for fixed size bracketing and can be used in regular text situations, while the "right" key of a pair creates variable sized bracketing and is only useful in math mode.
 
 | Hot key | Functionality |
 | --- | --- |
@@ -100,5 +113,6 @@ The second set of hot keys add bracketing before and after highlighted  text. Th
 | Alt+Shift+) | parentheses a.k.a. round brackets for math |
 | Alt+] | square brackets for math |
 | Alt+Shift+} | curly brackets a.k.a. braces for math |
+
 
 
