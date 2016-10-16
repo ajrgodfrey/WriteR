@@ -1,4 +1,4 @@
-# WriteR Version 0.161014.0
+# WriteR Version 0.161016.0
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version has been proposed for development in parallel, (led by James Curtis).
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -7,7 +7,11 @@
 
 import wx 
 import sys
+# import FileMenuEvents # problems with this one
+import EditMenuEvents
+import HelpMenuEvents
 import MathInserts
+import RMarkdownEvents
 from wx.py.shell import Shell
 from wx.aui import AuiManager, AuiPaneInfo
 from threading import Thread, Event
@@ -538,28 +542,7 @@ class MainWindow(wx.Frame):
         return userProvidedFilename
 
 # Event handlers:
-# help menu events
-    def OnAbout(self, event):
-        dialog = wx.MessageDialog(self, "WriteR is a  first attempt  at developing an R Markdown editor\n"
-                                        "using wxPython. Development started by Jonathan Godfrey\n"
-                                        "and James Curtis in 2015.\nContinued development assisted by Timothy Bilton in 2016.\nSend all feedback to Jonathan Godfrey at a.j.godfrey@massey.ac.nz\nVersion: 0.160530.0 (or later)",
-                                  "About this R Markdown Editor", wx.OK)
-        dialog.ShowModal()
-        dialog.Destroy()
-
-# file menu events
-    def OnSafeExit(self, event):
-        self.OnSave(event)
-        self.OnExit(event)
-
-    def OnExit(self, event):
-        self.Close()  # Close the main window.
-
-    def OnSave(self, event):
-        textfile = open(join(self.dirname, self.filename), "w")
-        textfile.write(self.editor.GetValue())
-        textfile.close()
-
+    # file menu events
     def OnOpen(self, event):
         if self.askUserForFilename(style=wx.OPEN, **self.defaultFileDialogOptions()):
             self.fileOpen(self.dirname, self.filename)
@@ -582,19 +565,29 @@ class MainWindow(wx.Frame):
         if self.askUserForFilename(defaultFile=self.filename, style=wx.SAVE, **self.defaultFileDialogOptions()):
             self.OnSave(event)
 
-# edit menu events
-    def OnCut(self, event):
-        self.editor.Cut()
-    def OnCopy(self, event):
-        self.editor.Copy()
-    def OnPaste(self, event):
-        self.editor.Paste()
-    def OnDelete(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.Remove(frm, to)
-    def OnSelectAll(self, event):
-        self.editor.SelectAll()
+    def OnSave(self, event):
+        textfile = open(join(self.dirname, self.filename), "w")
+        textfile.write(self.editor.GetValue())
+        textfile.close()
 
+
+    def OnExit(self, event):
+        self.Close()  # Close the main window.
+
+    def OnSafeExit(self, event):
+        self.OnSave(event)
+        self.OnExit(event)
+
+
+    # help menu events
+    OnAbout = HelpMenuEvents.OnAbout
+
+    # edit menu events
+    OnSelectAll = EditMenuEvents.OnSelectAll
+    OnDelete = EditMenuEvents.OnDelete
+    OnPaste = EditMenuEvents.OnPaste
+    OnCopy = EditMenuEvents.OnCopy
+    OnCut = EditMenuEvents.OnCut
 
 # view menu events
     def StatusBar(self):
@@ -656,135 +649,28 @@ class MainWindow(wx.Frame):
         self.comp_thread = BashProcessThread(self.sub_flag, input_object, self.console.WriteText)
         self.comp_thread.start()
 
-    def OnRenderNull(self, event):
-        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-        self._mgr.Update()
-        # This allows the file to be up to date for the build
-        self.OnSave(event)
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['rendercommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
+    # Build Menu events
+    OnRenderNull = RMarkdownEvents.OnRenderNull
+    OnBuild = OnRenderNull # sets default build 
+    OnRenderHtml = RMarkdownEvents.OnRenderHtml
+    OnRenderAll = RMarkdownEvents.OnRenderAll
+    OnRenderWord = RMarkdownEvents.OnRenderWord
+    OnRenderPdf = RMarkdownEvents.OnRenderPdf
+    OnSelectRenderNull = RMarkdownEvents.OnSelectRenderNull
+    OnSelectRenderHtml = RMarkdownEvents.OnSelectRenderHtml
+    OnSelectRenderAll = RMarkdownEvents.OnSelectRenderAll
+    OnSelectRenderWord = RMarkdownEvents.OnSelectRenderWord
+    OnSelectRenderPdf = RMarkdownEvents.OnSelectRenderPdf
+    OnKnit2html = RMarkdownEvents.OnKnit2html
+    OnKnit2pdf = RMarkdownEvents.OnKnit2pdf
 
-    # set default build 
-    OnBuild = OnRenderNull
-
-    def OnRenderHtml(self, event):
-        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-        self._mgr.Update()
-        # This allows the file to be up to date for the build
-        self.OnSave(event)
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['renderhtmlcommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
-    def OnRenderAll(self, event):
-        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-        self._mgr.Update()
-        # This allows the file to be up to date for the build
-        self.OnSave(event)
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['renderallcommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
-    def OnRenderWord(self, event):
-        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-        self._mgr.Update()
-        # This allows the file to be up to date for the build
-        self.OnSave(event)
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['renderwordcommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
-    def OnRenderPdf(self, event):
-        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-        self._mgr.Update()
-        # This allows the file to be up to date for the build
-        self.OnSave(event)
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['renderpdfcommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
-
-
-    def OnSelectRenderNull(self, event):
-        self.Bind(wx.EVT_MENU, self.OnRenderNull, self.Render)
-    def OnSelectRenderHtml(self, event):
-        self.Bind(wx.EVT_MENU, self.OnRenderHtml, self.Render)
-    def OnSelectRenderAll(self, event):
-        self.Bind(wx.EVT_MENU, self.OnRenderAll, self.Render)
-    def OnSelectRenderWord(self, event):
-        self.Bind(wx.EVT_MENU, self.OnRenderWord, self.Render)
-    def OnSelectRenderPdf(self, event):
-        self.Bind(wx.EVT_MENU, self.OnRenderPdf, self.Render)
-
-
-    def OnKnit2html(self, event):
-        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-        self._mgr.Update()
-        # This allows the file to be up to date for the build
-        self.OnSave(event)
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('knitr', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('knitr', repos="{0}")}};require(knitr);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['knit2htmlcommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
-
-    def OnKnit2pdf(self, event):
-        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-        self._mgr.Update()
-        # This allows the file to be up to date for the build
-        self.OnSave(event)
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('knitr', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('knitr', repos="{0}")}};require(knitr);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['knit2pdfcommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
-
-
-    def OnRCommand(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("`")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("`r ")
-        self.editor.SetInsertionPoint(frm + 3)
-
-
-    def OnRChunk(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("\n```\n\n")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("\n```{r }\n")
-        self.editor.SetInsertionPoint(frm + 8)
-
-    def OnRGraph(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("\n```\n\n")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("\n```{r , fig.height=5, fig.width=5, fig.cap=\"\"}\n")
-        self.editor.SetInsertionPoint(frm + 8)
-
-    def OnRPipe(self, event):
-        self.editor.WriteText(" %>% ") 
-    def OnRLAssign(self, event):
-        self.editor.WriteText(" <- ") 
-    def OnRRAssign(self, event):
-        self.editor.WriteText(" -> ") 
+    # R and RMarkdown events
+    OnRCommand = RMarkdownEvents.OnRCommand
+    OnRChunk = RMarkdownEvents.OnRChunk
+    OnRGraph = RMarkdownEvents.OnRGraph
+    OnRPipe = RMarkdownEvents.OnRPipe
+    OnRLAssign = RMarkdownEvents.OnRLAssign
+    OnRRAssign = RMarkdownEvents.OnRRAssign
 
     # MathInserts are all LaTeX input for math mode
     OnSymbol_infinity = MathInserts.OnSymbol_infinity
@@ -838,6 +724,10 @@ class MainWindow(wx.Frame):
     OnGreek_psi = MathInserts.OnGreek_psi
     OnGreek_omega = MathInserts.OnGreek_omega
 
+    OnMathRoundBrack = MathInserts.OnMathRoundBrack
+    OnMathCurlyBrack = MathInserts.OnMathCurlyBrack
+    OnMathSquareBrack = MathInserts.OnMathSquareBrack
+
     # format menu events
     def OnSquareBrack(self, event):
         frm, to = self.editor.GetSelection()
@@ -863,30 +753,6 @@ class MainWindow(wx.Frame):
         self.editor.SetInsertionPoint(frm)
         self.editor.WriteText("(")
         self.editor.SetInsertionPoint(to + 2)
-
-    def OnMathSquareBrack(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("\\right] ")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText(" \\left[")
-        self.editor.SetInsertionPoint(to + 15)
-
-    def OnMathCurlyBrack(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("\\right} ")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText(" \\left{")
-        self.editor.SetInsertionPoint(to + 15)
-
-    def OnMathRoundBrack(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("\\right) ")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText(" \\left(")
-        self.editor.SetInsertionPoint(to + 15)
 
     def OnMath(self, event):
         frm, to = self.editor.GetSelection()
@@ -1084,7 +950,8 @@ class MainWindow(wx.Frame):
 
     def OnFindClose(self, event):
         event.GetDialog().Destroy()
- # mandatory lines to get program running.
+
+# mandatory lines to get program running.
 if __name__ == "__main__":
     app = wx.App()
     frame = MainWindow()

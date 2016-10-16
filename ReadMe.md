@@ -56,6 +56,7 @@ And so quickly, the world falls apart. The executable seems broken on my machine
 
 ## October 2016
 
+- AJRG found a way to put function definitions in a separate file. MathInserts.py created.
 - AJRG added more LaTeX symbols
 - added documentation folder
 -  aded file for hot key assignments
@@ -63,7 +64,7 @@ And so quickly, the world falls apart. The executable seems broken on my machine
 
 ## Work to do
 
-- want to split the script into more easily managed parts.
+- want to split the script into more easily managed parts. (Partially achieved with creation of MathInserts.py)
 - when we have saved, but done nothing else that alters the document, WriteR still asks us if we want to save our work. 
 - A find/replace dialogue is desperately needed.
 - Spell checking might then be possible.

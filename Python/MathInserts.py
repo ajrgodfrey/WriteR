@@ -1,3 +1,30 @@
+
+def OnMathSquareBrack(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("\\right] ")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText(" \\left[")
+        self.editor.SetInsertionPoint(to + 15)
+
+def OnMathCurlyBrack(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("\\right} ")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText(" \\left{")
+        self.editor.SetInsertionPoint(to + 15)
+
+
+def OnMathRoundBrack(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText("\\right) ")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText(" \\left(")
+        self.editor.SetInsertionPoint(to + 15)
+
+
 def OnSymbol_infinity(self, event):
         self.editor.WriteText("\\infty{}") 
 def OnSymbol_plusminus(self, event):
