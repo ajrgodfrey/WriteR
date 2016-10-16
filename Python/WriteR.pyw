@@ -1,4 +1,4 @@
-# WriteR Version 0.161011.0
+# WriteR Version 0.161014.0
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version has been proposed for development in parallel, (led by James Curtis).
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -7,6 +7,7 @@
 
 import wx 
 import sys
+import MathInserts
 from wx.py.shell import Shell
 from wx.aui import AuiManager, AuiPaneInfo
 from threading import Thread, Event
@@ -51,6 +52,8 @@ ID_RLASSIGN = wx.NewId()
 ID_RRASSIGN = wx.NewId()
 
 ID_SQUAREROOT = wx.NewId() 
+ID_MATHBAR = wx.NewId() 
+ID_ABSVAL = wx.NewId() 
 ID_FRACTION = wx.NewId() 
 ID_SUMMATION = wx.NewId() 
 ID_INTEGRAL = wx.NewId() 
@@ -344,14 +347,16 @@ class MainWindow(wx.Frame):
         menuBar.Append(buildMenu, "Build")  # Add the Build Menu to the MenuBar
 
         insertMenu = wx.Menu()
-        AddHeadBlock = insertMenu.Append(-1, "preamble")
+        AddHeadBlock = insertMenu.Append(-1, "header/preamble\tCtrl+Shift+H")
         self.Bind(wx.EVT_MENU, self.OnAddHeadBlock, AddHeadBlock)
-        AddURL = insertMenu.Append(-1, "URL")
+        AddURL = insertMenu.Append(-1, "URL\tCtrl+Shift+U")
         self.Bind(wx.EVT_MENU, self.OnAddURL, AddURL)
-        AddEMail = insertMenu.Append(-1, "e-mail")
+        AddEMail = insertMenu.Append(-1, "e-mail\tCtrl+Shift+E")
         self.Bind(wx.EVT_MENU, self.OnAddEMail, AddEMail)
-        AddFigure = insertMenu.Append(-1, "Figure")
+        AddFigure = insertMenu.Append(-1, "Figure\tCtrl+Shift+F")
         self.Bind(wx.EVT_MENU, self.OnAddFigure, AddFigure)
+        AddReference = insertMenu.Append(-1, "Reference\tCtrl+Shift+R")
+        self.Bind(wx.EVT_MENU, self.OnAddReference, AddReference)
         headingsMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
@@ -418,6 +423,8 @@ class MainWindow(wx.Frame):
         for id, label, helpText, handler in \
                 [
                  (ID_SQUAREROOT, "Square root\tAlt+Ctrl+Shift+R", "insert a square root", self.OnSquareRoot), 
+                 (ID_MATHBAR, "bar \tCtrl+Shift+B", "insert a bar operator", self.OnMathBar), 
+                 (ID_ABSVAL, "Absolute values\tCtrl+Shift+A", "insert left and right absolute value delimiters", self.OnAbsVal), 
                  (ID_FRACTION, "Fraction\tCtrl+Shift+/", "insert a fraction", self.OnFraction), 
                  (ID_SUMMATION, "Summation\tAlt+Ctrl+Shift+S", "insert a summation", self.OnSummation), 
                  (ID_INTEGRAL, "Integral\tAlt+Ctrl+Shift+I", "insert an integral", self.Onintegral), 
@@ -779,107 +786,57 @@ class MainWindow(wx.Frame):
     def OnRRAssign(self, event):
         self.editor.WriteText(" -> ") 
 
-    def OnSymbol_infinity(self, event):
-        self.editor.WriteText("\\infty{}") 
-    def OnSymbol_plusminus(self, event):
-        self.editor.WriteText(" \\pm ") 
-    def OnSymbol_minusplus(self, event):
-        self.editor.WriteText(" \\mp ") 
-    def OnSymbol_geq(self, event):
-        self.editor.WriteText(" \\geq ") 
-    def OnSymbol_leq(self, event):
-        self.editor.WriteText(" \\leq ") 
-    def OnSymbol_neq(self, event):
-        self.editor.WriteText(" \\ne ") 
-
-    def OnSymbol_times(self, event):
-        self.editor.WriteText("\\times{}") 
-    def OnSymbol_partial(self, event):
-        self.editor.WriteText("\\partial{}") 
-    def OnSymbol_LeftParen(self, event):
-        self.editor.WriteText("\\left(") 
-    def OnSymbol_RightParen(self, event):
-        self.editor.WriteText("\\right) ") 
-    def OnSymbol_LeftSquare(self, event):
-        self.editor.WriteText("\\left[") 
-    def OnSymbol_RightSquare(self, event):
-        self.editor.WriteText("\\right] ") 
-    def OnSymbol_LeftCurly(self, event):
-        self.editor.WriteText("\\left\\{") 
-    def OnSymbol_RightCurly(self, event):
-        self.editor.WriteText("\\right\\} ")
-
-
-
-    def OnSquareRoot(self, event):
-        self.editor.WriteText("\\sqrt{}") 
-    def OnFraction(self, event):
-        self.editor.WriteText("\\frac{ num }{ den }") 
-    def OnSummation(self, event):
-        self.editor.WriteText("\\sum_{ lower }^{ upper }{ what }") 
-    def Onintegral(self, event):
-        self.editor.WriteText("\\int_{ lower }^{ upper }{ what }") 
-    def OnProduct(self, event):
-        self.editor.WriteText("\\prod_{ lower }^{ upper }{ what }") 
-    def OnLimit(self, event):
-        self.editor.WriteText("\\lim_{ what \\to where }{is}") 
-    def OnDoubleSummation(self, event):
-        self.editor.WriteText("\\sum_{ lower }^{ upper }{\\sum_{ lower }^{ upper }{ what }}") 
-    def OnDoubleIntegral(self, event):
-        self.editor.WriteText("\\int_{ lower }^{ upper }{\\int_{ lower }^{ upper }{ what }}") 
-
-    def OnGreek_alpha(self, event):
-        self.editor.WriteText("\\alpha{}") 
-    def OnGreek_beta(self, event):
-        self.editor.WriteText("\\beta{}") 
-    def OnGreek_gamma(self, event):
-        self.editor.WriteText("\\gamma{}") 
-    def OnGreek_delta(self, event):
-        self.editor.WriteText("\\delta{}") 
-    def OnGreek_epsilon(self, event):
-        self.editor.WriteText("\\epsilon{}") 
-    def OnGreek_varepsilon(self, event):
-        self.editor.WriteText("\\varepsilon{}") 
-    def OnGreek_zeta(self, event):
-        self.editor.WriteText("\\zeta{}") 
-    def OnGreek_eta(self, event):
-        self.editor.WriteText("\\eta{}") 
-    def OnGreek_theta(self, event):
-        self.editor.WriteText("\\theta{}") 
-    def OnGreek_vartheta(self, event):
-        self.editor.WriteText("\\vartheta{}") 
-    def OnGreek_iota(self, event):
-        self.editor.WriteText("\\iota{}") 
-    def OnGreek_kappa(self, event):
-        self.editor.WriteText("\\kappa{}") 
-    def OnGreek_lambda(self, event):
-        self.editor.WriteText("\\lambda{}") 
-    def OnGreek_mu(self, event):
-        self.editor.WriteText("\\mu{}") 
-    def OnGreek_nu(self, event):
-        self.editor.WriteText("\\nu{}") 
-    def OnGreek_xi(self, event):
-        self.editor.WriteText("\\xi{}") 
-    def OnGreek_omicron(self, event):
-        self.editor.WriteText("\\omicron{}") 
-    def OnGreek_pi(self, event):
-        self.editor.WriteText("\\pi{}") 
-    def OnGreek_rho(self, event):
-        self.editor.WriteText("\\rho{}") 
-    def OnGreek_sigma(self, event):
-        self.editor.WriteText("\\sigma{}") 
-    def OnGreek_tau(self, event):
-        self.editor.WriteText("\\tau{}") 
-    def OnGreek_upsilon(self, event):
-        self.editor.WriteText("\\upsilon{}") 
-    def OnGreek_phi(self, event):
-        self.editor.WriteText("\\phi{}") 
-    def OnGreek_chi(self, event):
-        self.editor.WriteText("\\chi{}") 
-    def OnGreek_psi(self, event):
-        self.editor.WriteText("\\psi{}") 
-    def OnGreek_omega(self, event):
-        self.editor.WriteText("\\omega{}")
+    # MathInserts are all LaTeX input for math mode
+    OnSymbol_infinity = MathInserts.OnSymbol_infinity
+    OnSymbol_plusminus = MathInserts.OnSymbol_plusminus
+    OnSymbol_minusplus = MathInserts.OnSymbol_minusplus
+    OnSymbol_geq = MathInserts.OnSymbol_geq
+    OnSymbol_leq = MathInserts.OnSymbol_leq
+    OnSymbol_neq = MathInserts.OnSymbol_neq
+    OnSymbol_times = MathInserts.OnSymbol_times
+    OnSymbol_partial = MathInserts.OnSymbol_partial
+    OnSymbol_LeftParen = MathInserts.OnSymbol_LeftParen
+    OnSymbol_RightParen = MathInserts.OnSymbol_RightParen
+    OnSymbol_LeftSquare = MathInserts.OnSymbol_LeftSquare
+    OnSymbol_RightSquare = MathInserts.OnSymbol_RightSquare
+    OnSymbol_LeftCurly = MathInserts.OnSymbol_LeftCurly
+    OnSymbol_RightCurly = MathInserts.OnSymbol_RightCurly
+    OnAbsVal = MathInserts.OnAbsVal
+    OnMathBar = MathInserts.OnMathBar
+    OnSquareRoot = MathInserts.OnSquareRoot
+    OnFraction = MathInserts.OnFraction
+    OnSummation = MathInserts.OnSummation
+    Onintegral = MathInserts.Onintegral
+    OnProduct = MathInserts.OnProduct
+    OnLimit = MathInserts.OnLimit
+    OnDoubleSummation = MathInserts.OnDoubleSummation
+    OnDoubleIntegral = MathInserts.OnDoubleIntegral
+    OnGreek_alpha = MathInserts.OnGreek_alpha
+    OnGreek_beta = MathInserts.OnGreek_beta
+    OnGreek_gamma = MathInserts.OnGreek_gamma
+    OnGreek_delta = MathInserts.OnGreek_delta
+    OnGreek_epsilon = MathInserts.OnGreek_epsilon
+    OnGreek_varepsilon = MathInserts.OnGreek_varepsilon
+    OnGreek_zeta = MathInserts.OnGreek_zeta
+    OnGreek_eta = MathInserts.OnGreek_eta
+    OnGreek_theta = MathInserts.OnGreek_theta
+    OnGreek_vartheta = MathInserts.OnGreek_vartheta
+    OnGreek_iota = MathInserts.OnGreek_iota
+    OnGreek_kappa = MathInserts.OnGreek_kappa
+    OnGreek_lambda = MathInserts.OnGreek_lambda
+    OnGreek_mu = MathInserts.OnGreek_mu
+    OnGreek_nu = MathInserts.OnGreek_nu
+    OnGreek_xi = MathInserts.OnGreek_xi
+    OnGreek_omicron = MathInserts.OnGreek_omicron
+    OnGreek_pi = MathInserts.OnGreek_pi
+    OnGreek_rho = MathInserts.OnGreek_rho
+    OnGreek_sigma = MathInserts.OnGreek_sigma
+    OnGreek_tau = MathInserts.OnGreek_tau
+    OnGreek_upsilon = MathInserts.OnGreek_upsilon
+    OnGreek_phi = MathInserts.OnGreek_phi
+    OnGreek_chi = MathInserts.OnGreek_chi
+    OnGreek_psi = MathInserts.OnGreek_psi
+    OnGreek_omega = MathInserts.OnGreek_omega
 
     # format menu events
     def OnSquareBrack(self, event):
@@ -969,6 +926,9 @@ class MainWindow(wx.Frame):
         self.editor.SetInsertionPoint(0)
         self.editor.WriteText('---\ntitle: ""\nauthor: ""\ndate: ""\noutput: html_document\n---\n') 
         self.editor.SetInsertionPoint(13)
+
+    def OnAddReference(self, event):
+        self.editor.WriteText(" [@ref] ") 
 
     def OnAddURL(self, event):
         self.editor.WriteText(" [alt text](http://) ") 

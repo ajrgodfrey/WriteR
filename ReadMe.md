@@ -45,7 +45,7 @@ AJRG met with Timothy Bilton and we added some consideration for alternativ buil
 
 ## 2 June 2016
 
-And so quickly, the world falls apart. The executable seems broken on my machine, as do versions going well back. The pyw script does work as expected though.
+And so quickly, the world falls apart. The executable seems broken on my machine, as do versions going well back. The pyw script does work as expected though. NB this is only the single file WriteR.exe; the executable as a folder of files does perform properly. (Oct 2016)
 
 ## 22 September 2016
 
@@ -56,8 +56,10 @@ And so quickly, the world falls apart. The executable seems broken on my machine
 
 ## October 2016
 
+- AJRG added more LaTeX symbols
 - added documentation folder
 -  aded file for hot key assignments
+- AJRG ported version 161011.0 into the BrailleR package.
 
 ## Work to do
 
@@ -68,5 +70,5 @@ And so quickly, the world falls apart. The executable seems broken on my machine
 -  direct use of pandoc instead of R for *.md files.
 - various symbols need to be added to documentation for hot keys
 - complete documentation for guidance to use
-- more commands such as  div for divide, pm and mp, absolute values, floor and ceiling, angle brackets, nth root (has square brackets), left and right without brackets, hat, bar, and  widehat. 
+- more commands such as  div for divide, absolute values, floor and ceiling, angle brackets, nth root (has square brackets), left and right without brackets, hat, bar, and  widehat. 
 
