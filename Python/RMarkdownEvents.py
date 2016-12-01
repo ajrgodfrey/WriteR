@@ -8,66 +8,49 @@ from os.path import join, split, isdir, expanduser, realpath
 from os import walk
 from time import asctime, sleep
 
-def OnRenderNull(self, event):
+def OnStartRender(self, event):
         self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
         self._mgr.Update()
         # This allows the file to be up to date for the build
         self.OnSave(event)
+
+
+def OnRenderProcess(self, event, whichcmd):
         self.StartThread([self.settings['RDirectory'], "-e",
                           '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
                           '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
                               self.hardsettings['repo']) +
-                          self.hardsettings['rendercommand'].format(
+                          self.hardsettings[whichcmd].format(
                               join(self.dirname, self.filename).replace('\\', '\\\\'))])
 
+
+
+def OnRenderNull(self, event):
+        OnStartRender(self, event)
+        OnRenderProcess(self, event, whichcmd='rendercommand')
 
 def OnRenderHtml(self, event):
-        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-        self._mgr.Update()
-        # This allows the file to be up to date for the build
-        self.OnSave(event)
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['renderhtmlcommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
+        OnStartRender(self, event)
+        OnRenderProcess(self, event, whichcmd='renderhtmlcommand')
 
 def OnRenderAll(self, event):
-        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-        self._mgr.Update()
-        # This allows the file to be up to date for the build
-        self.OnSave(event)
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['renderallcommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
+        OnStartRender(self, event)
+        OnRenderProcess(self, event, whichcmd='renderallcommand')
+
 
 def OnRenderWord(self, event):
-        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-        self._mgr.Update()
-        # This allows the file to be up to date for the build
-        self.OnSave(event)
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['renderwordcommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
+        OnStartRender(self, event)
+        OnRenderProcess(self, event, whichcmd='renderwordcommand')
+
 
 def OnRenderPdf(self, event):
-        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-        self._mgr.Update()
-        # This allows the file to be up to date for the build
-        self.OnSave(event)
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['renderpdfcommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
+        OnStartRender(self, event)
+        OnRenderProcess(self, event, whichcmd='renderpdfcommand')
+
+def OnRenderSlidey(self, event):
+        OnStartRender(self, event)
+        OnRenderProcess(self, event, whichcmd='renderslideycommand')
+
 
 
 def OnSelectRenderNull(self, event):
@@ -85,12 +68,12 @@ def OnSelectRenderWord(self, event):
 def OnSelectRenderPdf(self, event):
         self.Bind(wx.EVT_MENU, self.OnRenderPdf, self.Render)
 
+def OnSelectRenderSlidey(self, event):
+        self.Bind(wx.EVT_MENU, self.OnRenderSlidey, self.Render)
+
 
 def OnKnit2html(self, event):
-        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-        self._mgr.Update()
-        # This allows the file to be up to date for the build
-        self.OnSave(event)
+        OnStartRender(self, event)
         self.StartThread([self.settings['RDirectory'], "-e",
                           '''if (!is.element('knitr', installed.packages()[,1])){{'''.format() +
                           '''install.packages('knitr', repos="{0}")}};require(knitr);'''.format(
@@ -99,10 +82,7 @@ def OnKnit2html(self, event):
                               join(self.dirname, self.filename).replace('\\', '\\\\'))])
 
 def OnKnit2pdf(self, event):
-        self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-        self._mgr.Update()
-        # This allows the file to be up to date for the build
-        self.OnSave(event)
+        OnStartRender(self, event)
         self.StartThread([self.settings['RDirectory'], "-e",
                           '''if (!is.element('knitr', installed.packages()[,1])){{'''.format() +
                           '''install.packages('knitr', repos="{0}")}};require(knitr);'''.format(
@@ -143,4 +123,19 @@ def OnRLAssign(self, event):
 
 def OnRRAssign(self, event):
         self.editor.WriteText(" -> ") 
+
+def OnPlay(self, event):
+        self.StartThread([self.settings['RDirectory'], "-e",
+                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
+                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
+                              self.hardsettings['repo']) +
+                          self.hardsettings['rendercommand'].format(
+                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
+# render html stuff
+        self.StartThread([self.settings['RDirectory'], "-e",
+                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
+                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
+                              self.hardsettings['repo']) +
+                          self.hardsettings['renderhtmlcommand'].format(
+                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
 

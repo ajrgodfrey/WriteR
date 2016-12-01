@@ -30,6 +30,8 @@ ID_SETTINGS = wx.NewId()
 
 ID_FINDONLY = wx.NewId()
 ID_FINDREPLACE = wx.NewId()
+ID_GOTO  = wx.NewId()
+ID_WORDCOUNT = wx.NewId()
 
 
 # symbols menu for mathematical symbols
@@ -204,6 +206,7 @@ class MainWindow(wx.Frame):
         self.hardsettings = {'repo': "http://cran.stat.auckland.ac.nz/",
                              'rendercommand': '''rmarkdown::render("{}")''',
                              'renderallcommand': '''rmarkdown::render("{}", output_format="all")''',
+                             'renderslideycommand': '''rmarkdown::render("{}", output_format="slidey_document")''',
                              'renderpdfcommand': '''rmarkdown::render("{}", output_format="pdf_document")''',
                              'renderwordcommand': '''rmarkdown::render("{}", output_format="word_document")''',
                              'renderhtmlcommand': '''rmarkdown::render("{}", output_format="html_document")''',
@@ -296,9 +299,11 @@ class MainWindow(wx.Frame):
                  (wx.ID_PASTE, "&Paste\tCtrl+V", "Paste text from clipboard", self.OnPaste),
                  (wx.ID_SELECTALL, "Select all\tCtrl+A", "Highlight entire text", self.OnSelectAll),
                  (wx.ID_DELETE, "&Delete", "Delete highlighted text", self.OnDelete),
+                 (ID_WORDCOUNT, "Word count (broken)\tCtrl+w", "get a word count of the entire text", self.OnWordCount),
                  (None,) * 4,
                  (ID_FINDONLY, "Find\tCtrl+F", "Open a standard find dialog box", self.OnShowFindToFix),
-                 (ID_FINDREPLACE, "Find/replace\tCtrl+H", "Open a find /replace dialog box", self.OnShowFindReplaceToFix),
+                 (ID_GOTO, "Go to line (broken)\tCtrl+g", "Open a dialog box to choose a line number", self.OnGoToLine),
+                 (ID_FINDREPLACE, "Find/replace\tCtrl+H", "Open a find/replace dialog box", self.OnShowFindReplaceToFix),
                  (None,) * 4,
                  (ID_SETTINGS, 'Settings', "Setup the editor to your liking", self.OnSettings)]:
             if id == None:
@@ -322,7 +327,7 @@ class MainWindow(wx.Frame):
         menuBar.Append(viewMenu, "View")  # Add the view Menu to the MenuBar
 
         buildMenu = wx.Menu()
-        self.Render = buildMenu.Append(wx.ID_ANY, "Render the document\tF6", "Use the rmarkdown package to render the document into the chosen format")
+        self.Render = buildMenu.Append(wx.ID_ANY, "Render the document\tF5", "Use the rmarkdown package to render the document into the chosen format")
         self.Bind(wx.EVT_MENU, self.OnRenderNull, self.Render)
         # Create render menu
         renderMenu = wx.Menu()
@@ -332,6 +337,8 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnSelectRenderHtml, self.ChooseRenderHtml) 
         self.ChooseRenderWord = renderMenu.Append(wx.ID_ANY, "Render into Microsoft Word only", "Use the rmarkdown package and render function to create Microsoft Word", wx.ITEM_RADIO)
         self.Bind(wx.EVT_MENU, self.OnSelectRenderWord, self.ChooseRenderWord) 
+        self.ChooseRenderSlidey = renderMenu.Append(wx.ID_ANY, "Render into slidey only", "Use the rmarkdown package and render function to create a slidey presentation", wx.ITEM_RADIO)
+        self.Bind(wx.EVT_MENU, self.OnSelectRenderSlidey, self.ChooseRenderSlidey) 
         self.ChooseRenderPdf = renderMenu.Append(wx.ID_ANY, "Render into pdf only", "Use the rmarkdown package and render function to create pdf", wx.ITEM_RADIO)
         self.Bind(wx.EVT_MENU, self.OnSelectRenderPdf, self.ChooseRenderPdf) 
         self.ChooseRenderAll = renderMenu.Append(wx.ID_ANY, "Render into all specified formats", "Use the rmarkdown package and render function to create multiple output documents", wx.ITEM_RADIO)
@@ -339,8 +346,7 @@ class MainWindow(wx.Frame):
         buildMenu.AppendMenu(-1, "Set render process to...", renderMenu) # Add the render Menu as a submenu to the build menu
         for id, label, helpText, handler in \
                 [
-                 (ID_BUILD, "Build\tF5", "Build the script", self.OnBuild),
-                 (ID_KNIT2HTML, "Knit to html\tF7", "Knit the script to HTML", self.OnKnit2html),
+                 (ID_KNIT2HTML, "Knit to html\tF6", "Knit the script to HTML", self.OnKnit2html),
                  (ID_KNIT2PDF, "Knit to pdf\tShift+F6", "Knit the script to a pdf file using LaTeX", self.OnKnit2pdf)]:
             if id == None:
                 buildMenu.AppendSeparator()
@@ -588,6 +594,8 @@ class MainWindow(wx.Frame):
     OnPaste = EditMenuEvents.OnPaste
     OnCopy = EditMenuEvents.OnCopy
     OnCut = EditMenuEvents.OnCut
+    OnGoToLine = EditMenuEvents.OnGoToLine
+    OnWordCount = EditMenuEvents.OnWordCount
 
 # view menu events
     def StatusBar(self):
@@ -653,11 +661,13 @@ class MainWindow(wx.Frame):
     OnRenderNull = RMarkdownEvents.OnRenderNull
     OnBuild = OnRenderNull # sets default build 
     OnRenderHtml = RMarkdownEvents.OnRenderHtml
+    OnRenderSlidey = RMarkdownEvents.OnRenderSlidey
     OnRenderAll = RMarkdownEvents.OnRenderAll
     OnRenderWord = RMarkdownEvents.OnRenderWord
     OnRenderPdf = RMarkdownEvents.OnRenderPdf
     OnSelectRenderNull = RMarkdownEvents.OnSelectRenderNull
     OnSelectRenderHtml = RMarkdownEvents.OnSelectRenderHtml
+    OnSelectRenderSlidey = RMarkdownEvents.OnSelectRenderSlidey
     OnSelectRenderAll = RMarkdownEvents.OnSelectRenderAll
     OnSelectRenderWord = RMarkdownEvents.OnSelectRenderWord
     OnSelectRenderPdf = RMarkdownEvents.OnSelectRenderPdf
