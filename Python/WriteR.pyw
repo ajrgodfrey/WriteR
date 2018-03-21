@@ -1,4 +1,4 @@
-# WriteR Version 0.161016.0
+# WriteR Version 0.1612.0
 # development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
 # a C++ version has been proposed for development in parallel, (led by James Curtis).
 # cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
@@ -203,16 +203,6 @@ class MainWindow(wx.Frame):
         self._mgr.SetManagedWindow(self)
         self.ChosenFontSize = 14
         self.font = wx.Font(self.ChosenFontSize, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas')
-        self.hardsettings = {'repo': "http://cran.stat.auckland.ac.nz/",
-                             'rendercommand': '''rmarkdown::render("{}")''',
-                             'renderallcommand': '''rmarkdown::render("{}", output_format="all")''',
-                             'renderslideycommand': '''rmarkdown::render("{}", output_format="slidey_document")''',
-                             'renderpdfcommand': '''rmarkdown::render("{}", output_format="pdf_document")''',
-                             'renderwordcommand': '''rmarkdown::render("{}", output_format="word_document")''',
-                             'renderhtmlcommand': '''rmarkdown::render("{}", output_format="html_document")''',
-                             'knit2mdcommand': '''knitr::knit("{}")''',
-                             'knit2htmlcommand': '''knitr::knit2html("{}")''',
-                             'knit2pdfcommand': '''knitr::knit2pdf("{}")'''}
         self.settingsFile = "WriteROptions"
         self.settings = {#'dirname': 'none',
 #                         'templates': 'none',
@@ -337,8 +327,8 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnSelectRenderHtml, self.ChooseRenderHtml) 
         self.ChooseRenderWord = renderMenu.Append(wx.ID_ANY, "Render into Microsoft Word only", "Use the rmarkdown package and render function to create Microsoft Word", wx.ITEM_RADIO)
         self.Bind(wx.EVT_MENU, self.OnSelectRenderWord, self.ChooseRenderWord) 
-        self.ChooseRenderSlidey = renderMenu.Append(wx.ID_ANY, "Render into slidey only", "Use the rmarkdown package and render function to create a slidey presentation", wx.ITEM_RADIO)
-        self.Bind(wx.EVT_MENU, self.OnSelectRenderSlidey, self.ChooseRenderSlidey) 
+        self.ChooseRenderSlidy = renderMenu.Append(wx.ID_ANY, "Render into slidy only", "Use the rmarkdown package and render function to create a slidy presentation", wx.ITEM_RADIO)
+        self.Bind(wx.EVT_MENU, self.OnSelectRenderSlidy, self.ChooseRenderSlidy) 
         self.ChooseRenderPdf = renderMenu.Append(wx.ID_ANY, "Render into pdf only", "Use the rmarkdown package and render function to create pdf", wx.ITEM_RADIO)
         self.Bind(wx.EVT_MENU, self.OnSelectRenderPdf, self.ChooseRenderPdf) 
         self.ChooseRenderAll = renderMenu.Append(wx.ID_ANY, "Render into all specified formats", "Use the rmarkdown package and render function to create multiple output documents", wx.ITEM_RADIO)
@@ -488,7 +478,7 @@ class MainWindow(wx.Frame):
         statsMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
-                 (ID_RCOMMAND, "Insert inline R command", "insert an in-line R command", self.OnRCommand),
+                 (ID_RCOMMAND, "Insert inline R command\tAlt+c", "insert an in-line R command", self.OnRCommand),
                  (ID_RCHUNK, "Insert R code chunk\tAlt+R", "insert standard R code chunk", self.OnRChunk),
                  (ID_RGRAPH, "Insert R code chunk for a graph\tAlt+G", "insert R code chunk for a graph", self.OnRGraph),
                  (ID_RLASSIGN, "Insert a left assignment\tCtrl+<", "insert R code for the left assignment <-", self.OnRLAssign),
@@ -661,13 +651,13 @@ class MainWindow(wx.Frame):
     OnRenderNull = RMarkdownEvents.OnRenderNull
     OnBuild = OnRenderNull # sets default build 
     OnRenderHtml = RMarkdownEvents.OnRenderHtml
-    OnRenderSlidey = RMarkdownEvents.OnRenderSlidey
+    OnRenderSlidy = RMarkdownEvents.OnRenderSlidy
     OnRenderAll = RMarkdownEvents.OnRenderAll
     OnRenderWord = RMarkdownEvents.OnRenderWord
     OnRenderPdf = RMarkdownEvents.OnRenderPdf
     OnSelectRenderNull = RMarkdownEvents.OnSelectRenderNull
     OnSelectRenderHtml = RMarkdownEvents.OnSelectRenderHtml
-    OnSelectRenderSlidey = RMarkdownEvents.OnSelectRenderSlidey
+    OnSelectRenderSlidy = RMarkdownEvents.OnSelectRenderSlidy
     OnSelectRenderAll = RMarkdownEvents.OnSelectRenderAll
     OnSelectRenderWord = RMarkdownEvents.OnSelectRenderWord
     OnSelectRenderPdf = RMarkdownEvents.OnSelectRenderPdf

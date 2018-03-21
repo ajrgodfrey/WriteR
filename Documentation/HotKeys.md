@@ -1,7 +1,7 @@
 ---
 title: "Hot keys for use in WriteR"
 author: "A. Jonathan R. Godfrey"
-date: "Last updated: 11 October 2016"
+date: "Last updated: 15 November 2016"
 output: html_document
 ---
 
@@ -23,6 +23,7 @@ I've sorted the hot keys into sets that I think make sense. Some hot keys are ve
 | Ctrl+c | Copy to the clipboard |
 | Ctrl+d | Select a font for the display (not the final document |
 | Ctrl+f | Find. Not implemented properly yet. |
+| Ctrl+g | go to line |
 | Ctrl+h | Find/replace. Not implemented yet. |
 | Ctrl+i | Italic. Does not undo itself, nor does undo (Ctrl+z work on it) |
 | Ctrl+n | Start a new file |
@@ -30,6 +31,7 @@ I've sorted the hot keys into sets that I think make sense. Some hot keys are ve
 | Ctrl+s | Save using the current filename |
 | Ctrl+Shift+s | Save using a new filename |
 | Ctrl+v | Paste from clipboard |
+| Ctrl+w | Word count |
 | Ctrl+x | Cut to clipboard |
 | Ctrl+z | Undo. Not so well-behaved as users might expect.  |
 | Alt+f4 | Close WriteR |
@@ -44,9 +46,38 @@ I've sorted the hot keys into sets that I think make sense. Some hot keys are ve
 | Ctrl+- | Reduce font size for display font. |
 | Ctrl+= | Increase font size for display font. |
 
+
+## Markdown formatting
+
+Headings are of levels 1 to 6 and are all obtained using the Alt key in conjunction with the number for the desired level of heading.
+
+To turn a text string into a math object, highlight the desired text and use Ctrl+4. This places a dollar sign before and after the text. Note that a double dollar can be inserted if no text is highlighted.
+
+Similarly, use Ctrl+` to change a text string into a code font.
+
+The syntax for figures, URLs, email addresses, and a header (preamble)  is inserted using the hot keys Ctrl+Shift in conjunction with the initial letter.
+
+
+
+
+## R and R markdown 
+
+R markdown is a specific flavour of markdown that is purpose-designed to add functionality for R statistical software. These hot keys and the associated functionality are not relevant for other markdown documents unless explicitly stated.
+
+| Hot key | Functionality |
+| --- | --- |
+| Alt+c  | insert an inline R command  |
+| Alt+r  | insert R code chunk |
+| Alt+g  | insert R code chunk with additional content needed  for graphs |
+| Ctrl+< | left assignment operator <- |
+| Ctrl+> | right assignment operator -> |
+ | Ctrl+Shift+P | the pipe operator %>% |
+
+
 ## Mathematical symbols, including Greek letters 
 
 These commands are all intended to produce LaTeX commands that are inserted in between single or double dollar signs for inline and newline based mathemathematical content respectively.
+
 
 
 ### Mathematical symbols
@@ -84,6 +115,7 @@ These commands are all intended to produce LaTeX commands that are inserted in b
 
 | Hot key | Functionality |
 | --- | --- |
+| Ctrl+Shift+B | bar, as for the mean of x |
 | Alt+Ctrl+Shift+I | Integral |
 | Alt+Ctrl+Shift+R | Square root |
 | Alt+Ctrl+Shift+S | Summation |
