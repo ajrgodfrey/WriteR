@@ -88,9 +88,9 @@ def OnRGraph(self, event):
 def OnRmdComment(self, event):
         frm, to = self.editor.GetSelection()
         self.editor.SetInsertionPoint(to)
-        self.editor.WriteText(" --->\n\n")
+        self.editor.WriteText(" -->\n\n")
         self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("\n<!--- ")
+        self.editor.WriteText("\n<!-- ")
         self.editor.SetInsertionPoint(to + 15)
 
 def OnRPipe(self, event):
