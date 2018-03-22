@@ -8,88 +8,58 @@ from os.path import join, split, isdir, expanduser, realpath
 from os import walk
 from time import asctime, sleep
 
-def OnStartRender(self, event):
+
+hardsettings = {'repo': "http://cran.stat.auckland.ac.nz/",
+                             'rendercommand': '''rmarkdown::render("{}")''',
+                             'renderallcommand': '''rmarkdown::render("{}", output_format="all")''',
+                             'renderslidycommand': '''rmarkdown::render("{}", output_format=slidy_presentation())''',
+                             'renderpdfcommand': '''rmarkdown::render("{}", output_format=pdf_document())''',
+                             'renderwordcommand': '''rmarkdown::render("{}", output_format=word_document())''',
+                             'renderhtmlcommand': '''rmarkdown::render("{}", output_format="html_document")''',
+                             'knit2mdcommand': '''knitr::knit("{}")''',
+                             'knit2htmlcommand': '''knitr::knit2html("{}")''',
+                             'knit2pdfcommand': '''knitr::knit2pdf("{}")'''}
+
+def OnProcess(self, event, whichcmd):
         self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
         self._mgr.Update()
-        # This allows the file to be up to date for the build
-        self.OnSave(event)
-
-
-def OnRenderProcess(self, event, whichcmd):
+        self.OnSave(event) # This allows the file to be up to date for the build
         self.StartThread([self.settings['RDirectory'], "-e",
                           '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
                           '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings[whichcmd].format(
+                              hardsettings['repo']) +
+                          hardsettings[whichcmd].format(
                               join(self.dirname, self.filename).replace('\\', '\\\\'))])
-
-
 
 def OnRenderNull(self, event):
-        OnStartRender(self, event)
-        OnRenderProcess(self, event, whichcmd='rendercommand')
-
+    OnProcess(self, event, whichcmd='rendercommand')
 def OnRenderHtml(self, event):
-        OnStartRender(self, event)
-        OnRenderProcess(self, event, whichcmd='renderhtmlcommand')
-
+    OnProcess(self, event, whichcmd='renderhtmlcommand')
 def OnRenderAll(self, event):
-        OnStartRender(self, event)
-        OnRenderProcess(self, event, whichcmd='renderallcommand')
-
-
+    OnProcess(self, event, whichcmd='renderallcommand')
 def OnRenderWord(self, event):
-        OnStartRender(self, event)
-        OnRenderProcess(self, event, whichcmd='renderwordcommand')
-
-
+    OnProcess(self, event, whichcmd='renderwordcommand')
 def OnRenderPdf(self, event):
-        OnStartRender(self, event)
-        OnRenderProcess(self, event, whichcmd='renderpdfcommand')
-
-def OnRenderSlidey(self, event):
-        OnStartRender(self, event)
-        OnRenderProcess(self, event, whichcmd='renderslideycommand')
-
-
+    OnProcess(self, event, whichcmd='renderpdfcommand')
+def OnRenderSlidy(self, event):
+    OnProcess(self, event, whichcmd='renderslidycommand')
+def OnKnit2html(self, event):
+    OnProcess(self, event, whichcmd='knit2htmlcommand')
+def OnKnit2pdf(self, event):
+    OnProcess(self, event, whichcmd='knit2pdfcommand')
 
 def OnSelectRenderNull(self, event):
-        self.Bind(wx.EVT_MENU, self.OnRenderNull, self.Render)
-
+    self.Bind(wx.EVT_MENU, self.OnRenderNull, self.Render)
 def OnSelectRenderHtml(self, event):
-        self.Bind(wx.EVT_MENU, self.OnRenderHtml, self.Render)
-
+    self.Bind(wx.EVT_MENU, self.OnRenderHtml, self.Render)
 def OnSelectRenderAll(self, event):
-        self.Bind(wx.EVT_MENU, self.OnRenderAll, self.Render)
-
+    self.Bind(wx.EVT_MENU, self.OnRenderAll, self.Render)
 def OnSelectRenderWord(self, event):
-        self.Bind(wx.EVT_MENU, self.OnRenderWord, self.Render)
-
+    self.Bind(wx.EVT_MENU, self.OnRenderWord, self.Render)
 def OnSelectRenderPdf(self, event):
-        self.Bind(wx.EVT_MENU, self.OnRenderPdf, self.Render)
-
-def OnSelectRenderSlidey(self, event):
-        self.Bind(wx.EVT_MENU, self.OnRenderSlidey, self.Render)
-
-
-def OnKnit2html(self, event):
-        OnStartRender(self, event)
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('knitr', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('knitr', repos="{0}")}};require(knitr);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['knit2htmlcommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
-
-def OnKnit2pdf(self, event):
-        OnStartRender(self, event)
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('knitr', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('knitr', repos="{0}")}};require(knitr);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['knit2pdfcommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
-
+    self.Bind(wx.EVT_MENU, self.OnRenderPdf, self.Render)
+def OnSelectRenderSlidy(self, event):
+    self.Bind(wx.EVT_MENU, self.OnRenderSlidy, self.Render)
 
 def OnRCommand(self, event):
         frm, to = self.editor.GetSelection()
@@ -115,27 +85,18 @@ def OnRGraph(self, event):
         self.editor.WriteText("\n```{r , fig.height=5, fig.width=5, fig.cap=\"\"}\n")
         self.editor.SetInsertionPoint(frm + 8)
 
+def OnRmdComment(self, event):
+        frm, to = self.editor.GetSelection()
+        self.editor.SetInsertionPoint(to)
+        self.editor.WriteText(" --->\n\n")
+        self.editor.SetInsertionPoint(frm)
+        self.editor.WriteText("\n<!--- ")
+        self.editor.SetInsertionPoint(to + 15)
+
 def OnRPipe(self, event):
-        self.editor.WriteText(" %>% ") 
-
+    self.editor.WriteText(" %>% ") 
 def OnRLAssign(self, event):
-        self.editor.WriteText(" <- ") 
-
+    self.editor.WriteText(" <- ") 
 def OnRRAssign(self, event):
-        self.editor.WriteText(" -> ") 
-
-def OnPlay(self, event):
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['rendercommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
-# render html stuff
-        self.StartThread([self.settings['RDirectory'], "-e",
-                          '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
-                          '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
-                              self.hardsettings['repo']) +
-                          self.hardsettings['renderhtmlcommand'].format(
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
+    self.editor.WriteText(" -> ") 
 

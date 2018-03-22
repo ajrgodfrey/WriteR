@@ -1,7 +1,7 @@
 ---
 title: "Hot keys for use in WriteR"
 author: "A. Jonathan R. Godfrey"
-date: "Last updated: 15 November 2016"
+date: "Last updated: 22 March 2018"
 output: html_document
 ---
 
@@ -57,6 +57,7 @@ Similarly, use Ctrl+` to change a text string into a code font.
 
 The syntax for figures, URLs, email addresses, and a header (preamble)  is inserted using the hot keys Ctrl+Shift in conjunction with the initial letter.
 
+To comment out a selection, or just insert the delimiters for a comment, use Alt+Shift+#
 
 
 
