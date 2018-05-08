@@ -156,8 +156,9 @@ class BashProcessThread(Thread):
         self.input_list = input_list
         printing(input_list)
         self.comp_thread = Popen(input_list, stdout=PIPE, stderr=STDOUT)
-
-    #- def run(self):
+        for line in self.comp_thread.stdout:
+            writelineFunc(line)
+        self.comp_thread.wait()
 
 class MyInterpretor(object):
     def __init__(self, locals, rawin, stdin, stdout, stderr):
