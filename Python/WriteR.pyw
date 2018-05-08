@@ -334,7 +334,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnSelectRenderPdf, self.ChooseRenderPdf) 
         self.ChooseRenderAll = renderMenu.Append(wx.ID_ANY, "Render into all specified formats", "Use the rmarkdown package and render function to create multiple output documents", wx.ITEM_RADIO)
         self.Bind(wx.EVT_MENU, self.OnSelectRenderAll, self.ChooseRenderAll) 
-        buildMenu.AppendMenu(-1, "Set render process to...", renderMenu) # Add the render Menu as a submenu to the build menu
+        buildMenu.Append(-1, "Set render process to...", renderMenu) # Add the render Menu as a submenu to the build menu
         for id, label, helpText, handler in \
                 [
                  (ID_KNIT2HTML, "Knit to html\tF6", "Knit the script to HTML", self.OnKnit2html),
@@ -372,7 +372,7 @@ class MainWindow(wx.Frame):
             else:
                 item = headingsMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        insertMenu.AppendMenu(-1, "Heading", headingsMenu)
+        insertMenu.Append(-1, "Heading", headingsMenu)
         menuBar.Append(insertMenu, "Insert")  # Add the Insert Menu to the MenuBar
 
         formatMenu = wx.Menu()
@@ -419,7 +419,7 @@ class MainWindow(wx.Frame):
             else:
                 item = symbolsMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        mathsMenu.AppendMenu(-1, "Symbols", symbolsMenu)
+        mathsMenu.Append(-1, "Symbols", symbolsMenu)
         structuresMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
@@ -438,7 +438,7 @@ class MainWindow(wx.Frame):
             else:
                 item = structuresMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        mathsMenu.AppendMenu(-1, "Structures", structuresMenu)# Add the structures Menu as a submenu to the main menu
+        mathsMenu.Append(-1, "Structures", structuresMenu)# Add the structures Menu as a submenu to the main menu
         GreekMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
@@ -473,7 +473,7 @@ class MainWindow(wx.Frame):
             else:
                 item = GreekMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        mathsMenu.AppendMenu(-1, "Greek letters", GreekMenu)
+        mathsMenu.Append(-1, "Greek letters", GreekMenu)
         menuBar.Append(mathsMenu, "Maths")  # Add the maths Menu to the MenuBar
 
         statsMenu = wx.Menu()
@@ -542,7 +542,7 @@ class MainWindow(wx.Frame):
 # Event handlers:
     # file menu events
     def OnOpen(self, event):
-        if self.askUserForFilename(style=wx.OPEN, **self.defaultFileDialogOptions()):
+        if self.askUserForFilename(style=wx.FD_OPEN, **self.defaultFileDialogOptions()):
             self.fileOpen(self.dirname, self.filename)
 
     def fileOpen(self, dirname, filename):
@@ -570,6 +570,7 @@ class MainWindow(wx.Frame):
 
 
     def OnExit(self, event):
+        self._mgr.UnInit()
         self.Close()  # Close the main window.
 
     def OnSafeExit(self, event):
