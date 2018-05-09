@@ -21,6 +21,7 @@ from os import walk
 from time import asctime, sleep
 
 print_option = False
+display_rscript_cmd = True
 
 # set up some ID tags
 ID_BUILD = wx.NewId()
@@ -156,8 +157,14 @@ class BashProcessThread(Thread):
         self.input_list = input_list
         printing(input_list)
         self.comp_thread = Popen(input_list, stdout=PIPE, stderr=STDOUT)
+
+        if display_rscript_cmd:
+           writelineFunc('\n'.join(input_list))
+           writelineFunc('\n\n')
+
         for line in self.comp_thread.stdout:
             writelineFunc(line)
+
         self.comp_thread.wait()
 
 class MyInterpretor(object):
