@@ -7,6 +7,7 @@
 
 import wx 
 import sys
+import re
 # import FileMenuEvents # problems with this one
 import EditMenuEvents
 import HelpMenuEvents
@@ -30,10 +31,13 @@ ID_KNIT2PDF = wx.NewId()
 ID_SETTINGS = wx.NewId()
 
 ID_FINDONLY = wx.NewId()
+ID_FINDNEXT = wx.NewId()
 ID_FINDREPLACE = wx.NewId()
 ID_GOTO  = wx.NewId()
 ID_WORDCOUNT = wx.NewId()
 
+ID_SETMARK = wx.NewId()
+ID_SELECTTOMARK = wx.NewId()
 
 # symbols menu for mathematical symbols
 ID_SYMBOL_INFINITY = wx.NewId() 
@@ -145,8 +149,7 @@ def dcf_loads(string):
 
 
 def printing(*args):
-    if print_option: print args
-
+    if print_option: print args 
 
 class BashProcessThread(Thread):
     def __init__(self, flag, input_list, writelineFunc):
@@ -165,7 +168,8 @@ class BashProcessThread(Thread):
         for line in self.comp_thread.stdout:
             writelineFunc(line)
 
-        self.comp_thread.wait()
+        returnCode = self.comp_thread.wait()
+        writelineFunc("\nReturn code: {}".format(returnCode))
 
 class MyInterpretor(object):
     def __init__(self, locals, rawin, stdin, stdout, stderr):
@@ -265,8 +269,16 @@ class MainWindow(wx.Frame):
         self._mgr.GetPane("editor").Show()
         self.editor.SetFocus()
         self.editor.SelectAll()
+        try:
+            self.nope=wx.Sound("nope.wav")
+        except AttributeError:
+            print ("Unable to create sound object")
         self._mgr.Update()
         # self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE)
+
+
+    def Nope(self):
+        self.nope.Play(wx.SOUND_ASYNC)
 
     def CreateExteriorWindowComponents(self):
         self.CreateMenu()
@@ -300,9 +312,12 @@ class MainWindow(wx.Frame):
                  (wx.ID_DELETE, "&Delete", "Delete highlighted text", self.OnDelete),
                  (ID_WORDCOUNT, "Word count (broken)\tCtrl+w", "get a word count of the entire text", self.OnWordCount),
                  (None,) * 4,
-                 (ID_FINDONLY, "Find\tCtrl+F", "Open a standard find dialog box", self.OnShowFindToFix),
-                 (ID_GOTO, "Go to line (broken)\tCtrl+g", "Open a dialog box to choose a line number", self.OnGoToLine),
-                 (ID_FINDREPLACE, "Find/replace\tCtrl+H", "Open a find/replace dialog box", self.OnShowFindReplaceToFix),
+                 (ID_FINDONLY, "Find\tCtrl+F", "Open a standard find dialog box", self.OnShowFind),
+                 (ID_FINDNEXT, "FindNext\tF3", "FindNext", self.F3Next),
+                 (ID_GOTO, "Go to line\tCtrl+g", "Open a dialog box to choose a line number", self.OnGoToLine),
+                 (ID_FINDREPLACE, "Find/replace\tCtrl+H", "Open a find/replace dialog box", self.OnShowFindReplace),
+                 (ID_SETMARK, "Set Mark\tCtrl+SPACE", "Set Mark", self.OnSetMark),
+                 (ID_SELECTTOMARK , "Select To Mark\tAlt+Ctrl+SPACE", "Select To Mark", self.OnSelectToMark),
                  (None,) * 4,
                  (ID_SETTINGS, 'Settings', "Setup the editor to your liking", self.OnSettings)]:
             if id == None:
@@ -342,7 +357,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnSelectRenderPdf, self.ChooseRenderPdf) 
         self.ChooseRenderAll = renderMenu.Append(wx.ID_ANY, "Render into all specified formats", "Use the rmarkdown package and render function to create multiple output documents", wx.ITEM_RADIO)
         self.Bind(wx.EVT_MENU, self.OnSelectRenderAll, self.ChooseRenderAll) 
-        buildMenu.Append(-1, "Set render process to...", renderMenu) # Add the render Menu as a submenu to the build menu
+        buildMenu.AppendMenu(-1, "Set render process to...", renderMenu) # Add the render Menu as a submenu to the build menu
         for id, label, helpText, handler in \
                 [
                  (ID_KNIT2HTML, "Knit to html\tF6", "Knit the script to HTML", self.OnKnit2html),
@@ -380,7 +395,7 @@ class MainWindow(wx.Frame):
             else:
                 item = headingsMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        insertMenu.Append(-1, "Heading", headingsMenu)
+        insertMenu.AppendMenu(-1, "Heading", headingsMenu)
         menuBar.Append(insertMenu, "Insert")  # Add the Insert Menu to the MenuBar
 
         formatMenu = wx.Menu()
@@ -427,7 +442,7 @@ class MainWindow(wx.Frame):
             else:
                 item = symbolsMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        mathsMenu.Append(-1, "Symbols", symbolsMenu)
+        mathsMenu.AppendMenu(-1, "Symbols", symbolsMenu)
         structuresMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
@@ -446,7 +461,7 @@ class MainWindow(wx.Frame):
             else:
                 item = structuresMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        mathsMenu.Append(-1, "Structures", structuresMenu)# Add the structures Menu as a submenu to the main menu
+        mathsMenu.AppendMenu(-1, "Structures", structuresMenu)# Add the structures Menu as a submenu to the main menu
         GreekMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
@@ -481,7 +496,7 @@ class MainWindow(wx.Frame):
             else:
                 item = GreekMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        mathsMenu.Append(-1, "Greek letters", GreekMenu)
+        mathsMenu.AppendMenu(-1, "Greek letters", GreekMenu)
         menuBar.Append(mathsMenu, "Maths")  # Add the maths Menu to the MenuBar
 
         statsMenu = wx.Menu()
@@ -522,7 +537,9 @@ class MainWindow(wx.Frame):
 
     def CreateTextCtrl(self, text):
         text = wx.TextCtrl(self, -1, text, wx.Point(0, 0), wx.Size(150, 90),
-                           wx.NO_BORDER | wx.TE_MULTILINE)
+                           # wx.NO_BORDER | wx.TE_MULTILINE)
+                           wx.TE_MULTILINE)
+
         text.SetFont(self.font)
         return text
 
@@ -836,9 +853,6 @@ class MainWindow(wx.Frame):
             self.statusbar.Show()
             self.SetStatusText(SBText)
 
-
-
-
     def OnClose(self, event):
         self.settings['filename'] = self.filename
         self.settings['lastdir'] = self.dirname
@@ -926,39 +940,124 @@ class MainWindow(wx.Frame):
     def OnSettings(self, event):
         wx.MessageBox("You wanted to see the settings")
 
-    def OnShowFindToFix(self, event):
-        wx.MessageBox("This feature is not fully implemented as yet.")
-    def OnShowFindReplaceToFix(self, event):
-        wx.MessageBox("This feature is not fully implemented as yet.")
-
     def OnShowFind(self, event):
         data = wx.FindReplaceData()
+        data.SetFlags(wx.FR_DOWN)
         dlg = wx.FindReplaceDialog(self, data, "Find")
         dlg.data = data  # save a reference to it...
         dlg.Show(True)
 
+    def OnSetMark(self, event):
+        self.mark = self.editor.GetInsertionPoint()
+
+    def OnSelectToMark(self, event):
+        insertionPoint = self.editor.GetInsertionPoint()
+        if (self.mark < insertionPoint):
+           self.editor.SetSelection(self.mark, insertionPoint)
+        elif (self.mark > insertionPoint):
+           self.editor.SetSelection(insertionPoint, self.mark)
+
     def OnShowFindReplace(self, event):
         data = wx.FindReplaceData()
+        data.SetFlags(wx.FR_DOWN)
         dlg = wx.FindReplaceDialog(self, data, "Find & Replace", wx.FR_REPLACEDIALOG)
         dlg.data = data  # save a reference to it...
         dlg.Show(True)
 
+    def ComputeFindString(self, event):
+        if event.GetFlags() & wx.FR_WHOLEWORD:
+           return "".join([r"\b", re.escape(event.GetFindString()), r"\b"])
+        else:
+           return "".join([re.escape(event.GetFindString())])
+
+    def ComputeReFlags(self, event):
+        if event.GetFlags() & wx.FR_MATCHCASE:
+           return re.LOCALE
+        else:
+           return re.LOCALE | re.IGNORECASE
+
+    def ComputeReplacementString(self, event):
+        return event.GetReplaceString()
+
+    def MoveTo(self, row, col):
+       self.priorMatchRow = row
+       self.priorMatchCol = col
+       # self.console.write("MoveTo {},{}\n".format(row, col))
+       position = self.editor.XYToPosition(col, row)
+       self.editor.SetInsertionPoint(position)
+       self.editor.ShowPosition(position)
+
+
+    def FindFrom(self, currentColumn, currentRow):
+        # Special logic for checking just part of current line
+        currentLine = self.editor.GetLineText(currentRow)
+        if self.forward:
+           matchObject = self.regex.search(currentLine[currentColumn+1:])
+           if matchObject:
+               self.MoveTo(currentRow, currentColumn + 1 + matchObject.start())
+               return
+        else:
+           matchObject = self.regex.search(currentLine[:currentColumn])
+           if matchObject:
+               for matchObject in self.regex.finditer(currentLine[:currentColumn]):
+                   pass
+               self.MoveTo(currentRow, matchObject.start())
+               return
+
+        # General case for checking whole lines
+        if self.forward:
+           lineRange = range(currentRow+1, self.editor.GetNumberOfLines())
+        else:
+           lineRange = reversed(range(0, currentRow)) 
+
+        for i in lineRange:
+            line = self.editor.GetLineText(i)
+            matchObject = self.regex.search(line)
+            if matchObject:
+               if not self.forward:
+                  for matchObject in self.regex.finditer(line):
+                      pass
+
+               self.MoveTo(i, matchObject.start())
+               return
+
+        self.Nope()
+	# self.console.write("no match starting from row {} col {}\n".format(currentRow, currentColumn))
+
+    def ReplaceNext(self, event):
+        return
+
+    def ReplaceAll(self, event):
+        findString = self.ComputeFindString(event)
+        reFlags = self.ComputeReFlags(event)
+        replaceString = self.ComputeReplacementString(event)
+        oldText = self.editor.GetValue()
+        newText = re.sub(findString, replaceString, oldText, flags=reFlags)
+
+        insertionPoint = self.editor.GetInsertionPoint()
+        self.editor.SetValue(newText)
+        self.editor.SetInsertionPoint(insertionPoint)
+
+    def F3Next(self, event):
+        self.FindFrom(self.priorMatchCol, self.priorMatchRow)
+
     def OnFind(self, event):
-        map = {
-            wx.wxEVT_COMMAND_FIND : "FIND",
-            wx.wxEVT_COMMAND_FIND_NEXT : "FIND_NEXT",
-            wx.wxEVT_COMMAND_FIND_REPLACE : "REPLACE",
-            wx.wxEVT_COMMAND_FIND_REPLACE_ALL : "REPLACE_ALL",
-            }
         et = event.GetEventType()
-        if et in map:
-            evtType = map[et]
+
+        self.regex = re.compile(self.ComputeFindString(event), self.ComputeReFlags(event))
+        self.forward = event.GetFlags() & wx.FR_DOWN
+
+        if et == wx.wxEVT_COMMAND_FIND:
+            (col, row) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
+            self.FindFrom(col, row)
+        elif et == wx.wxEVT_COMMAND_FIND_NEXT:
+            self.FindFrom(self.priorMatchCol, self.priorMatchRow)
+        elif et == wx.wxEVT_COMMAND_FIND_REPLACE:
+            self.ReplaceNext(event)
+        elif et == wx.wxEVT_COMMAND_FIND_REPLACE_ALL:
+            self.ReplaceAll(event)
         else:
-            evtType = "**Unknown Event Type**"
-        if et in [wx.wxEVT_COMMAND_FIND_REPLACE, wx.wxEVT_COMMAND_FIND_REPLACE_ALL]:
-            replaceTxt = "Replace text: %s" % event.GetReplaceString()
-        else:
-            replaceTxt = ""
+            self.console.write("unexpected eventType %s -- %s\n" % (et, event))
 
     def OnFindClose(self, event):
         event.GetDialog().Destroy()
