@@ -12,6 +12,7 @@ import re
 import EditMenuEvents
 import HelpMenuEvents
 import MathInserts
+import MyConsole
 import RMarkdownEvents
 from wx.py.shell import Shell
 from wx.aui import AuiManager, AuiPaneInfo
@@ -153,7 +154,7 @@ def printing(*args):
     if print_option: print args 
 
 class BashProcessThread(Thread):
-    def __init__(self, flag, input_list, writelineFunc):
+    def __init__(self, flag, input_list, writelineFunc, doneFunc):
         Thread.__init__(self)
         self.flag = flag
         self.writelineFunc = writelineFunc
@@ -170,31 +171,7 @@ class BashProcessThread(Thread):
             writelineFunc(line)
 
         returnCode = self.comp_thread.wait()
-        writelineFunc("\nReturn code: {}".format(returnCode))
-
-class MyInterpretor(object):
-    def __init__(self, locals, rawin, stdin, stdout, stderr):
-        self.introText = "Welcome to stackoverflow bash shell"
-        self.locals = locals
-        self.revision = 1.0
-        self.rawin = rawin
-        self.stdin = stdin
-        self.stdout = stdout
-        self.stderr = stderr
-        self.more = False
-        # bash process
-        self.bp = Popen(['python', '-u', 'test_out.py'], shell=False, stdout=PIPE, stdin=PIPE, stderr=STDOUT)
-        # start output grab thread
-        self.outputThread = BashProcessThread(self.bp.stdout.readline)
-        self.outputThread.start()
-        # start err grab thread
-        # self.errorThread = BashProcessThread(self.bp.stderr.readline)
-        # self.errorThread.start()
-
-    #- def getAutoCompleteKeys(self):
-    #- def getAutoCompleteList(self, *args, **kwargs):
-    #- def getCallTip(self, command):
-    #- def push(self, command):
+        doneFunc(returnCode)
 
 ID_DIRECTORY_CHANGE = wx.NewId()
 ID_CRAN = wx.NewId()
@@ -259,14 +236,9 @@ class MainWindow(wx.Frame):
 
     def CreateInteriorWindowComponents(self):
         self.editor = self.CreateTextCtrl(self.settings['newText'])
-        self.console = self.CreateTextCtrl("")
-        self.console.SetEditable(False)
-        self._mgr.AddPane(self.console, AuiPaneInfo().Name("console")
-                          .Caption("Console").Bottom().Layer(1).Position(1).CloseButton(True)
-                          .MinimizeButton(True).Hide())
+        self.console = MyConsole.MyConsole(self)
         self._mgr.AddPane(self.editor, AuiPaneInfo().Name('editor').
                           CenterPane().Hide())
-        self._mgr.GetPane("console").Hide().Bottom().Layer(0).Row(0).Position(0)
         self._mgr.GetPane("editor").Show()
         self.editor.SetFocus()
         self.editor.SelectAll()
@@ -527,14 +499,6 @@ class MainWindow(wx.Frame):
         menuBar.Append(helpMenu, "&Help")  # Add the helpMenu to the MenuBar
         self.SetMenuBar(menuBar)  # Add the menuBar to the Frame
 
-
-
-    def CreateShellCtrl(self):
-        shell = Shell(self, -1, wx.Point(0, 0), wx.Size(150, 90),
-                      wx.NO_BORDER | wx.TE_MULTILINE, InterpClass=MyInterpretor)
-        shell.SetFont(self.font)
-        return shell
-
     def CreateTextCtrl(self, text):
         text = wx.TextCtrl(self, -1, text, wx.Point(0, 0), wx.Size(150, 90),
                            # wx.NO_BORDER | wx.TE_MULTILINE)
@@ -671,8 +635,8 @@ class MainWindow(wx.Frame):
             while self.comp_thread.isAlive():
                 sleep(1)
             self.sub_flag.clear()
-            self.console.SetValue('')
-        self.comp_thread = BashProcessThread(self.sub_flag, input_object, self.console.WriteText)
+            self.console.Reset()
+        self.comp_thread = BashProcessThread(self.sub_flag, input_object, self.console.CreateWriteText, self.console.DoneFunc)
         self.comp_thread.start()
 
     # Build Menu events
