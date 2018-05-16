@@ -23,6 +23,7 @@ from time import asctime, sleep
 
 print_option = False
 display_rscript_cmd = True
+playBeep = False
 
 # set up some ID tags
 ID_BUILD = wx.NewId()
@@ -269,16 +270,15 @@ class MainWindow(wx.Frame):
         self._mgr.GetPane("editor").Show()
         self.editor.SetFocus()
         self.editor.SelectAll()
-        try:
+        if playBeep:
             self.nope=wx.Sound("nope.wav")
-        except AttributeError:
-            print ("Unable to create sound object")
         self._mgr.Update()
         # self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE)
 
 
     def Nope(self):
-        self.nope.Play(wx.SOUND_ASYNC)
+        if playBeep:
+           self.nope.Play(wx.SOUND_ASYNC)
 
     def CreateExteriorWindowComponents(self):
         self.CreateMenu()
