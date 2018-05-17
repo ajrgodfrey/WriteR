@@ -11,15 +11,15 @@ from time import asctime, sleep
 quiet = 'TRUE' # or 'FALSE', since these are 'R' constants
 
 hardsettings = {'repo': "http://cran.stat.auckland.ac.nz/",
-                             'rendercommand': '''rmarkdown::render(quiet={},"{}")''',
-                             'renderallcommand': '''rmarkdown::render(quiet={},"{}", output_format="all")''',
-                             'renderslidycommand': '''rmarkdown::render(quiet={},"{}", output_format=slidy_presentation())''',
-                             'renderpdfcommand': '''rmarkdown::render("quiet={},{}", output_format=pdf_document())''',
-                             'renderwordcommand': '''rmarkdown::render("quiet={},{}", output_format=word_document())''',
-                             'renderhtmlcommand': '''rmarkdown::render("quiet={},{}", output_format="html_document")''',
-                             'knit2mdcommand': '''knitr::knit(quiet={},"{}")''',
-                             'knit2htmlcommand': '''knitr::knit2html(quiet={},"{}")''',
-                             'knit2pdfcommand': '''knitr::knit2pdf(quiet={},"{}")'''}
+                             'rendercommand': '''rmarkdown::render("{}",quiet={})''',
+                             'renderallcommand': '''rmarkdown::render("{}", output_format="all",quiet={})''',
+                             'renderslidycommand': '''rmarkdown::render("{}", output_format=slidy_presentation(),quiet={})''',
+                             'renderpdfcommand': '''rmarkdown::render("{}", output_format=pdf_document(),quiet={})''',
+                             'renderwordcommand': '''rmarkdown::render("{}", output_format=word_document(),quiet={})''',
+                             'renderhtmlcommand': '''rmarkdown::render("{}", output_format="html_document",quiet={})''',
+                             'knit2mdcommand': '''knitr::knit("{}",quiet={})''',
+                             'knit2htmlcommand': '''knitr::knit2html("{}",quiet={})''',
+                             'knit2pdfcommand': '''knitr::knit2pdf("{}",quiet={})'''}
 
 def OnProcess(self, event, whichcmd):
         self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
@@ -30,8 +30,8 @@ def OnProcess(self, event, whichcmd):
                           '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
                               hardsettings['repo']) +
                           hardsettings[whichcmd].format(
-                              quiet,
-                              join(self.dirname, self.filename).replace('\\', '\\\\'))])
+                              join(self.dirname, self.filename).replace('\\', '\\\\'),
+                              quiet)])
 
 def OnRenderNull(self, event):
     OnProcess(self, event, whichcmd='rendercommand')
