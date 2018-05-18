@@ -922,10 +922,11 @@ class MainWindow(wx.Frame):
 
     def AlternateFocus(self, event):
         if self.focusConsole:
-           self.console.SetFocus()
-        else:
            self.editor.SetFocus()
-        self.focusConsole = not self.focusConsole
+           self.focusConsole = False
+        else:
+           self.console.SetFocus()
+           self.focusConsole = True
 
     def OnSelectToMark(self, event):
         insertionPoint = self.editor.GetInsertionPoint()

@@ -4,6 +4,7 @@ class MyConsole:
     def __init__(self, parent):
         self.console = parent.CreateTextCtrl("")
         self.console.SetEditable(True)
+        self.parent = parent
         parent._mgr.AddPane(self.console, AuiPaneInfo().Name("console")
                           .Caption("Console").Bottom().Layer(1).Position(1).CloseButton(True)
                           .MinimizeButton(True))
@@ -26,4 +27,5 @@ class MyConsole:
     def DoneFunc(self, retcode):
         self.console.write("Done {}".format(retcode))
         self.console.SetFocus()
+        self.parent.focusConsole = True
 
