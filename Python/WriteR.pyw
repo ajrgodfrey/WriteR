@@ -41,6 +41,8 @@ ID_WORDCOUNT = wx.NewId()
 ID_SETMARK = wx.NewId()
 ID_SELECTTOMARK = wx.NewId()
 
+ID_ALTERNATE_FOCUS = wx.NewId()
+
 # symbols menu for mathematical symbols
 ID_SYMBOL_INFINITY = wx.NewId() 
 ID_SYMBOL_MINUSPLUS = wx.NewId() 
@@ -242,6 +244,9 @@ class MainWindow(wx.Frame):
         self._mgr.GetPane("editor").Show()
         self.editor.SetFocus()
         self.editor.SelectAll()
+
+        self.focusConsole = False
+
         if playBeep:
             self.nope=wx.Sound("nope.wav")
         self._mgr.Update()
@@ -290,6 +295,7 @@ class MainWindow(wx.Frame):
                  (ID_FINDREPLACE, "Find/replace\tCtrl+H", "Open a find/replace dialog box", self.OnShowFindReplace),
                  (ID_SETMARK, "Set Mark\tCtrl+SPACE", "Set Mark", self.OnSetMark),
                  (ID_SELECTTOMARK , "Select To Mark\tAlt+Ctrl+SPACE", "Select To Mark", self.OnSelectToMark),
+                 (ID_ALTERNATE_FOCUS , "Alternate Focus\tF8", "Alternate Focus", self.AlternateFocus),
                  (None,) * 4,
                  (ID_SETTINGS, 'Settings', "Setup the editor to your liking", self.OnSettings)]:
             if id == None:
@@ -913,6 +919,13 @@ class MainWindow(wx.Frame):
 
     def OnSetMark(self, event):
         self.mark = self.editor.GetInsertionPoint()
+
+    def AlternateFocus(self, event):
+        if self.focusConsole:
+           self.console.SetFocus()
+        else:
+           self.editor.SetFocus()
+        self.focusConsole = not self.focusConsole
 
     def OnSelectToMark(self, event):
         insertionPoint = self.editor.GetInsertionPoint()
