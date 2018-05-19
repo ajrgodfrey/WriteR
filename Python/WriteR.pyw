@@ -591,8 +591,6 @@ class MainWindow(wx.Frame):
         self.statusbar.SetFieldsCount(3)
         self.statusbar.SetStatusWidths([-5, -2, -1])
         self.SetStatusText(SBText)
-
-
        
     def OnIncreaseFontSize(self, event):
         self.font.SetPointSize(self.font.GetPointSize()+1)
@@ -924,9 +922,11 @@ class MainWindow(wx.Frame):
         if self.focusConsole:
            self.editor.SetFocus()
            self.focusConsole = False
+           self.SetStatusText('editor')
         else:
            self.console.SetFocus()
            self.focusConsole = True
+           self.SetStatusText('console')
 
     def OnSelectToMark(self, event):
         insertionPoint = self.editor.GetInsertionPoint()
@@ -960,7 +960,8 @@ class MainWindow(wx.Frame):
     def MoveTo(self, row, col):
        self.priorMatchRow = row
        self.priorMatchCol = col
-       # self.console.write("MoveTo {},{}\n".format(row, col))
+       message = "Row {} Col {}".format(row, col)
+       self.SetStatusText(message)
        position = self.editor.XYToPosition(col, row)
        self.editor.SetInsertionPoint(position)
        self.editor.ShowPosition(position)
