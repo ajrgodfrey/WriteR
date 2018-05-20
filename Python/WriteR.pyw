@@ -14,6 +14,7 @@ import HelpMenuEvents
 import MathInserts
 import MyConsole
 import RMarkdownEvents
+import winsound
 from wx.py.shell import Shell
 from wx.aui import AuiManager, AuiPaneInfo
 from threading import Thread, Event
@@ -24,7 +25,6 @@ from time import asctime, sleep
 
 print_option = False
 display_rscript_cmd = True
-playBeep = False
 
 # set up some ID tags
 ID_BUILD = wx.NewId()
@@ -158,6 +158,7 @@ def printing(*args):
 class BashProcessThread(Thread):
     def __init__(self, flag, input_list, writelineFunc, doneFunc):
         Thread.__init__(self)
+        busy = wx.BusyInfo("Please wait")
         self.flag = flag
         self.writelineFunc = writelineFunc
         self.setDaemon(True)
@@ -173,6 +174,7 @@ class BashProcessThread(Thread):
             writelineFunc(line)
 
         returnCode = self.comp_thread.wait()
+        del busy
         doneFunc(returnCode)
 
 ID_DIRECTORY_CHANGE = wx.NewId()
@@ -243,19 +245,11 @@ class MainWindow(wx.Frame):
                           CenterPane().Hide())
         self._mgr.GetPane("editor").Show()
         self.editor.SetFocus()
-        self.editor.SelectAll()
-
-        self.focusConsole = False
-
-        if playBeep:
-            self.nope=wx.Sound("nope.wav")
+        self.editor.SelectAll() 
+        self.focusConsole = False 
         self._mgr.Update()
         # self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE)
 
-
-    def Nope(self):
-        if playBeep:
-           self.nope.Play(wx.SOUND_ASYNC)
 
     def CreateExteriorWindowComponents(self):
         self.CreateMenu()
@@ -918,15 +912,23 @@ class MainWindow(wx.Frame):
     def OnSetMark(self, event):
         self.mark = self.editor.GetInsertionPoint()
 
+    def SetFocusConsole(self, toConsole):
+        if toConsole != self.focusConsole:
+           self.ActuallyAlternateFocus()
+
     def AlternateFocus(self, event):
+        self.ActuallyAlternateFocus()
+
+    def ActuallyAlternateFocus(self):
         if self.focusConsole:
            self.editor.SetFocus()
-           self.focusConsole = False
            self.SetStatusText('editor')
+           winsound.Beep(2000, 250)
         else:
            self.console.SetFocus()
-           self.focusConsole = True
            self.SetStatusText('console')
+           winsound.Beep(3000, 250)
+        self.focusConsole = not self.focusConsole
 
     def OnSelectToMark(self, event):
         insertionPoint = self.editor.GetInsertionPoint()
@@ -965,7 +967,7 @@ class MainWindow(wx.Frame):
        position = self.editor.XYToPosition(col, row)
        self.editor.SetInsertionPoint(position)
        self.editor.ShowPosition(position)
-
+       winsound.Beep(1000, 250)
 
     def FindFrom(self, currentColumn, currentRow):
         # Special logic for checking just part of current line
@@ -1000,8 +1002,7 @@ class MainWindow(wx.Frame):
                self.MoveTo(i, matchObject.start())
                return
 
-        self.Nope()
-	# self.console.write("no match starting from row {} col {}\n".format(currentRow, currentColumn))
+        winsound.Beep(500, 500)
 
     def ReplaceNext(self, event):
         return

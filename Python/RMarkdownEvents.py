@@ -24,6 +24,7 @@ hardsettings = {'repo': "http://cran.stat.auckland.ac.nz/",
 def OnProcess(self, event, whichcmd):
         self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
         self._mgr.Update()
+        self.SetFocusConsole(False)
         self.OnSave(event) # This allows the file to be up to date for the build
         self.StartThread([self.settings['RDirectory'], "-e",
                           '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
