@@ -14,7 +14,10 @@ import HelpMenuEvents
 import MathInserts
 import MyConsole
 import RMarkdownEvents
-import winsound
+try:
+    import winsound
+except ImportError:
+    print "Winsound module not found\n"
 from wx.py.shell import Shell
 from wx.aui import AuiManager, AuiPaneInfo
 from threading import Thread, Event
@@ -202,10 +205,12 @@ class MainWindow(wx.Frame):
         self.settings = {#'dirname': 'none',
 #                         'templates': 'none',
                          'lastdir': '.',
+                         'beep': 'True',
                          'filename': 'none',
                          'newText': "Use WriteR to edit your R markdown files, perhaps by starting from a template file",
                          'RDirectory': self.GetRDirectory()}
         self.settings = self.getSettings(self.settingsFile, self.settings)
+        self.beep = self.settings['beep'].upper().strip() == 'TRUE'
         if len(sys.argv) > 1:
             self.settings['lastdir'], self.settings['filename'] = split(realpath(sys.argv[-1]))
             self.filename = self.settings['filename']
@@ -923,11 +928,13 @@ class MainWindow(wx.Frame):
         if self.focusConsole:
            self.editor.SetFocus()
            self.SetStatusText('editor')
-           winsound.Beep(2000, 250)
+           if self.beep:
+              winsound.Beep(2000, 250)
         else:
            self.console.SetFocus()
            self.SetStatusText('console')
-           winsound.Beep(3000, 250)
+           if self.beep:
+              winsound.Beep(3000, 250)
         self.focusConsole = not self.focusConsole
 
     def OnSelectToMark(self, event):
@@ -967,7 +974,8 @@ class MainWindow(wx.Frame):
        position = self.editor.XYToPosition(col, row)
        self.editor.SetInsertionPoint(position)
        self.editor.ShowPosition(position)
-       winsound.Beep(1000, 250)
+       if self.beep:
+          winsound.Beep(1000, 250)
 
     def FindFrom(self, currentColumn, currentRow):
         # Special logic for checking just part of current line
@@ -1001,8 +1009,8 @@ class MainWindow(wx.Frame):
 
                self.MoveTo(i, matchObject.start())
                return
-
-        winsound.Beep(500, 500)
+        if self.beep:
+           winsound.Beep(500, 500)
 
     def ReplaceNext(self, event):
         return
