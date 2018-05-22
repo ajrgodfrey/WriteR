@@ -206,6 +206,7 @@ class MainWindow(wx.Frame):
 #                         'templates': 'none',
                          'lastdir': '.',
                          'beep': 'True',
+                         'repo': 'http://cran.stat.auckland.ac.nz/', 
                          'filename': 'none',
                          'newText': "Use WriteR to edit your R markdown files, perhaps by starting from a template file",
                          'RDirectory': self.GetRDirectory()}

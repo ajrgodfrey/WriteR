@@ -10,7 +10,7 @@ from time import asctime, sleep
 
 quiet = 'TRUE' # or 'FALSE', since these are 'R' constants
 
-hardsettings = {'repo': "http://cran.stat.auckland.ac.nz/",
+hardsettings = {
                              'rendercommand': '''rmarkdown::render("{}",quiet={})''',
                              'renderallcommand': '''rmarkdown::render("{}", output_format="all",quiet={})''',
                              'renderslidycommand': '''rmarkdown::render("{}", output_format=slidy_presentation(),quiet={})''',
@@ -29,7 +29,7 @@ def OnProcess(self, event, whichcmd):
         self.StartThread([self.settings['RDirectory'], "-e",
                           '''if (!is.element('rmarkdown', installed.packages()[,1])){{'''.format() +
                           '''install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);'''.format(
-                              hardsettings['repo']) +
+                              self.settings['repo']) +
                           hardsettings[whichcmd].format(
                               join(self.dirname, self.filename).replace('\\', '\\\\'),
                               quiet)])
