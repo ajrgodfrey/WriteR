@@ -14,7 +14,10 @@ import HelpMenuEvents
 import MathInserts
 import MyConsole
 import RMarkdownEvents
-import winsound
+try:
+    import winsound
+except ImportError:
+    print "Winsound module not found\n"
 from wx.py.shell import Shell
 from wx.aui import AuiManager, AuiPaneInfo
 from threading import Thread, Event
@@ -25,6 +28,7 @@ from time import asctime, sleep
 
 print_option = False
 display_rscript_cmd = True
+beep = True
 
 # set up some ID tags
 ID_BUILD = wx.NewId()
@@ -329,7 +333,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnSelectRenderPdf, self.ChooseRenderPdf) 
         self.ChooseRenderAll = renderMenu.Append(wx.ID_ANY, "Render into all specified formats", "Use the rmarkdown package and render function to create multiple output documents", wx.ITEM_RADIO)
         self.Bind(wx.EVT_MENU, self.OnSelectRenderAll, self.ChooseRenderAll) 
-        buildMenu.AppendMenu(-1, "Set render process to...", renderMenu) # Add the render Menu as a submenu to the build menu
+        buildMenu.Append(-1, "Set render process to...", renderMenu) # Add the render Menu as a submenu to the build menu
         for id, label, helpText, handler in \
                 [
                  (ID_KNIT2HTML, "Knit to html\tF6", "Knit the script to HTML", self.OnKnit2html),
@@ -367,7 +371,7 @@ class MainWindow(wx.Frame):
             else:
                 item = headingsMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        insertMenu.AppendMenu(-1, "Heading", headingsMenu)
+        insertMenu.Append(-1, "Heading", headingsMenu)
         menuBar.Append(insertMenu, "Insert")  # Add the Insert Menu to the MenuBar
 
         formatMenu = wx.Menu()
@@ -414,7 +418,7 @@ class MainWindow(wx.Frame):
             else:
                 item = symbolsMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        mathsMenu.AppendMenu(-1, "Symbols", symbolsMenu)
+        mathsMenu.Append(-1, "Symbols", symbolsMenu)
         structuresMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
@@ -433,7 +437,7 @@ class MainWindow(wx.Frame):
             else:
                 item = structuresMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        mathsMenu.AppendMenu(-1, "Structures", structuresMenu)# Add the structures Menu as a submenu to the main menu
+        mathsMenu.Append(-1, "Structures", structuresMenu)# Add the structures Menu as a submenu to the main menu
         GreekMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
@@ -468,7 +472,7 @@ class MainWindow(wx.Frame):
             else:
                 item = GreekMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        mathsMenu.AppendMenu(-1, "Greek letters", GreekMenu)
+        mathsMenu.Append(-1, "Greek letters", GreekMenu)
         menuBar.Append(mathsMenu, "Maths")  # Add the maths Menu to the MenuBar
 
         statsMenu = wx.Menu()
@@ -923,11 +927,13 @@ class MainWindow(wx.Frame):
         if self.focusConsole:
            self.editor.SetFocus()
            self.SetStatusText('editor')
-           winsound.Beep(2000, 250)
+           if beep:
+              winsound.Beep(2000, 250)
         else:
            self.console.SetFocus()
            self.SetStatusText('console')
-           winsound.Beep(3000, 250)
+           if beep:
+              winsound.Beep(3000, 250)
         self.focusConsole = not self.focusConsole
 
     def OnSelectToMark(self, event):
@@ -967,7 +973,8 @@ class MainWindow(wx.Frame):
        position = self.editor.XYToPosition(col, row)
        self.editor.SetInsertionPoint(position)
        self.editor.ShowPosition(position)
-       winsound.Beep(1000, 250)
+       if beep:
+          winsound.Beep(1000, 250)
 
     def FindFrom(self, currentColumn, currentRow):
         # Special logic for checking just part of current line
@@ -1002,7 +1009,8 @@ class MainWindow(wx.Frame):
                self.MoveTo(i, matchObject.start())
                return
 
-        winsound.Beep(500, 500)
+        if beep:
+           winsound.Beep(500, 500)
 
     def ReplaceNext(self, event):
         return
