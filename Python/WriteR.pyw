@@ -954,15 +954,18 @@ class MainWindow(wx.Frame):
     def AlternateFocus(self, event):
         self.ActuallyAlternateFocus()
 
+    def TellUser(self, text):
+        self.SetStatusText(text)
+
     def ActuallyAlternateFocus(self):
         if self.focusConsole:
            self.editor.SetFocus()
-           self.SetStatusText('editor')
+           self.TellUser('editor')
            if beep:
               winsound.Beep(2000, 250)
         else:
            self.console.SetFocus()
-           self.SetStatusText('console')
+           self.TellUser('console')
            if beep:
               winsound.Beep(3000, 250)
         self.focusConsole = not self.focusConsole
@@ -1004,7 +1007,7 @@ class MainWindow(wx.Frame):
        self.priorMatchRow = row
        self.priorMatchCol = col
        message = "Row {} Col {}".format(row, col)
-       self.SetStatusText(message)
+       self.TellUser(message)
        position = self.editor.XYToPosition(col, row)
        self.editor.SetInsertionPoint(position)
        self.editor.ShowPosition(position)
