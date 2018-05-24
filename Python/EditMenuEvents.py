@@ -12,7 +12,7 @@ def OnWordCount(self, event):
     
     
 def OnGoToLine(self, event):
-	(x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
+        (x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
         maxLine=self.editor.GetNumberOfLines()
         dialog = wx.NumberEntryDialog(self, caption="GoToLine", message="Go to line",prompt="Line",value=y,min=0,max=maxLine)
         if dialog.ShowModal() == wx.ID_OK:
