@@ -553,7 +553,7 @@ class MainWindow(wx.Frame):
         self.OnExit()
 
     def fileOpen(self, dirname, filename):
-        path = join(dirname, filename)
+        path = join(dirname.strip(), filename)
         try: 
            textfile = open(path, "r")
         except Exception as error:
@@ -582,7 +582,7 @@ class MainWindow(wx.Frame):
         self.OnSaveAs(event)
 
     def OnSaveAs(self, event):
-        if self.askUserForFilename(defaultFile=self.filename, style=wx.SAVE, **self.defaultFileDialogOptions()):
+        if self.askUserForFilename(defaultFile=self.filename, style=wx.FD_SAVE, **self.defaultFileDialogOptions()):
             self.OnSave(event)
 
     def OnSave(self, event):
