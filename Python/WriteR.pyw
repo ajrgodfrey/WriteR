@@ -168,18 +168,22 @@ class BashProcessThread(Thread):
         self.setDaemon(True)
         self.input_list = input_list
         printing(input_list)
-        self.comp_thread = Popen(input_list, stdout=PIPE, stderr=STDOUT)
-
-        if display_rscript_cmd:
-           writelineFunc('\n'.join(input_list))
-           writelineFunc('\n\n')
-
-        for line in self.comp_thread.stdout:
-            writelineFunc(line)
-
-        returnCode = self.comp_thread.wait()
-        del busy
-        doneFunc(returnCode)
+        try: 
+            self.comp_thread = Popen(input_list, stdout=PIPE, stderr=STDOUT)
+    
+            if display_rscript_cmd:
+               writelineFunc('\n'.join(input_list))
+               writelineFunc('\n\n')
+    
+            for line in self.comp_thread.stdout:
+                writelineFunc(line)
+    
+            returnCode = self.comp_thread.wait()
+            del busy
+            doneFunc(returnCode)
+        except Exception as error:
+            del busy
+            doneFunc("\nCaught error {} for {}".format(error, input_list))
 
 ID_DIRECTORY_CHANGE = wx.NewId()
 ID_CRAN = wx.NewId()
@@ -538,10 +542,31 @@ class MainWindow(wx.Frame):
         if self.askUserForFilename(style=wx.FD_OPEN, **self.defaultFileDialogOptions()):
             self.fileOpen(self.dirname, self.filename)
 
+    def fatalError(self, message):
+        dialog = wx.MessageDialog(self, message, "Fatal Error", wx.OK)
+        dialog.ShowModal()
+        dialog.Destroy()
+        self.OnExit()
+
     def fileOpen(self, dirname, filename):
-        textfile = open(join(dirname, filename), "r")
-        self.editor.SetValue(textfile.read())
-        textfile.close()
+        path = join(dirname, filename)
+        try: 
+           textfile = open(path, "r")
+        except Exception as error:
+           self.fatalError("Unable to open {} because {}".format(path, error))
+           self.OnExit()
+
+        try: 
+           self.editor.SetValue(textfile.read())
+        except Exception as error:
+           self.fatalError("Unable to read {} into editor because {}".format(path, error))
+           self.OnExit()
+
+        try: 
+           textfile.close()
+        except Exception as error:
+           self.fatalError("Unable to close {} because {}".format(path, error))
+           self.OnExit()
 
     def OnNewFile(self, event):
         self.olddirname = self.dirname
@@ -561,15 +586,14 @@ class MainWindow(wx.Frame):
         textfile.write(self.editor.GetValue())
         textfile.close()
 
-
-    def OnExit(self, event):
-        self._mgr.UnInit()
+    def OnExit(self):
+        if self._mgr:
+           self._mgr.UnInit()
         self.Close()  # Close the main window.
 
     def OnSafeExit(self, event):
         self.OnSave(event)
-        self.OnExit(event)
-
+        self.OnExit()
 
     # help menu events
     OnAbout = HelpMenuEvents.OnAbout
