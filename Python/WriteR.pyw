@@ -959,12 +959,16 @@ class MainWindow(wx.Frame):
     def TellUser(self, text):
         self.SetStatusText(text)
         if system_tray:
-           nm = wx.adv.NotificationMessage()
-           nm.SetMessage(text)
-           nm.SetParent(self)
-           nm.SetTitle("")
-           nm.SetFlags(wx.ICON_INFORMATION)
-           nm.Show()
+           try:
+              nm = wx.adv.NotificationMessage()
+              nm.SetMessage(text)
+              nm.SetParent(self)
+              nm.SetTitle("")
+              nm.SetFlags(wx.ICON_INFORMATION)
+              nm.Show(1)
+           except Exception as error:
+              print ("Problem setting notification {}".format(error))
+              pass
 
     def ActuallyAlternateFocus(self):
         if self.focusConsole:
