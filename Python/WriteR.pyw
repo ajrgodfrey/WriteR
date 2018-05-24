@@ -943,6 +943,8 @@ class MainWindow(wx.Frame):
 
     def OnSetMark(self, event):
         self.mark = self.editor.GetInsertionPoint()
+        if beep:
+           winsound.Beep(1000, 250)
 
     def SetFocusConsole(self, toConsole):
         if toConsole != self.focusConsole:
@@ -968,8 +970,12 @@ class MainWindow(wx.Frame):
         insertionPoint = self.editor.GetInsertionPoint()
         if (self.mark < insertionPoint):
            self.editor.SetSelection(self.mark, insertionPoint)
+           if beep:
+              winsound.Beep(750, 250)
         elif (self.mark > insertionPoint):
            self.editor.SetSelection(insertionPoint, self.mark)
+           if beep:
+              winsound.Beep(1500, 250)
 
     def OnShowFindReplace(self, event):
         data = wx.FindReplaceData()
