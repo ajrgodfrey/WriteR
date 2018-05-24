@@ -38,6 +38,7 @@ ID_SETTINGS = wx.NewId()
 
 ID_FINDONLY = wx.NewId()
 ID_FINDNEXT = wx.NewId()
+ID_FINDPREV = wx.NewId()
 ID_FINDREPLACE = wx.NewId()
 ID_GOTO  = wx.NewId()
 ID_WORDCOUNT = wx.NewId()
@@ -255,6 +256,8 @@ class MainWindow(wx.Frame):
         self.editor.SetFocus()
         self.editor.SelectAll() 
         self.focusConsole = False 
+        self.priorMatchCol = 0
+        self.priorMatchRow = 0
         self._mgr.Update()
         # self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE)
 
@@ -293,6 +296,7 @@ class MainWindow(wx.Frame):
                  (None,) * 4,
                  (ID_FINDONLY, "Find\tCtrl+F", "Open a standard find dialog box", self.OnShowFind),
                  (ID_FINDNEXT, "FindNext\tF3", "FindNext", self.F3Next),
+                 (ID_FINDPREV, "FindPrevious\tShift+F3", "FindPrev", self.ShiftF3Previous),
                  (ID_GOTO, "Go to line\tCtrl+g", "Open a dialog box to choose a line number", self.OnGoToLine),
                  (ID_FINDREPLACE, "Find/replace\tCtrl+H", "Open a find/replace dialog box", self.OnShowFindReplace),
                  (ID_SETMARK, "Set Mark\tCtrl+SPACE", "Set Mark", self.OnSetMark),
@@ -1000,10 +1004,11 @@ class MainWindow(wx.Frame):
        if beep:
           winsound.Beep(1000, 250)
 
-    def FindFrom(self, currentColumn, currentRow):
+    def FindFrom(self, currentColumn, currentRow, reverseDirection):
         # Special logic for checking just part of current line
         currentLine = self.editor.GetLineText(currentRow)
-        if self.forward:
+        searchForward = self.forward != reverseDirection
+        if searchForward:
            matchObject = self.regex.search(currentLine[currentColumn+1:])
            if matchObject:
                self.MoveTo(currentRow, currentColumn + 1 + matchObject.start())
@@ -1017,7 +1022,7 @@ class MainWindow(wx.Frame):
                return
 
         # General case for checking whole lines
-        if self.forward:
+        if searchForward:
            lineRange = range(currentRow+1, self.editor.GetNumberOfLines())
         else:
            lineRange = reversed(range(0, currentRow)) 
@@ -1026,7 +1031,7 @@ class MainWindow(wx.Frame):
             line = self.editor.GetLineText(i)
             matchObject = self.regex.search(line)
             if matchObject:
-               if not self.forward:
+               if not searchForward:
                   for matchObject in self.regex.finditer(line):
                       pass
 
@@ -1051,7 +1056,10 @@ class MainWindow(wx.Frame):
         self.editor.SetInsertionPoint(insertionPoint)
 
     def F3Next(self, event):
-        self.FindFrom(self.priorMatchCol, self.priorMatchRow)
+        self.FindFrom(self.priorMatchCol, self.priorMatchRow, False)
+
+    def ShiftF3Previous(self, event):
+        self.FindFrom(self.priorMatchCol, self.priorMatchRow, True)
 
     def OnFind(self, event):
         et = event.GetEventType()
@@ -1061,9 +1069,9 @@ class MainWindow(wx.Frame):
 
         if et == wx.wxEVT_COMMAND_FIND:
             (col, row) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
-            self.FindFrom(col, row)
+            self.FindFrom(col, row, False)
         elif et == wx.wxEVT_COMMAND_FIND_NEXT:
-            self.FindFrom(self.priorMatchCol, self.priorMatchRow)
+            self.FindFrom(self.priorMatchCol, self.priorMatchRow, False)
         elif et == wx.wxEVT_COMMAND_FIND_REPLACE:
             self.ReplaceNext(event)
         elif et == wx.wxEVT_COMMAND_FIND_REPLACE_ALL:
