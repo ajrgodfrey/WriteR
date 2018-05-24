@@ -6,6 +6,7 @@
 
 
 import wx 
+import wx.adv
 import sys
 import re
 # import FileMenuEvents # problems with this one
@@ -30,6 +31,7 @@ from six import iteritems
 print_option = False
 display_rscript_cmd = True
 beep = 'winsound' in sys.modules
+system_tray = True
 
 # set up some ID tags
 ID_BUILD = wx.NewId()
@@ -956,6 +958,13 @@ class MainWindow(wx.Frame):
 
     def TellUser(self, text):
         self.SetStatusText(text)
+        if system_tray:
+           nm = wx.adv.NotificationMessage()
+           nm.SetMessage(text)
+           nm.SetParent(self)
+           nm.SetTitle("")
+           nm.SetFlags(wx.ICON_INFORMATION)
+           nm.Show()
 
     def ActuallyAlternateFocus(self):
         if self.focusConsole:
