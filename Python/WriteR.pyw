@@ -17,7 +17,7 @@ import RMarkdownEvents
 try:
     import winsound
 except ImportError:
-    print "Winsound module not found\n"
+    print("Winsound module not found\n")
 from wx.py.shell import Shell
 from wx.aui import AuiManager, AuiPaneInfo
 from threading import Thread, Event
@@ -25,10 +25,11 @@ from subprocess import Popen, PIPE, STDOUT
 from os.path import join, split, isdir, expanduser, realpath
 from os import walk
 from time import asctime, sleep
+from six import iteritems
 
 print_option = False
 display_rscript_cmd = True
-beep = True
+beep = 'winsound' in sys.modules
 
 # set up some ID tags
 ID_BUILD = wx.NewId()
@@ -137,7 +138,7 @@ SBText = "This program is for editing R Markdown files"
 
 def dcf_dumps(data, sort_keys=True):
     string = ""
-    for k, v in sorted(data.iteritems()):
+    for k, v in sorted(iteritems(data)):
         if v is None: v = 'None'
         string += "{:}: {:}\n".format(k, v.replace('\n', '\n '))
     return string
@@ -158,7 +159,7 @@ def dcf_loads(string):
 
 
 def printing(*args):
-    if print_option: print args 
+    if print_option: print (args)
 
 class BashProcessThread(Thread):
     def __init__(self, flag, input_list, writelineFunc, doneFunc):
@@ -883,7 +884,7 @@ class MainWindow(wx.Frame):
             elif isdir("C:\\Program Files (x86)\\R"):
                 hold = "C:\\Program Files (x86)\\R"
             else:
-                print warn; return
+                print (warn); return
             options = [join(r, rscript) for r, d, f in walk(hold) if rscript in f]
             printing('options', options)
             if len(options) > 0:
@@ -901,7 +902,7 @@ class MainWindow(wx.Frame):
                             choice = op
                             version = vv
             else:
-                print warn; return
+                print (warn); return
         else:
             'something to get the information out of the settings file.'
         return choice
@@ -992,9 +993,9 @@ class MainWindow(wx.Frame):
 
     def ComputeReFlags(self, event):
         if event.GetFlags() & wx.FR_MATCHCASE:
-           return re.LOCALE
+           return 0
         else:
-           return re.LOCALE | re.IGNORECASE
+           return re.IGNORECASE
 
     def ComputeReplacementString(self, event):
         return event.GetReplaceString()
