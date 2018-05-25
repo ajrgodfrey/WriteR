@@ -295,7 +295,7 @@ class MainWindow(wx.Frame):
                  (wx.ID_PASTE, "&Paste\tCtrl+V", "Paste text from clipboard", self.OnPaste),
                  (wx.ID_SELECTALL, "Select all\tCtrl+A", "Highlight entire text", self.OnSelectAll),
                  (wx.ID_DELETE, "&Delete", "Delete highlighted text", self.OnDelete),
-                 (ID_WORDCOUNT, "Word count (broken)\tCtrl+w", "get a word count of the entire text", self.OnWordCount),
+                 (ID_WORDCOUNT, "Word count\tCtrl+w", "get a word count of the entire text", self.OnWordCount),
                  (None,) * 4,
                  (ID_FINDONLY, "Find\tCtrl+F", "Open a standard find dialog box", self.OnShowFind),
                  (ID_FINDNEXT, "FindNext\tF3", "FindNext", self.F3Next),
@@ -612,7 +612,6 @@ class MainWindow(wx.Frame):
     OnCopy = EditMenuEvents.OnCopy
     OnCut = EditMenuEvents.OnCut
     OnGoToLine = EditMenuEvents.OnGoToLine
-    OnWordCount = EditMenuEvents.OnWordCount
 
 # view menu events
     def StatusBar(self):
@@ -969,6 +968,13 @@ class MainWindow(wx.Frame):
            except Exception as error:
               print ("Problem setting notification {}".format(error))
               pass
+
+    def OnWordCount(self, event):
+        text=self.editor.GetValue()
+        word_count=len(text.split())
+        (x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
+        line_count = len(text)
+        self.TellUser("{} words, {} lines, {} currentLine".format(word_count, line_count, y))
 
     def ActuallyAlternateFocus(self):
         if self.focusConsole:
