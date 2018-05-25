@@ -1,16 +1,6 @@
 import wx
 import wx.stc # needed for word count and go to line
 
-
-def OnWordCount(self, event):
-        text=self.editor.GetText()
-        word_count=len(text.split())
-        dialog=wx.MessageDialog(self,"%d words" % word_count,"Word count",wx.ICON_INFORMATION|wx.OK)
-        dialog.Centre()
-        result=dialog.ShowModal()
-        dialog.Destroy()
-    
-    
 def OnGoToLine(self, event):
         (x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
         maxLine=self.editor.GetNumberOfLines()
