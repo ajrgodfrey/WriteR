@@ -972,9 +972,9 @@ class MainWindow(wx.Frame):
     def OnWordCount(self, event):
         text=self.editor.GetValue()
         word_count=len(text.split())
-        (x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
+        (on, x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
         line_count = len(text)
-        self.TellUser("{} words, {} lines, {} currentLine".format(word_count, line_count, y))
+        self.TellUser("{} words, line {}/{}".format(word_count, y, line_count))
 
     def ActuallyAlternateFocus(self):
         if self.focusConsole:
@@ -1097,7 +1097,7 @@ class MainWindow(wx.Frame):
         self.forward = event.GetFlags() & wx.FR_DOWN
 
         if et == wx.wxEVT_COMMAND_FIND:
-            (col, row) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
+            (ok, col, row) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
             self.FindFrom(col, row, False)
         elif et == wx.wxEVT_COMMAND_FIND_NEXT:
             self.FindFrom(self.priorMatchCol, self.priorMatchRow, False)
