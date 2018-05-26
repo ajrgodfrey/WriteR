@@ -974,7 +974,8 @@ class MainWindow(wx.Frame):
         word_count=len(text.split())
         (on, x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
         line_count = len(text)
-        self.TellUser("{} words, line {}/{}".format(word_count, y, line_count))
+        markdownState = RMarkdownEvents.CurrentMarkdown(self)
+        self.TellUser("{} words, line {}/{} {}".format(word_count, y, line_count, markdownState))
 
     def ActuallyAlternateFocus(self):
         if self.focusConsole:

@@ -103,3 +103,54 @@ def OnRLAssign(self, event):
 def OnRRAssign(self, event):
     self.editor.WriteText(" -> ") 
 
+STATE_NORMAL = "in text"
+STATE_START_HEADER = "start header"
+STATE_IN_HEADER = "in header"
+STATE_END_HEADER = "end header"
+STATE_START_CODEBLOCK = "start codeblock"
+STATE_IN_CODEBLOCK = "in codeblock"
+STATE_END_CODEBLOCK = "end codeblock"
+STATE_START_LATEX_DOLLAR = "start latex"
+STATE_IN_LATEX_DOLLAR = "in latex"
+STATE_END_LATEX_DOLLAR = "end latex"
+STATE_START_LATEX_BRACKET = "start  latex" # note: more spaces between words than corresponding "DOLLAR" constant
+STATE_IN_LATEX_BRACKET = "in  latex" # note: more spaces between words than corresponding "DOLLAR" constant
+STATE_END_LATEX_BRACKET = "end  latex" # note: more spaces between words than corresponding "DOLLAR" constant
+
+def CurrentMarkdown(self):
+    (ok, currentCol, currentRow) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
+    state = STATE_NORMAL 
+    for i in range(0, currentRow):
+        line = self.editor.GetLineText(i)
+        if state == STATE_NORMAL or state == STATE_END_HEADER or state == STATE_END_CODEBLOCK or state == STATE_END_LATEX_DOLLAR or state== STATE_END_LATEX_BRACKET:
+           if line.startswith("---"):
+              state = STATE_START_HEADER
+           elif line.startswith("```"):
+              state = STATE_START_CODEBLOCK
+           elif line.startswith("$$"):
+              state = STATE_START_LATEX_DOLLAR
+           elif line.startswith("\["):
+              state = STATE_START_LATEX_BRACKET
+           else:
+              state = STATE_NORMAL
+        elif state == STATE_START_HEADER or state == STATE_IN_HEADER:
+           if line.startswith("---"):
+              state = STATE_END_HEADER
+           else:
+              state = STATE_IN_HEADER
+        elif state == STATE_START_CODEBLOCK or state == STATE_IN_CODEBLOCK:
+           if line.startswith("```"):
+              state = STATE_END_CODEBLOCK
+           else:
+              state = STATE_IN_CODEBLOCK
+        elif state == STATE_START_LATEX_DOLLAR or state == STATE_IN_LATEX_DOLLAR:
+           if line.startswith("$$"):
+              state = STATE_END_LATEX_DOLLAR
+           else:
+              state = STATE_IN_LATEX_DOLLAR
+        elif state == STATE_START_LATEX_BRACKET or state == STATE_IN_LATEX_BRACKET:
+           if line.startswith("\]"):
+              state = STATE_END_LATEX_BRACKET
+           else:
+              state = STATE_IN_LATEX_BRACKET
+    return state
