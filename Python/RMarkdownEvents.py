@@ -122,7 +122,7 @@ def CurrentMarkdown(self):
     state = STATE_NORMAL 
     for i in range(0, currentRow+1):
         line = self.editor.GetLineText(i)
-        if state == STATE_NORMAL or state == STATE_END_HEADER or state == STATE_END_CODEBLOCK or state == STATE_END_LATEX_DOLLAR or state== STATE_END_LATEX_BRACKET:
+        if state is STATE_NORMAL or state is STATE_END_HEADER or state is STATE_END_CODEBLOCK or state is STATE_END_LATEX_DOLLAR or state is STATE_END_LATEX_BRACKET:
            if line.startswith("---"):
               state = STATE_START_HEADER
            elif line.startswith("```"):
@@ -133,22 +133,22 @@ def CurrentMarkdown(self):
               state = STATE_START_LATEX_BRACKET
            else:
               state = STATE_NORMAL
-        elif state == STATE_START_HEADER or state == STATE_IN_HEADER:
+        elif state is STATE_START_HEADER or state is STATE_IN_HEADER:
            if line.startswith("---"):
               state = STATE_END_HEADER
            else:
               state = STATE_IN_HEADER
-        elif state == STATE_START_CODEBLOCK or state == STATE_IN_CODEBLOCK:
+        elif state is STATE_START_CODEBLOCK or state is STATE_IN_CODEBLOCK:
            if line.startswith("```"):
               state = STATE_END_CODEBLOCK
            else:
               state = STATE_IN_CODEBLOCK
-        elif state == STATE_START_LATEX_DOLLAR or state == STATE_IN_LATEX_DOLLAR:
+        elif state is STATE_START_LATEX_DOLLAR or state is STATE_IN_LATEX_DOLLAR:
            if line.startswith("$$"):
               state = STATE_END_LATEX_DOLLAR
            else:
               state = STATE_IN_LATEX_DOLLAR
-        elif state == STATE_START_LATEX_BRACKET or state == STATE_IN_LATEX_BRACKET:
+        elif state is STATE_START_LATEX_BRACKET or state is STATE_IN_LATEX_BRACKET:
            if line.startswith("\]"):
               state = STATE_END_LATEX_BRACKET
            else:
