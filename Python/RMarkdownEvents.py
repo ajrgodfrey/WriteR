@@ -120,7 +120,7 @@ STATE_END_LATEX_BRACKET = "end  latex" # note: more spaces between words than co
 def CurrentMarkdown(self):
     (ok, currentCol, currentRow) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
     state = STATE_NORMAL 
-    for i in range(0, currentRow):
+    for i in range(0, currentRow+1):
         line = self.editor.GetLineText(i)
         if state == STATE_NORMAL or state == STATE_END_HEADER or state == STATE_END_CODEBLOCK or state == STATE_END_LATEX_DOLLAR or state== STATE_END_LATEX_BRACKET:
            if line.startswith("---"):
