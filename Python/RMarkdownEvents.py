@@ -10,7 +10,7 @@ from time import asctime, sleep
 
 quiet = 'TRUE' # or 'FALSE', since these are 'R' constants
 
-hardsettings = {'repo': "http://cran.stat.auckland.ac.nz/",
+hardsettings = {'repo': "https://cloud.r-project.org",
                              'rendercommand': '''rmarkdown::render("{}",quiet={})''',
                              'renderallcommand': '''rmarkdown::render("{}", output_format="all",quiet={})''',
                              'renderslidycommand': '''rmarkdown::render("{}", output_format=slidy_presentation(),quiet={})''',
