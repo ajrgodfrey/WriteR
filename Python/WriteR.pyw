@@ -304,7 +304,7 @@ class MainWindow(wx.Frame):
                  (ID_FINDREPLACE, "Find/replace\tCtrl+H", "Open a find/replace dialog box", self.OnShowFindReplace),
                  (ID_SETMARK, "Set Mark\tCtrl+SPACE", "Set Mark", self.OnSetMark),
                  (ID_SELECTTOMARK , "Select To Mark\tAlt+Ctrl+SPACE", "Select To Mark", self.OnSelectToMark),
-                 (ID_ALTERNATE_FOCUS , "Alternate Focus\tF8", "Alternate Focus", self.AlternateFocus),
+                 (ID_ALTERNATE_FOCUS , "Alternate Focus\tF4", "Alternate Focus", self.AlternateFocus),
                  (None,) * 4,
                  (ID_SETTINGS, 'Settings', "Setup the editor to your liking", self.OnSettings)]:
             if id == None:
