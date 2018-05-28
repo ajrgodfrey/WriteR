@@ -6,8 +6,9 @@ WriteR is intended for use with R markdown files. Users must have R installed an
 
 Perhaps the easiest way to ensure the necessary R add-on packages are installed is to install the BrailleR add-on package.
  
-To get WriteR to run, users must have Python 2.7 installed and hte latest version of wxPython. Once Python 2.7 is installed, the command line "`pip install wxPython`" can be issued to install the wx module, or if it is already there, "`pip install -U wxPython`" will update it. N.B. The capitalisation  of U and P was intentional (and is required).
- 
+To get WriteR to run, users must have Python 2.7 installed and the latest version of wxPython. Once Python 2.7 is installed, the command line "`pip install wxPython`" can be issued to install the wx module, or if it is already there, "`pip install -U wxPython`" will update it. N.B. The capitalisation  of U and P was intentional (and is required).
+
+As of May 2018, the code is suitable for use in both Python 2.7 and Python 3.6; special thanks to Marshall Flax for that and numerous other updates in May 2018. Some question exists (at the time of writing) about the ability to use the "pip" method of installng wxPython for Python 3. Manual installation may be necessary.
 
 This repository was established 8 January 2016 after a meeting Jonathan had with James in Petone.
 
