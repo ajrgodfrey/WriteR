@@ -110,6 +110,7 @@ STATE_END_HEADER = "end header"
 STATE_START_CODEBLOCK = "start codeblock"
 STATE_IN_CODEBLOCK = "in codeblock"
 STATE_END_CODEBLOCK = "end codeblock"
+STATE_SINGLE_LINE_LATEX = "single line latex"
 STATE_START_LATEX_DOLLAR = "start latex"
 STATE_IN_LATEX_DOLLAR = "in latex"
 STATE_END_LATEX_DOLLAR = "end latex"
@@ -122,11 +123,13 @@ def CurrentMarkdown(self):
     state = STATE_NORMAL 
     for i in range(0, currentRow+1):
         line = self.editor.GetLineText(i)
-        if state is STATE_NORMAL or state is STATE_END_HEADER or state is STATE_END_CODEBLOCK or state is STATE_END_LATEX_DOLLAR or state is STATE_END_LATEX_BRACKET:
+        if state is STATE_NORMAL or state is STATE_END_HEADER or state is STATE_END_CODEBLOCK or state is STATE_END_LATEX_DOLLAR or state is STATE_END_LATEX_BRACKET or state is STATE_SINGLE_LINE_LATEX:
            if line.startswith("---"):
               state = STATE_START_HEADER
            elif line.startswith("```"):
               state = STATE_START_CODEBLOCK
+           elif line.startswith("$$") and line[2:].endswith("$$"):
+              state = STATE_SINGLE_LINE_LATEX
            elif line.startswith("$$"):
               state = STATE_START_LATEX_DOLLAR
            elif line.startswith("\["):
@@ -144,7 +147,7 @@ def CurrentMarkdown(self):
            else:
               state = STATE_IN_CODEBLOCK
         elif state is STATE_START_LATEX_DOLLAR or state is STATE_IN_LATEX_DOLLAR:
-           if line.startswith("$$"):
+           if line.startswith("$$") or line.endswith("$$"):
               state = STATE_END_LATEX_DOLLAR
            else:
               state = STATE_IN_LATEX_DOLLAR
