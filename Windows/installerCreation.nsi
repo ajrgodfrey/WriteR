@@ -27,6 +27,7 @@ MessageBox MB_OK "You are about to install WriteR. $\nBefore you use WriteR thou
 
 SetOutPath $INSTDIR
 File PackageFiles\Install\version.txt
+File PackageFiles\Install\warning.txt
 SetOutPath $INSTDIR\Source
 file PackageFiles\Python\*.py
 file PackageFiles\Python\*.pyw
@@ -50,6 +51,7 @@ Delete "$SMPROGRAMS\WriteR\Uninstall WriteR app.lnk"
 rmDir "$SMPROGRAMS\WriteR"
 
 Delete $INSTDIR\version.txt
+Delete $INSTDIR\warning.txt
 Delete $INSTDIR\Source\*.*
 RMDir $INSTDIR\Source
 Delete $INSTDIR\bin\wx\*.*
