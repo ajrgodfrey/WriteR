@@ -1,18 +1,28 @@
 # The WriteR application 
 
 
+## Latest news
+
+In March 2022, AJRG worked on making an executable and corresponding installer for Windows users.
+
+- the executable is built using pyinstaller, with both a folder and a single file version.
+- Nullsoft is the tool being used to create the Windows installer.
+- a version number was added to the distribution. This duplicates information held in the Help menu.
+
+
 ## System requirements
 
 
 ### R and R markdown processing
 
-WriteR is intended for use with R markdown files. Users must have R installed and several R packages if they are to process markdown files into HTML or Microsoft Word's docx format; in addition, an installation of a LaTeX, probably miktex2.9 will be needed if the documents are to be processed into pdf files.
+WriteR is intended for use with R markdown files. Users must have R and Pandoc installed and several R packages if they are to process markdown files into HTML or Microsoft Word's docx format; in addition, an installation of a LaTeX, probably miktex2.9 will be needed if the documents are to be processed into pdf files.
 
 Perhaps the easiest way to ensure the necessary R add-on packages are installed is to install the BrailleR add-on package.
 
 
 ### Python requirements
- 
+
+If you do not use the dedicated Windows installer for WriteR, you will need to use the original source Python scripts.  
 To get WriteR to run using the Python script files, users must have Python 3.8 installed and the corresponding version of wxPython. Once Python 3.8 is installed, the command line "`pip install wxPython`" can be issued to install the wx module, or if it is already there, "`pip install -U wxPython`" will update it. N.B. The capitalisation  of U and P was intentional (and is required).
 
 
@@ -87,7 +97,7 @@ OK, it seems keeping the readme up to date was overlooked for a while!
 
 ### May 2018
 
-The code was made suitable for use in both Python 2.7 and Python 3.6; special thanks to Marshall Flax for that and numerous other updates in May 2018. Python 2.7 is no longer under development so the recommended Python installation is now 3.8. N.B. Python 3.10 has been released but does not work well with wxPython at the moment (March 2022).
+The code was made suitable for use in both Python 2.7 and Python 3.6; special thanks to Marshall Flax for that and numerous other updates in May 2018. Python 2.7 is no longer under development so the recommended Python installation is now 3.8. N.B. Python 3.10 has been released but does not work well with wxPython at the moment (discovered in March 2022).
 
 
 
