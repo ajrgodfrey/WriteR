@@ -22,7 +22,7 @@ The current tool used to create a folder and a single file version of WriteR is 
 
 `pyinstaller PackageFiles\Python\WriteR.pyw` is all I used. No other pyinstaller commands matter given the first file has a `pyw` extension, except perhaps making a single file version by adding the `--onefile` switch.
 
-N.B. I'm not all that excited by the speed that these executables load. I also seem to have different load times from these versions and the installed version built using hte following workflow.
+N.B. I'm not all that excited by the speed that these executables load. I also seem to have different load times from these versions and the installed version built using the following workflow.
 
 
 
