@@ -1,3 +1,6 @@
+# 2022.11.29 this file is for the processing of files using rmarkdown
+#      It is therefore intended solely for WriteR, not WriteQuarto
+
 import wx
 import sys
 from wx.py.shell import Shell
@@ -64,30 +67,6 @@ def OnSelectRenderPdf(self, event):
 def OnSelectRenderSlidy(self, event):
     self.Bind(wx.EVT_MENU, self.OnRenderSlidy, self.Render)
 
-def OnRCommand(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("`")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("`r ")
-        self.editor.SetInsertionPoint(frm + 3)
-
-def OnRChunk(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("\n```\n\n")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("\n```{r }\n")
-        self.editor.SetInsertionPoint(frm + 8)
-
-def OnRGraph(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("\n```\n\n")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("\n```{r , fig.height=5, fig.width=5, fig.alt=\" \", fig.cap=\"\"}\n")
-        self.editor.SetInsertionPoint(frm + 8)
-
 def OnRmdComment(self, event):
         frm, to = self.editor.GetSelection()
         self.editor.SetInsertionPoint(to)
@@ -95,13 +74,6 @@ def OnRmdComment(self, event):
         self.editor.SetInsertionPoint(frm)
         self.editor.WriteText("\n<!-- ")
         self.editor.SetInsertionPoint(to + 15)
-
-def OnRPipe(self, event):
-    self.editor.WriteText(" %>% ") 
-def OnRLAssign(self, event):
-    self.editor.WriteText(" <- ") 
-def OnRRAssign(self, event):
-    self.editor.WriteText(" -> ") 
 
 STATE_NORMAL = "in text"
 STATE_START_HEADER = "start header"

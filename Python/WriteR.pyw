@@ -1,20 +1,28 @@
-# WriteR Version 0.1612.0
-# development of this Python version left solely to Jonathan Godfrey from 8 March 2016 onwards
-# a C++ version has been proposed for development in parallel, (led by James Curtis).
-# cleaning taking place: any line starting with #- suggests a block of redundant code was removed.
-# assistance from T.Bilton on 15 April 2016 to think about additions. More to come.
+# 2022.11.29 This file needs careful checking to remove content that should be totally independent of implementation
+#    so that we can be sure it contains WriteR necessities, and nothing needed for WriteQuarto
+
 
 
 import wx 
 import wx.adv
 import sys
 import re
+
 # import FileMenuEvents # problems with this one
+
+# imports for all implementations
 import EditMenuEvents
-import HelpMenuEvents
-import MathInserts
+import IDTags
+from MarkdownEvents import * 
+from MathInserts import *
 import MyConsole
+from REvents import * 
+# imports solely for WriteR
+from HelpMenuEvents import * 
 import RMarkdownEvents
+
+
+# and yet more general imports
 try:
     import winsound
 except ImportError:
@@ -601,7 +609,7 @@ class MainWindow(wx.Frame):
         self.OnExit()
 
     # help menu events
-    OnAbout = HelpMenuEvents.OnAbout
+##    OnAbout = HelpMenuEvents.OnAbout
 
     # edit menu events
     OnSelectAll = EditMenuEvents.OnSelectAll
@@ -686,70 +694,6 @@ class MainWindow(wx.Frame):
     OnKnit2html = RMarkdownEvents.OnKnit2html
     OnKnit2pdf = RMarkdownEvents.OnKnit2pdf
 
-    # R and RMarkdown events
-    OnRCommand = RMarkdownEvents.OnRCommand
-    OnRChunk = RMarkdownEvents.OnRChunk
-    OnRGraph = RMarkdownEvents.OnRGraph
-    OnRmdComment = RMarkdownEvents.OnRmdComment
-    OnRPipe = RMarkdownEvents.OnRPipe
-    OnRLAssign = RMarkdownEvents.OnRLAssign
-    OnRRAssign = RMarkdownEvents.OnRRAssign
-
-    # MathInserts are all LaTeX input for math mode
-    OnSymbol_infinity = MathInserts.OnSymbol_infinity
-    OnSymbol_plusminus = MathInserts.OnSymbol_plusminus
-    OnSymbol_minusplus = MathInserts.OnSymbol_minusplus
-    OnSymbol_geq = MathInserts.OnSymbol_geq
-    OnSymbol_leq = MathInserts.OnSymbol_leq
-    OnSymbol_neq = MathInserts.OnSymbol_neq
-    OnSymbol_times = MathInserts.OnSymbol_times
-    OnSymbol_partial = MathInserts.OnSymbol_partial
-    OnSymbol_LeftParen = MathInserts.OnSymbol_LeftParen
-    OnSymbol_RightParen = MathInserts.OnSymbol_RightParen
-    OnSymbol_LeftSquare = MathInserts.OnSymbol_LeftSquare
-    OnSymbol_RightSquare = MathInserts.OnSymbol_RightSquare
-    OnSymbol_LeftCurly = MathInserts.OnSymbol_LeftCurly
-    OnSymbol_RightCurly = MathInserts.OnSymbol_RightCurly
-    OnAbsVal = MathInserts.OnAbsVal
-    OnMathBar = MathInserts.OnMathBar
-    OnSquareRoot = MathInserts.OnSquareRoot
-    OnFraction = MathInserts.OnFraction
-    OnSummation = MathInserts.OnSummation
-    Onintegral = MathInserts.Onintegral
-    OnProduct = MathInserts.OnProduct
-    OnLimit = MathInserts.OnLimit
-    OnDoubleSummation = MathInserts.OnDoubleSummation
-    OnDoubleIntegral = MathInserts.OnDoubleIntegral
-    OnGreek_alpha = MathInserts.OnGreek_alpha
-    OnGreek_beta = MathInserts.OnGreek_beta
-    OnGreek_gamma = MathInserts.OnGreek_gamma
-    OnGreek_delta = MathInserts.OnGreek_delta
-    OnGreek_epsilon = MathInserts.OnGreek_epsilon
-    OnGreek_varepsilon = MathInserts.OnGreek_varepsilon
-    OnGreek_zeta = MathInserts.OnGreek_zeta
-    OnGreek_eta = MathInserts.OnGreek_eta
-    OnGreek_theta = MathInserts.OnGreek_theta
-    OnGreek_vartheta = MathInserts.OnGreek_vartheta
-    OnGreek_iota = MathInserts.OnGreek_iota
-    OnGreek_kappa = MathInserts.OnGreek_kappa
-    OnGreek_lambda = MathInserts.OnGreek_lambda
-    OnGreek_mu = MathInserts.OnGreek_mu
-    OnGreek_nu = MathInserts.OnGreek_nu
-    OnGreek_xi = MathInserts.OnGreek_xi
-    OnGreek_omicron = MathInserts.OnGreek_omicron
-    OnGreek_pi = MathInserts.OnGreek_pi
-    OnGreek_rho = MathInserts.OnGreek_rho
-    OnGreek_sigma = MathInserts.OnGreek_sigma
-    OnGreek_tau = MathInserts.OnGreek_tau
-    OnGreek_upsilon = MathInserts.OnGreek_upsilon
-    OnGreek_phi = MathInserts.OnGreek_phi
-    OnGreek_chi = MathInserts.OnGreek_chi
-    OnGreek_psi = MathInserts.OnGreek_psi
-    OnGreek_omega = MathInserts.OnGreek_omega
-
-    OnMathRoundBrack = MathInserts.OnMathRoundBrack
-    OnMathCurlyBrack = MathInserts.OnMathCurlyBrack
-    OnMathSquareBrack = MathInserts.OnMathSquareBrack
 
     # format menu events
     def OnSquareBrack(self, event):
@@ -777,67 +721,10 @@ class MainWindow(wx.Frame):
         self.editor.WriteText("(")
         self.editor.SetInsertionPoint(to + 2)
 
-    def OnMath(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("$")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("$")
-        self.editor.SetInsertionPoint(to + 2)
-
-    def OnItalic(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("*")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("*")
-        self.editor.SetInsertionPoint(to + 2)
-
-
-    def OnBold(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("**")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("**")
-        self.editor.SetInsertionPoint(to + 4)
-
-    def OnCode(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("`")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("`")
-        self.editor.SetInsertionPoint(to + 2)
-
-
     def OnAddHeadBlock(self, event):
         self.editor.SetInsertionPoint(0)
         self.editor.WriteText('---\ntitle: ""\nauthor: ""\ndate: ""\noutput: html_document\n---\n') 
         self.editor.SetInsertionPoint(13)
-
-    def OnAddReference(self, event):
-        self.editor.WriteText(" [@ref] ") 
-
-    def OnAddURL(self, event):
-        self.editor.WriteText(" [alt text](http://) ") 
-    def OnAddEMail(self, event):
-        self.editor.WriteText(" [name](Mailto:) ") 
-    def OnAddFigure(self, event):
-        self.editor.WriteText(" ![alt tag](filename) ") 
-
-    def OnHeading1(self, event):
-        self.editor.WriteText("\n# ") 
-    def OnHeading2(self, event):
-        self.editor.WriteText("\n## ") 
-    def OnHeading3(self, event):
-        self.editor.WriteText("\n### ") 
-    def OnHeading4(self, event):
-        self.editor.WriteText("\n#### ") 
-    def OnHeading5(self, event):
-        self.editor.WriteText("\n##### ") 
-    def OnHeading6(self, event):
-        self.editor.WriteText("\n###### ")
 
     # view menu events
     def ToggleStatusBar(self, event):

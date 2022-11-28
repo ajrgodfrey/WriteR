@@ -1,3 +1,7 @@
+# 2022.11.29 This file needs careful checking to ensure it remains totally independent of implementation
+#    so that we can be sure it remains useful for WriteR and WriteQuarto
+
+
 from wx.aui import AuiManager, AuiPaneInfo
 
 class MyConsole:

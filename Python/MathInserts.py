@@ -1,3 +1,6 @@
+# 2022.11.29 This file is for insertion of anything mathematical, so should be useful across implementations
+#    This file needs careful checking to ensure it remains totally independent of implementation
+#    so that we can be sure it remains useful for WriteR and WriteQuarto
 
 def OnMathSquareBrack(self, event):
         frm, to = self.editor.GetSelection()
