@@ -11,8 +11,9 @@ import re
 # import FileMenuEvents # problems with this one
 
 # imports for all implementations
+import IDTags # must come first
+from IDTags  import *
 import EditMenuEvents
-import IDTags
 from MarkdownEvents import * 
 from MathInserts import *
 import MyConsole
@@ -40,107 +41,6 @@ print_option = False
 display_rscript_cmd = True
 beep = 'winsound' in sys.modules
 system_tray = True
-
-# set up some ID tags
-ID_BUILD = wx.NewId()
-ID_KNIT2HTML = wx.NewId()
-ID_KNIT2PDF = wx.NewId()
-ID_SETTINGS = wx.NewId()
-
-ID_FINDONLY = wx.NewId()
-ID_FINDNEXT = wx.NewId()
-ID_FINDPREV = wx.NewId()
-ID_FINDREPLACE = wx.NewId()
-ID_GOTO  = wx.NewId()
-ID_WORDCOUNT = wx.NewId()
-
-ID_SETMARK = wx.NewId()
-ID_SELECTTOMARK = wx.NewId()
-
-ID_ALTERNATE_FOCUS = wx.NewId()
-
-# symbols menu for mathematical symbols
-ID_SYMBOL_INFINITY = wx.NewId() 
-ID_SYMBOL_MINUSPLUS = wx.NewId() 
-ID_SYMBOL_PLUSMINUS = wx.NewId() 
-ID_SYMBOL_TIMES = wx.NewId() 
-ID_SYMBOL_PARTIAL = wx.NewId() 
-ID_SYMBOL_LEFTPAREN = wx.NewId() 
-ID_SYMBOL_RIGHTPAREN = wx.NewId() 
-ID_SYMBOL_LEFTSQUARE = wx.NewId() 
-ID_SYMBOL_RIGHTSQUARE = wx.NewId() 
-ID_SYMBOL_LEFTCURLY = wx.NewId() 
-ID_SYMBOL_RIGHTCURLY = wx.NewId()
-ID_SYMBOL_GRTREQL = wx.NewId() 
-ID_SYMBOL_LESSEQL = wx.NewId() 
-ID_SYMBOL_NOTEQL = wx.NewId() 
-
-ID_RCOMMAND = wx.NewId()
-ID_COMMENTOUT = wx.NewId()
-ID_RCHUNK = wx.NewId()
-ID_RGRAPH = wx.NewId()
-ID_RPIPE = wx.NewId()
-ID_RLASSIGN = wx.NewId()
-ID_RRASSIGN = wx.NewId()
-
-ID_SQUAREROOT = wx.NewId() 
-ID_MATHBAR = wx.NewId() 
-ID_ABSVAL = wx.NewId() 
-ID_FRACTION = wx.NewId() 
-ID_SUMMATION = wx.NewId() 
-ID_INTEGRAL = wx.NewId() 
-ID_PRODUCT = wx.NewId() 
-ID_LIMIT = wx.NewId() 
-ID_DOUBLESUMMATION = wx.NewId() 
-ID_DOUBLEINTEGRAL = wx.NewId()
-
-# Greek menu for Greek letters
-ID_GREEK_ALPHA = wx.NewId() 
-ID_GREEK_BETA = wx.NewId() 
-ID_GREEK_GAMMA = wx.NewId() 
-ID_GREEK_DELTA = wx.NewId() 
-ID_GREEK_EPSILON = wx.NewId() 
-ID_GREEK_VAREPSILON = wx.NewId() 
-ID_GREEK_ZETA = wx.NewId() 
-ID_GREEK_ETA = wx.NewId() 
-ID_GREEK_THETA = wx.NewId() 
-ID_GREEK_VARTHETA = wx.NewId() 
-ID_GREEK_IOTA = wx.NewId() 
-ID_GREEK_KAPPA = wx.NewId() 
-ID_GREEK_LAMBDA = wx.NewId() 
-ID_GREEK_MU = wx.NewId() 
-ID_GREEK_NU = wx.NewId() 
-ID_GREEK_XI = wx.NewId() 
-ID_GREEK_OMICRON = wx.NewId() 
-ID_GREEK_PI = wx.NewId() 
-ID_GREEK_RHO = wx.NewId() 
-ID_GREEK_SIGMA = wx.NewId() 
-ID_GREEK_TAU = wx.NewId() 
-ID_GREEK_UPSILON = wx.NewId() 
-ID_GREEK_PHI = wx.NewId() 
-ID_GREEK_CHI = wx.NewId() 
-ID_GREEK_PSI = wx.NewId() 
-ID_GREEK_OMEGA = wx.NewId()
-
-# format menu items
-ID_BOLD = wx.NewId()
-ID_ITALIC = wx.NewId()
-ID_MATH = wx.NewId()
-ID_CODE = wx.NewId()
-ID_RNDBRK = wx.NewId()
-ID_SQBRK = wx.NewId()
-ID_CRLBRK = wx.NewId()
-ID_BRNDBRK = wx.NewId()
-ID_BSQBRK = wx.NewId()
-ID_BCRLBRK = wx.NewId()
-
-# IDs for headings
-ID_H1 = wx.NewId() 
-ID_H2 = wx.NewId() 
-ID_H3 = wx.NewId() 
-ID_H4 = wx.NewId() 
-ID_H5 = wx.NewId() 
-ID_H6 = wx.NewId()
 
 # set up global text strings
 SBText = "This program is for editing R Markdown files"
@@ -196,15 +96,6 @@ class BashProcessThread(Thread):
         except Exception as error:
             del busy
             doneFunc("\nCaught error {} for {}".format(error, input_list))
-
-ID_DIRECTORY_CHANGE = wx.NewId()
-ID_CRAN = wx.NewId()
-ID_R_PATH = wx.NewId()
-ID_BUILD_COMMAND = wx.NewId()
-ID_KNIT2HTML_COMMAND = wx.NewId()
-ID_KNIT2PDF_COMMAND = wx.NewId()
-ID_NEWTEXT = wx.NewId()
-
 
 # get on with the program 
 class MainWindow(wx.Frame):

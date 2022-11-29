@@ -21,8 +21,10 @@ def OnAddReference(self, event):
 
 def OnAddURL(self, event):
         self.editor.WriteText(" [alt text](http://) ") 
+
 def OnAddEMail(self, event):
         self.editor.WriteText(" [name](Mailto:) ") 
+
 def OnAddFigure(self, event):
         self.editor.WriteText(" ![alt tag](filename) ") 
 
