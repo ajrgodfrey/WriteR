@@ -1,14 +1,21 @@
 # The WriteR application 
 
 
+WriteR  was created so that blind users could draft and compile R markdown documents. Sighted users do this in RStudio, but this software does not work well enough with the screen reading software blind people use.
+
+
 ## Latest news
 
 
-## WriteR 2022.2
+### WriteR 2022.2
+
+The primary reason for this new version is to create  a second application for writing quarto documents. Work is needed to pull all common content out of the primary app file into child files (modules)
+
+This version is also having to deal with wxPython developments, including deprecated functionality.
 
 
 
-## WriteR 2022.1
+### WriteR 2022.1
 
 In March 2022, AJRG worked on making an executable and corresponding installer for Windows users.
 
@@ -23,6 +30,8 @@ In March 2022, AJRG worked on making an executable and corresponding installer f
 ### R and R markdown processing
 
 WriteR is intended for use with R markdown files. Users must have R and Pandoc installed and several R packages if they are to process markdown files into HTML or Microsoft Word's docx format; in addition, an installation of a LaTeX, probably miktex2.9 will be needed if the documents are to be processed into pdf files.
+
+It also works well enough with regular markdown documents.
 
 Perhaps the easiest way to ensure the necessary R add-on packages are installed is to install the BrailleR add-on package.
 

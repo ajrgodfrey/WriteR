@@ -31,3 +31,6 @@ def OnSelectAll(self, event):
         self.editor.SelectAll()
 
 
+def OnSettings(self, event):
+        wx.MessageBox("You wanted to see the settings")
+

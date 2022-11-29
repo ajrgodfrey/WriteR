@@ -1,26 +1,28 @@
 # 2022.11.29 This file needs careful checking to remove content that should be totally independent of implementation
 #    so that we can be sure it contains WriteR necessities, and nothing needed for WriteQuarto
 
-
-
+# load modules
 import wx 
 import wx.adv
 import sys
 import re
 
-# import FileMenuEvents # problems with this one
 
 # imports for all implementations
 import IDTags # must come first
 from IDTags  import *
-import EditMenuEvents
+# import FileMenuEvents # problems with this one
+from EditMenuEvents import *
+from ViewMenuEvents import *
 from MarkdownEvents import * 
 from MathInserts import *
-import MyConsole
+from MyConsole import *
 from REvents import * 
+
 # imports solely for WriteR
+from RChunkEvents import * 
 from HelpMenuEvents import * 
-import RMarkdownEvents
+from RMarkdownEvents import *
 
 
 # and yet more general imports
@@ -37,13 +39,17 @@ from os import walk
 from time import asctime, sleep
 from six import iteritems
 
+# set up global text strings
+SBText = "This program is for editing R Markdown files"
+
+
+
+#development options
 print_option = False
 display_rscript_cmd = True
 beep = 'winsound' in sys.modules
 system_tray = True
 
-# set up global text strings
-SBText = "This program is for editing R Markdown files"
 
 
 def dcf_dumps(data, sort_keys=True):
@@ -114,7 +120,7 @@ class MainWindow(wx.Frame):
                          'lastdir': '.',
                          'filename': 'none',
                          'newText': "Use WriteR to edit your R markdown files, perhaps by starting from a template file",
-                         'RDirectory': self.GetRDirectory()}
+                         'RDirectory': "self.GetRDirectory()"}##
         if len(sys.argv) > 1:
             self.settings['lastdir'], self.settings['filename'] = split(realpath(sys.argv[-1]))
             self.filename = self.settings['filename']
@@ -168,6 +174,7 @@ class MainWindow(wx.Frame):
         self.SetTitle()
 
     def CreateMenu(self):
+        menuBar = wx.MenuBar()  # create the menu bar object
         fileMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [(wx.ID_NEW, "New file\tCtrl+N", "Start a new file", self.OnNewFile),
@@ -181,234 +188,18 @@ class MainWindow(wx.Frame):
             else:
                 item = fileMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        menuBar = wx.MenuBar()  # create the menu bar object
         menuBar.Append(fileMenu, "&File")  # Add the fileMenu to the MenuBar
 
 
-        editMenu = wx.Menu()
-        for id, label, helpText, handler in \
-                [(wx.ID_CUT, "Cu&t\tCtrl+X", "Cut highlighted text to clipboard", self.OnCut),
-                 (wx.ID_COPY, "&Copy\tCtrl+C", "Copy highlighted text to clipboard", self.OnCopy),
-                 (wx.ID_PASTE, "&Paste\tCtrl+V", "Paste text from clipboard", self.OnPaste),
-                 (wx.ID_SELECTALL, "Select all\tCtrl+A", "Highlight entire text", self.OnSelectAll),
-                 (wx.ID_DELETE, "&Delete", "Delete highlighted text", self.OnDelete),
-                 (ID_WORDCOUNT, "Word count\tCtrl+w", "get a word count of the entire text", self.OnWordCount),
-                 (None,) * 4,
-                 (ID_FINDONLY, "Find\tCtrl+F", "Open a standard find dialog box", self.OnShowFind),
-                 (ID_FINDNEXT, "FindNext\tF3", "FindNext", self.F3Next),
-                 (ID_FINDPREV, "FindPrevious\tShift+F3", "FindPrev", self.ShiftF3Previous),
-                 (ID_GOTO, "Go to line\tCtrl+g", "Open a dialog box to choose a line number", self.OnGoToLine),
-                 (ID_FINDREPLACE, "Find/replace\tCtrl+H", "Open a find/replace dialog box", self.OnShowFindReplace),
-                 (ID_SETMARK, "Set Mark\tCtrl+SPACE", "Set Mark", self.OnSetMark),
-                 (ID_SELECTTOMARK , "Select To Mark\tAlt+Ctrl+SPACE", "Select To Mark", self.OnSelectToMark),
-                 (ID_ALTERNATE_FOCUS , "Alternate Focus\tF4", "Alternate Focus", self.AlternateFocus),
-                 (None,) * 4,
-                 (ID_SETTINGS, 'Settings', "Setup the editor to your liking", self.OnSettings)]:
-            if id == None:
-                editMenu.AppendSeparator()
-            else:
-                item = editMenu.Append(id, label, helpText)
-                self.Bind(wx.EVT_MENU, handler, item)
-        menuBar.Append(editMenu, "&Edit")  # Add the editMenu to the MenuBar
+#        import EditMenu
+#        import ViewMenu
+#        import BuildMenuR
+#        import InsertMenu
+#        import FormatMenu
+#        import MathsMenu
+#        import ViewMenu
+#        import HelpMenu
 
-        viewMenu = wx.Menu()
-        self.ShowStatusBar = viewMenu.Append(wx.ID_ANY, "Show status bar", 
-            "Show Status bar", kind=wx.ITEM_CHECK)
-        viewMenu.Check(self.ShowStatusBar.GetId(), True)
-        self.Bind(wx.EVT_MENU, self.ToggleStatusBar, self.ShowStatusBar)
-        self.IncreaseFont = viewMenu.Append(wx.ID_ANY, "Increase the font size\tCtrl+=", "Increase the font size")
-        self.Bind(wx.EVT_MENU, self.OnIncreaseFontSize, self.IncreaseFont) 
-        self.DecreaseFont = viewMenu.Append(wx.ID_ANY, "Decrease the font size\tCtrl+-", "Decrease the font size")
-        self.Bind(wx.EVT_MENU, self.OnDecreaseFontSize, self.DecreaseFont) 
-        self.ChooseFont = viewMenu.Append(wx.ID_ANY, "Choose font\tCtrl+D", "Choose the font size and other details")
-        self.Bind(wx.EVT_MENU, self.OnSelectFont, self.ChooseFont )
-        menuBar.Append(viewMenu, "View")  # Add the view Menu to the MenuBar
-
-        buildMenu = wx.Menu()
-        self.Render = buildMenu.Append(wx.ID_ANY, "Render the document\tF5", "Use the rmarkdown package to render the document into the chosen format")
-        self.Bind(wx.EVT_MENU, self.OnRenderNull, self.Render)
-        # Create render menu
-        renderMenu = wx.Menu()
-        self.ChooseRenderNull = renderMenu.Append(wx.ID_ANY, "Render using defaults", "Use the rmarkdown package and render function to create HTML or only the first of multiple formats specified in YAML header", wx.ITEM_RADIO)
-        self.Bind(wx.EVT_MENU, self.OnSelectRenderNull, self.ChooseRenderNull)
-        self.ChooseRenderHtml = renderMenu.Append(wx.ID_ANY, "Render into HTML only", "Use the rmarkdown package and render function to create HTML", wx.ITEM_RADIO)
-        self.Bind(wx.EVT_MENU, self.OnSelectRenderHtml, self.ChooseRenderHtml) 
-        self.ChooseRenderWord = renderMenu.Append(wx.ID_ANY, "Render into Microsoft Word only", "Use the rmarkdown package and render function to create Microsoft Word", wx.ITEM_RADIO)
-        self.Bind(wx.EVT_MENU, self.OnSelectRenderWord, self.ChooseRenderWord) 
-        self.ChooseRenderSlidy = renderMenu.Append(wx.ID_ANY, "Render into slidy only", "Use the rmarkdown package and render function to create a slidy presentation", wx.ITEM_RADIO)
-        self.Bind(wx.EVT_MENU, self.OnSelectRenderSlidy, self.ChooseRenderSlidy) 
-        self.ChooseRenderPdf = renderMenu.Append(wx.ID_ANY, "Render into pdf only", "Use the rmarkdown package and render function to create pdf", wx.ITEM_RADIO)
-        self.Bind(wx.EVT_MENU, self.OnSelectRenderPdf, self.ChooseRenderPdf) 
-        self.ChooseRenderAll = renderMenu.Append(wx.ID_ANY, "Render into all specified formats", "Use the rmarkdown package and render function to create multiple output documents", wx.ITEM_RADIO)
-        self.Bind(wx.EVT_MENU, self.OnSelectRenderAll, self.ChooseRenderAll) 
-        buildMenu.Append(-1, "Set render process to...", renderMenu) # Add the render Menu as a submenu to the build menu
-        for id, label, helpText, handler in \
-                [
-                 (ID_KNIT2HTML, "Knit to html\tF6", "Knit the script to HTML", self.OnKnit2html),
-                 (ID_KNIT2PDF, "Knit to pdf\tShift+F6", "Knit the script to a pdf file using LaTeX", self.OnKnit2pdf)]:
-            if id == None:
-                buildMenu.AppendSeparator()
-            else:
-                item = buildMenu.Append(id, label, helpText)
-                self.Bind(wx.EVT_MENU, handler, item)
- 
-        menuBar.Append(buildMenu, "Build")  # Add the Build Menu to the MenuBar
-
-        insertMenu = wx.Menu()
-        AddHeadBlock = insertMenu.Append(-1, "header/preamble\tCtrl+Shift+H")
-        self.Bind(wx.EVT_MENU, self.OnAddHeadBlock, AddHeadBlock)
-        AddURL = insertMenu.Append(-1, "URL\tCtrl+Shift+U")
-        self.Bind(wx.EVT_MENU, self.OnAddURL, AddURL)
-        AddEMail = insertMenu.Append(-1, "e-mail\tCtrl+Shift+E")
-        self.Bind(wx.EVT_MENU, self.OnAddEMail, AddEMail)
-        AddFigure = insertMenu.Append(-1, "Figure\tCtrl+Shift+F")
-        self.Bind(wx.EVT_MENU, self.OnAddFigure, AddFigure)
-        AddReference = insertMenu.Append(-1, "Reference\tCtrl+Shift+R")
-        self.Bind(wx.EVT_MENU, self.OnAddReference, AddReference)
-        headingsMenu = wx.Menu()
-        for id, label, helpText, handler in \
-                [
-                 (ID_H1, "level &1\tAlt+1", "insert heading level 1", self.OnHeading1), 
-                 (ID_H2, "level &2\tAlt+2", "insert heading level 2", self.OnHeading2), 
-                 (ID_H3, "level &3\tAlt+3", "insert heading level 3", self.OnHeading3), 
-                 (ID_H4, "level &4\tAlt+4", "insert heading level 4", self.OnHeading4), 
-                 (ID_H5, "level &5\tAlt+5", "insert heading level 5", self.OnHeading5), 
-                 (ID_H6, "level &6\tAlt+6", "insert heading level 6", self.OnHeading6)]:
-            if id == None:
-                headingsMenu.AppendSeparator()
-            else:
-                item = headingsMenu.Append(id, label, helpText)
-                self.Bind(wx.EVT_MENU, handler, item)
-        insertMenu.Append(-1, "Heading", headingsMenu)
-        menuBar.Append(insertMenu, "Insert")  # Add the Insert Menu to the MenuBar
-
-        formatMenu = wx.Menu()
-        for id, label, helpText, handler in \
-                [
-                 (ID_BOLD, "Bold\tCtrl+B", "move to bold face font", self.OnBold),
-                 (ID_ITALIC, "Italic\tCtrl+I", "move to italic face font", self.OnItalic),
-                 (ID_CODE, "Code\tCtrl+`", "present using a typewriter font commonly seen when showing code", self.OnCode),
-                 (ID_MATH, "Maths mode\tCtrl+4", "move text to maths mode", self.OnMath),
-                 (ID_RNDBRK, "Round brackets\tAlt+Shift+(", "Wrap text in round () brackets", self.OnRoundBrack),
-                 (ID_SQBRK, "Square brackets\tAlt+[", "Wrap text in square brackets", self.OnSquareBrack),
-                 (ID_CRLBRK, "Curly brackets\tAlt+Shift+{", "Wrap text in curly brackets", self.OnCurlyBrack),
-                 (ID_BRNDBRK, "Round brackets (math)\tAlt+Shift+)", "Wrap math in round () brackets", self.OnMathRoundBrack),
-                 (ID_BSQBRK, "Square brackets (math)\tAlt+]", "Wrap math in square brackets", self.OnMathSquareBrack),
-                 (ID_BCRLBRK, "Curly brackets (math)\tAlt+Shift+}", "Wrap math in curly brackets", self.OnMathCurlyBrack)]:
-            if id == None:
-                formatMenu.AppendSeparator()
-            else:
-                item = formatMenu.Append(id, label, helpText)
-                self.Bind(wx.EVT_MENU, handler, item)
-        menuBar.Append(formatMenu, "F&ormat")  # Add the format Menu to the MenuBar
-
-
-        mathsMenu = wx.Menu()
-        symbolsMenu = wx.Menu()
-        for id, label, helpText, handler in \
-                [
-                 (ID_SYMBOL_INFINITY, "infinity\tCtrl+Shift+I", "insert infinity", self.OnSymbol_infinity), 
-                 (ID_SYMBOL_TIMES, "times\tCtrl+Shift+*", "insert times", self.OnSymbol_times), 
-                 (ID_SYMBOL_PARTIAL, "partial derivative\tCtrl+Shift+D", "insert partial", self.OnSymbol_partial), 
-                 (ID_SYMBOL_PLUSMINUS, "plus or minus\tCtrl+Shift+=", "insert plus or minus sign", self.OnSymbol_plusminus), 
-                 (ID_SYMBOL_MINUSPLUS, "minus or plus\tCtrl+Shift+-", "insert minus or plus sign", self.OnSymbol_minusplus), 
-                 (ID_SYMBOL_LESSEQL, "less than or equal\tCtrl+Shift+<", "insert less than or equal sign", self.OnSymbol_leq), 
-                 (ID_SYMBOL_GRTREQL, "greater than or equal \tCtrl+Shift+>", "insert greater than or equal sign", self.OnSymbol_geq), 
-                 (ID_SYMBOL_NOTEQL, "not equal\tCtrl+Shift+!", "insert not equal sign", self.OnSymbol_neq), 
-                 (ID_SYMBOL_LEFTPAREN, "Left Parenthesis\tCtrl+9", "insert variable size left parenthesis", self.OnSymbol_LeftParen), 
-                 (ID_SYMBOL_RIGHTPAREN, "Right Parenthesis\tCtrl+0", "insert variable size right parenthesis", self.OnSymbol_RightParen), 
-                 (ID_SYMBOL_LEFTSQUARE, "Left Square bracket\tCtrl+[", "insert variable size left square bracket", self.OnSymbol_LeftSquare), 
-                 (ID_SYMBOL_RIGHTSQUARE, "Right Square bracket\tCtrl+]", "insert variable size right square bracket", self.OnSymbol_RightSquare), 
-                 (ID_SYMBOL_LEFTCURLY, "Left Curly bracket\tCtrl+Shift+{", "insert variable size left curly bracket", self.OnSymbol_LeftCurly), 
-                 (ID_SYMBOL_RIGHTCURLY, "Right Curly bracket\tCtrl+Shift+}", "insert variable size right curly bracket", self.OnSymbol_RightCurly)]:
-            if id == None:
-                symbolsMenu.AppendSeparator()
-            else:
-                item = symbolsMenu.Append(id, label, helpText)
-                self.Bind(wx.EVT_MENU, handler, item)
-        mathsMenu.Append(-1, "Symbols", symbolsMenu)
-        structuresMenu = wx.Menu()
-        for id, label, helpText, handler in \
-                [
-                 (ID_SQUAREROOT, "Square root\tAlt+Ctrl+Shift+R", "insert a square root", self.OnSquareRoot), 
-                 (ID_MATHBAR, "bar \tCtrl+Shift+B", "insert a bar operator", self.OnMathBar), 
-                 (ID_ABSVAL, "Absolute values\tCtrl+Shift+A", "insert left and right absolute value delimiters", self.OnAbsVal), 
-                 (ID_FRACTION, "Fraction\tCtrl+Shift+/", "insert a fraction", self.OnFraction), 
-                 (ID_SUMMATION, "Summation\tAlt+Ctrl+Shift+S", "insert a summation", self.OnSummation), 
-                 (ID_INTEGRAL, "Integral\tAlt+Ctrl+Shift+I", "insert an integral", self.Onintegral), 
-                 (ID_PRODUCT, "Product\tAlt+Ctrl+Shift+P", "insert a product", self.OnProduct), 
-                 (ID_LIMIT, "Limit\tAlt+Ctrl+Shift+L", "insert a limit", self.OnLimit), 
-                 (ID_DOUBLESUMMATION, "Double summation\tAlt+Ctrl+Shift+D", "insert a double summation", self.OnDoubleSummation), 
-                 (ID_DOUBLEINTEGRAL, "Double integral", "insert a double integral", self.OnDoubleIntegral)]:
-            if id == None:
-                structuresMenu.AppendSeparator()
-            else:
-                item = structuresMenu.Append(id, label, helpText)
-                self.Bind(wx.EVT_MENU, handler, item)
-        mathsMenu.Append(-1, "Structures", structuresMenu)# Add the structures Menu as a submenu to the main menu
-        GreekMenu = wx.Menu()
-        for id, label, helpText, handler in \
-                [
-                 (ID_GREEK_ALPHA, "alpha\tAlt+Shift+A", "insert greek letter alpha", self.OnGreek_alpha), 
-                 (ID_GREEK_BETA, "beta\tAlt+Shift+B", "insert greek letter beta", self.OnGreek_beta), 
-                 (ID_GREEK_GAMMA, "gamma\tAlt+Shift+G", "insert greek letter gamma", self.OnGreek_gamma), 
-                 (ID_GREEK_DELTA, "delta\tAlt+Shift+D", "insert greek letter delta", self.OnGreek_delta), 
-                 (ID_GREEK_EPSILON, "epsilon\tAlt+Shift+E", "insert greek letter epsilon", self.OnGreek_epsilon), 
-                 (ID_GREEK_VAREPSILON, "epsilon (variant)\tAlt+Shift+V", "insert variant of greek letter epsilon", self.OnGreek_varepsilon), 
-                 (ID_GREEK_ZETA, "zeta\tAlt+Shift+Z", "insert greek letter zeta", self.OnGreek_zeta), 
-                 (ID_GREEK_ETA, "eta\tAlt+Shift+W", "insert greek letter eta", self.OnGreek_eta), 
-                 (ID_GREEK_THETA, "theta\tAlt+Shift+H", "insert greek letter theta", self.OnGreek_theta), 
-                 (ID_GREEK_VARTHETA, "theta (variant)\tAlt+Shift+/", "insert variant of greek letter theta", self.OnGreek_vartheta), 
-                 (ID_GREEK_IOTA, "iota\tAlt+Shift+I", "insert greek letter iota", self.OnGreek_iota), 
-                 (ID_GREEK_KAPPA, "kappa\tAlt+Shift+K", "insert greek letter kappa", self.OnGreek_kappa), 
-                 (ID_GREEK_LAMBDA, "lambda\tAlt+Shift+L", "insert greek letter lambda", self.OnGreek_lambda), 
-                 (ID_GREEK_MU, "mu\tAlt+Shift+M", "insert greek letter mu", self.OnGreek_mu), 
-                 (ID_GREEK_NU, "nu\tAlt+Shift+N", "insert greek letter nu", self.OnGreek_nu), 
-                 (ID_GREEK_XI, "xi\tAlt+Shift+X", "insert greek letter xi", self.OnGreek_xi), 
-                 (ID_GREEK_OMICRON, "omicron\tAlt+Shift+O", "insert greek letter omicron", self.OnGreek_omicron), 
-                 (ID_GREEK_PI, "pi\tAlt+Shift+P", "insert greek letter pi", self.OnGreek_pi), 
-                 (ID_GREEK_RHO, "rho\tAlt+Shift+R", "insert greek letter rho", self.OnGreek_rho), 
-                 (ID_GREEK_SIGMA, "sigma\tAlt+Shift+S", "insert greek letter sigma", self.OnGreek_sigma), 
-                 (ID_GREEK_TAU, "tau\tAlt+Shift+T", "insert greek letter tau", self.OnGreek_tau), 
-                 (ID_GREEK_UPSILON, "upsilon\tAlt+Shift+U", "insert greek letter upsilon", self.OnGreek_upsilon), 
-                 (ID_GREEK_PHI, "phi\tAlt+Shift+F", "insert greek letter phi", self.OnGreek_phi), 
-                 (ID_GREEK_CHI, "chi\tAlt+Shift+C", "insert greek letter chi", self.OnGreek_chi), 
-                 (ID_GREEK_PSI, "psi\tAlt+Shift+Y", "insert greek letter psi", self.OnGreek_psi), 
-                 (ID_GREEK_OMEGA, "omega\tAlt+Shift+.", "insert greek letter omega", self.OnGreek_omega)]:
-            if id == None:
-                GreekMenu.AppendSeparator()
-            else:
-                item = GreekMenu.Append(id, label, helpText)
-                self.Bind(wx.EVT_MENU, handler, item)
-        mathsMenu.Append(-1, "Greek letters", GreekMenu)
-        menuBar.Append(mathsMenu, "Maths")  # Add the maths Menu to the MenuBar
-
-        statsMenu = wx.Menu()
-        for id, label, helpText, handler in \
-                [
-                 (ID_RCOMMAND, "Insert inline R command\tAlt+c", "insert an in-line R command", self.OnRCommand),
-                 (ID_RCHUNK, "Insert R code chunk\tAlt+R", "insert standard R code chunk", self.OnRChunk),
-                 (ID_RGRAPH, "Insert R code chunk for a graph\tAlt+G", "insert R code chunk for a graph", self.OnRGraph),
-                 (ID_COMMENTOUT, "Comment out a selection\tAlt+q", "Comment out some selected text or insert the delimiters for a comment", self.OnRmdComment),
-                 (ID_RLASSIGN, "Insert a left assignment\tCtrl+<", "insert R code for the left assignment <-", self.OnRLAssign),
-                 (ID_RRASSIGN, "Insert a right assignment\tCtrl+>", "insert R code for the right assignment ->", self.OnRRAssign),
-                 (ID_RPIPE, "Insert a pipe operator\tCtrl+Shift+P", "insert R code for the pipe operator %>%", self.OnRPipe)]:
-            if id == None:
-                statsMenu.AppendSeparator()
-            else:
-                item = statsMenu.Append(id, label, helpText)
-                self.Bind(wx.EVT_MENU, handler, item)
-        menuBar.Append(statsMenu, "Stats")  # Add the stats Menu to the MenuBar
-
-        helpMenu = wx.Menu()
-        for id, label, helpText, handler in \
-                [(wx.ID_ABOUT, "About", "Information about this program", self.OnAbout)]:
-            if id == None:
-                fileMenu.AppendSeparator()
-            else:
-                item = helpMenu.Append(id, label, helpText)
-                self.Bind(wx.EVT_MENU, handler, item)
-        menuBar.Append(helpMenu, "&Help")  # Add the helpMenu to the MenuBar
         self.SetMenuBar(menuBar)  # Add the menuBar to the Frame
 
     def CreateTextCtrl(self, text):
@@ -499,59 +290,7 @@ class MainWindow(wx.Frame):
         self.OnSave(event)
         self.OnExit()
 
-    # help menu events
-##    OnAbout = HelpMenuEvents.OnAbout
 
-    # edit menu events
-    OnSelectAll = EditMenuEvents.OnSelectAll
-    OnDelete = EditMenuEvents.OnDelete
-    OnPaste = EditMenuEvents.OnPaste
-    OnCopy = EditMenuEvents.OnCopy
-    OnCut = EditMenuEvents.OnCut
-    OnGoToLine = EditMenuEvents.OnGoToLine
-
-# view menu events
-    def StatusBar(self):
-        self.statusbar = self.CreateStatusBar()
-        self.statusbar.SetFieldsCount(3)
-        self.statusbar.SetStatusWidths([-5, -2, -1])
-        self.SetStatusText(SBText)
-       
-    def OnIncreaseFontSize(self, event):
-        self.font.SetPointSize(self.font.GetPointSize()+1)
-        self.UpdateUI()
-    def OnDecreaseFontSize(self, event):
-        self.font.SetPointSize(self.font.GetPointSize()-1)
-        self.UpdateUI()
-
-    def UpdateUI(self):
-        self.editor.SetFont(self.font)
-        #self.editor.SetForegroundColour(self.curClr)
-        #self.ps.SetLabel(str(self.font.GetPointSize()))
-        #self.family.SetLabel(self.font.GetFamilyString())
-        #self.style.SetLabel(self.font.GetStyleString())
-        #self.weight.SetLabel(self.font.GetWeightString())
-        #self.face.SetLabel(self.font.GetFaceName())
-        #self.nfi.SetLabel(self.font.GetNativeFontInfo().ToString())
-        self.Layout()
-
-
-    def OnSelectFont(self, evt):
-        data = wx.FontData()
-        data.EnableEffects(False)
-        #data.SetColour(self.curClr)         # set colour
-        data.SetInitialFont(self.font)
-        dlg = wx.FontDialog(self, data)
-        if dlg.ShowModal() == wx.ID_OK:
-            data = dlg.GetFontData()
-            font = data.GetChosenFont()
-            #colour = data.GetColour()
-            self.font = font
-            #self.curClr = colour
-            self.UpdateUI()
-        # Don't destroy the dialog until you get everything you need from the
-        # dialog!
-        dlg.Destroy()
 
 
 
@@ -568,62 +307,8 @@ class MainWindow(wx.Frame):
         self.comp_thread = BashProcessThread(self.sub_flag, input_object, self.console.CreateWriteText, self.console.DoneFunc)
         self.comp_thread.start()
 
-    # Build Menu events
-    OnRenderNull = RMarkdownEvents.OnRenderNull
-    OnBuild = OnRenderNull # sets default build 
-    OnRenderHtml = RMarkdownEvents.OnRenderHtml
-    OnRenderSlidy = RMarkdownEvents.OnRenderSlidy
-    OnRenderAll = RMarkdownEvents.OnRenderAll
-    OnRenderWord = RMarkdownEvents.OnRenderWord
-    OnRenderPdf = RMarkdownEvents.OnRenderPdf
-    OnSelectRenderNull = RMarkdownEvents.OnSelectRenderNull
-    OnSelectRenderHtml = RMarkdownEvents.OnSelectRenderHtml
-    OnSelectRenderSlidy = RMarkdownEvents.OnSelectRenderSlidy
-    OnSelectRenderAll = RMarkdownEvents.OnSelectRenderAll
-    OnSelectRenderWord = RMarkdownEvents.OnSelectRenderWord
-    OnSelectRenderPdf = RMarkdownEvents.OnSelectRenderPdf
-    OnKnit2html = RMarkdownEvents.OnKnit2html
-    OnKnit2pdf = RMarkdownEvents.OnKnit2pdf
 
 
-    # format menu events
-    def OnSquareBrack(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("]")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("[")
-        self.editor.SetInsertionPoint(to + 2)
-
-    def OnCurlyBrack(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("}")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("{")
-        self.editor.SetInsertionPoint(to + 2)
-
-
-    def OnRoundBrack(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText(")")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("(")
-        self.editor.SetInsertionPoint(to + 2)
-
-    def OnAddHeadBlock(self, event):
-        self.editor.SetInsertionPoint(0)
-        self.editor.WriteText('---\ntitle: ""\nauthor: ""\ndate: ""\noutput: html_document\n---\n') 
-        self.editor.SetInsertionPoint(13)
-
-    # view menu events
-    def ToggleStatusBar(self, event):
-        if self.statusbar.IsShown():
-            self.statusbar.Hide()
-        else:
-            self.statusbar.Show()
-            self.SetStatusText(SBText)
 
     def OnClose(self, event):
         self.settings['filename'] = self.filename
@@ -642,55 +327,12 @@ class MainWindow(wx.Frame):
         else:
             self.Destroy()
 
-    def GetRDirectory(self):
-        def splitter(path, interest):
-            look = split(path)
-            if interest in look[1]:
-                return look[1]
-            if len(look[0]) == 0:
-                return None
-            return splitter(look[0], interest)
-        rscript = 'Rscript.exe'
-        warn = "Cannot find {} in default install location.".format(rscript)
-        version = "R-0.0.0"
-        choice = None
-        if "No settings file reference to settings":
-            if isdir("C:\\Program Files\\R"):
-                hold = "C:\\Program Files\\R"
-            elif isdir("C:\\Program Files (x86)\\R"):
-                hold = "C:\\Program Files (x86)\\R"
-            else:
-                print (warn); return
-            options = [join(r, rscript) for r, d, f in walk(hold) if rscript in f]
-            printing('options', options)
-            if len(options) > 0:
-                choice = options[0]
-                for op in options[1:]:
-                    vv = splitter(op, 'R-')
-                    if vv >= version:
-                        if 'x64' in op:
-                            choice = op
-                            version = vv
-                        elif 'i386' in op and 'x64' not in choice:
-                            choice = op
-                            version = vv
-                        elif 'i386' not in choice and 'x64' not in choice:
-                            choice = op
-                            version = vv
-            else:
-                print (warn); return
-        else:
-            'something to get the information out of the settings file.'
-        return choice
 
     def GetStartPosition(self):
         self.x = self.x + 20
         x = self.x
         pt = self.ClientToScreen(wx.Point(0, 0))
         return wx.Point(pt.x + x, pt.y + x)
-
-    def OnSettings(self, event):
-        wx.MessageBox("You wanted to see the settings")
 
     def OnShowFind(self, event):
         data = wx.FindReplaceData()
@@ -849,10 +491,8 @@ class MainWindow(wx.Frame):
 
     def OnFind(self, event):
         et = event.GetEventType()
-
         self.regex = re.compile(self.ComputeFindString(event), self.ComputeReFlags(event))
         self.forward = event.GetFlags() & wx.FR_DOWN
-
         if et == wx.wxEVT_COMMAND_FIND:
             (ok, col, row) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
             self.FindFrom(col, row, False)
