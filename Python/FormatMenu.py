@@ -3,6 +3,7 @@
 
 import wx
 
+def MakeFormatMenu(self):
         formatMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [

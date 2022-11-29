@@ -3,8 +3,9 @@
 
 import wx
 
-editMenu = wx.Menu()
-for id, label, helpText, handler in \
+def MakeEditMenu(self):
+    editMenu = wx.Menu()
+    for id, label, helpText, handler in \
                  [(wx.ID_CUT, "Cu&t\tCtrl+X", "Cut highlighted text to clipboard", self.OnCut),
                  (wx.ID_COPY, "&Copy\tCtrl+C", "Copy highlighted text to clipboard", self.OnCopy),
                  (wx.ID_PASTE, "&Paste\tCtrl+V", "Paste text from clipboard", self.OnPaste),
@@ -27,4 +28,4 @@ for id, label, helpText, handler in \
             else:
                  item = editMenu.Append(id, label, helpText)
                  self.Bind(wx.EVT_MENU, handler, item)
-menuBar.Append(editMenu, "&Edit")  # Add the editMenu to the MenuBar
+    menuBar.Append(editMenu, "&Edit")  # Add the editMenu to the MenuBar

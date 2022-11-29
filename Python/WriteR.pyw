@@ -14,9 +14,10 @@ from IDTags  import *
 # import FileMenuEvents # problems with this one
 from EditMenuEvents import *
 from ViewMenuEvents import *
+from ViewMenu import *
 from MarkdownEvents import * 
 from MathInserts import *
-from MyConsole import *
+import MyConsole 
 from REvents import * 
 
 # imports solely for WriteR
@@ -120,7 +121,7 @@ class MainWindow(wx.Frame):
                          'lastdir': '.',
                          'filename': 'none',
                          'newText': "Use WriteR to edit your R markdown files, perhaps by starting from a template file",
-                         'RDirectory': "self.GetRDirectory()"}##
+                         'RDirectory': "self.GetRDirectory()"}## couldn't see the function here so quoted it out
         if len(sys.argv) > 1:
             self.settings['lastdir'], self.settings['filename'] = split(realpath(sys.argv[-1]))
             self.filename = self.settings['filename']
@@ -170,7 +171,7 @@ class MainWindow(wx.Frame):
 
     def CreateExteriorWindowComponents(self):
         self.CreateMenu()
-        self.StatusBar()
+#        self.StatusBar() ## want this back
         self.SetTitle()
 
     def CreateMenu(self):
@@ -191,14 +192,14 @@ class MainWindow(wx.Frame):
         menuBar.Append(fileMenu, "&File")  # Add the fileMenu to the MenuBar
 
 
-#        import EditMenu
-#        import ViewMenu
-#        import BuildMenuR
-#        import InsertMenu
-#        import FormatMenu
-#        import MathsMenu
-#        import ViewMenu
-#        import HelpMenu
+        import EditMenu
+        import ViewMenu
+        import BuildMenuR
+        import InsertMenu
+        import FormatMenu
+        import MathsMenu
+        import StatsMenu
+        import HelpMenu
 
         self.SetMenuBar(menuBar)  # Add the menuBar to the Frame
 

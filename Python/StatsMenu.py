@@ -2,6 +2,8 @@
 #    so that we can be sure it remains useful for WriteR and WriteQuarto
 
 import wx
+
+def MakeStatsMenu(self):
         statsMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [

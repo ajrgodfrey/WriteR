@@ -3,6 +3,7 @@
 
 import wx
 
+def MakeInsertMenu(self):
         insertMenu = wx.Menu()
         AddHeadBlock = insertMenu.Append(-1, "header/preamble\tCtrl+Shift+H")
         self.Bind(wx.EVT_MENU, self.OnAddHeadBlock, AddHeadBlock)

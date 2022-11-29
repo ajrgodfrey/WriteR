@@ -2,6 +2,8 @@
 #    so that we can be sure it remains useful for WriteR and WriteQuarto
 
 import wx
+
+def MakeMathsMenu(self):
         mathsMenu = wx.Menu()
         symbolsMenu = wx.Menu()
         for id, label, helpText, handler in \
@@ -82,3 +84,6 @@ import wx
         mathsMenu.Append(-1, "Greek letters", GreekMenu)
         menuBar.Append(mathsMenu, "Maths")  # Add the maths Menu to the MenuBar
 
+
+if __name__ == "CreateMenu":
+    MakeMathsMenu(self)

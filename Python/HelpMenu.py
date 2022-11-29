@@ -3,7 +3,7 @@
 
 import wx
 
-
+def MakeHelpMenu(self):
         helpMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [(wx.ID_ABOUT, "About", "Information about this program", self.OnAbout)]:
