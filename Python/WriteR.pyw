@@ -10,13 +10,14 @@ import re
 
 # imports for all implementations
 import IDTags # must come first
-from IDTags  import *
+#from IDTags  import *
 # import FileMenuEvents # problems with this one
 from EditMenuEvents import *
 from ViewMenuEvents import *
 from ViewMenu import *
 from MarkdownEvents import * 
 from MathInserts import *
+import MathsMenu
 import MyConsole 
 from REvents import * 
 
@@ -197,7 +198,7 @@ class MainWindow(wx.Frame):
         import BuildMenuR
         import InsertMenu
         import FormatMenu
-        import MathsMenu
+        MathsMenu.MakeMenu(self)
         import StatsMenu
         import HelpMenu
 

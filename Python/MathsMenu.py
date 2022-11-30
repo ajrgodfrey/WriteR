@@ -2,8 +2,68 @@
 #    so that we can be sure it remains useful for WriteR and WriteQuarto
 
 import wx
+from MathInserts import *
 
-def MakeMathsMenu(self):
+# symbols menu for mathematical symbols
+ID_SYMBOL_INFINITY = wx.Window.NewControlId() 
+ID_SYMBOL_MINUSPLUS = wx.Window.NewControlId() 
+ID_SYMBOL_PLUSMINUS = wx.Window.NewControlId() 
+ID_SYMBOL_TIMES = wx.Window.NewControlId() 
+ID_SYMBOL_PARTIAL = wx.Window.NewControlId() 
+ID_SYMBOL_LEFTPAREN = wx.Window.NewControlId() 
+ID_SYMBOL_RIGHTPAREN = wx.Window.NewControlId() 
+ID_SYMBOL_LEFTSQUARE = wx.Window.NewControlId() 
+ID_SYMBOL_RIGHTSQUARE = wx.Window.NewControlId() 
+ID_SYMBOL_LEFTCURLY = wx.Window.NewControlId() 
+ID_SYMBOL_RIGHTCURLY = wx.Window.NewControlId()
+ID_SYMBOL_GRTREQL = wx.Window.NewControlId() 
+ID_SYMBOL_LESSEQL = wx.Window.NewControlId() 
+ID_SYMBOL_NOTEQL = wx.Window.NewControlId() 
+
+
+ID_SQUAREROOT = wx.Window.NewControlId() 
+ID_MATHBAR = wx.Window.NewControlId() 
+ID_ABSVAL = wx.Window.NewControlId() 
+ID_FRACTION = wx.Window.NewControlId() 
+ID_SUMMATION = wx.Window.NewControlId() 
+ID_INTEGRAL = wx.Window.NewControlId() 
+ID_PRODUCT = wx.Window.NewControlId() 
+ID_LIMIT = wx.Window.NewControlId() 
+ID_DOUBLESUMMATION = wx.Window.NewControlId() 
+ID_DOUBLEINTEGRAL = wx.Window.NewControlId()
+
+
+# Greek menu for Greek letters
+ID_GREEK_ALPHA = wx.Window.NewControlId() 
+ID_GREEK_BETA = wx.Window.NewControlId() 
+ID_GREEK_GAMMA = wx.Window.NewControlId() 
+ID_GREEK_DELTA = wx.Window.NewControlId() 
+ID_GREEK_EPSILON = wx.Window.NewControlId() 
+ID_GREEK_VAREPSILON = wx.Window.NewControlId() 
+ID_GREEK_ZETA = wx.Window.NewControlId() 
+ID_GREEK_ETA = wx.Window.NewControlId() 
+ID_GREEK_THETA = wx.Window.NewControlId() 
+ID_GREEK_VARTHETA = wx.Window.NewControlId() 
+ID_GREEK_IOTA = wx.Window.NewControlId() 
+ID_GREEK_KAPPA = wx.Window.NewControlId() 
+ID_GREEK_LAMBDA = wx.Window.NewControlId() 
+ID_GREEK_MU = wx.Window.NewControlId() 
+ID_GREEK_NU = wx.Window.NewControlId() 
+ID_GREEK_XI = wx.Window.NewControlId() 
+ID_GREEK_OMICRON = wx.Window.NewControlId() 
+ID_GREEK_PI = wx.Window.NewControlId() 
+ID_GREEK_RHO = wx.Window.NewControlId() 
+ID_GREEK_SIGMA = wx.Window.NewControlId() 
+ID_GREEK_TAU = wx.Window.NewControlId() 
+ID_GREEK_UPSILON = wx.Window.NewControlId() 
+ID_GREEK_PHI = wx.Window.NewControlId() 
+ID_GREEK_CHI = wx.Window.NewControlId() 
+ID_GREEK_PSI = wx.Window.NewControlId() 
+ID_GREEK_OMEGA = wx.Window.NewControlId()
+
+
+
+def MakeMenu(self):
         mathsMenu = wx.Menu()
         symbolsMenu = wx.Menu()
         for id, label, helpText, handler in \
@@ -84,6 +144,3 @@ def MakeMathsMenu(self):
         mathsMenu.Append(-1, "Greek letters", GreekMenu)
         menuBar.Append(mathsMenu, "Maths")  # Add the maths Menu to the MenuBar
 
-
-if __name__ == "CreateMenu":
-    MakeMathsMenu(self)

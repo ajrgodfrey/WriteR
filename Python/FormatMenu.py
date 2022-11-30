@@ -3,7 +3,22 @@
 
 import wx
 
-def MakeFormatMenu(self):
+
+# format menu items
+ID_BOLD = wx.Window.NewControlId()
+ID_ITALIC = wx.Window.NewControlId()
+ID_MATH = wx.Window.NewControlId()
+ID_CODE = wx.Window.NewControlId()
+ID_RNDBRK = wx.Window.NewControlId()
+ID_SQBRK = wx.Window.NewControlId()
+ID_CRLBRK = wx.Window.NewControlId()
+ID_BRNDBRK = wx.Window.NewControlId()
+ID_BSQBRK = wx.Window.NewControlId()
+ID_BCRLBRK = wx.Window.NewControlId()
+
+
+
+def MakeMenu(self):
         formatMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
