@@ -17,7 +17,7 @@ from ViewMenuEvents import *
 from ViewMenu import *
 from MarkdownEvents import * 
 from MathInserts import *
-import MathsMenu
+from MathsMenu import *
 import MyConsole 
 from REvents import * 
 
@@ -25,6 +25,7 @@ from REvents import *
 from RChunkEvents import * 
 from HelpMenuEvents import * 
 from RMarkdownEvents import *
+from HelpMenu import *
 
 
 # and yet more general imports
@@ -188,17 +189,16 @@ class MainWindow(wx.Frame):
             if id == None:
                 fileMenu.AppendSeparator()
             else:
-                item = fileMenu.Append(id, label, helpText)
+                item = fileMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(fileMenu, "&File")  # Add the fileMenu to the MenuBar
-
 
         import EditMenu
         import ViewMenu
         import BuildMenuR
         import InsertMenu
         import FormatMenu
-        MathsMenu.MakeMenu(self)
+        import MathsMenu
         import StatsMenu
         import HelpMenu
 

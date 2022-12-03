@@ -4,72 +4,17 @@
 import wx
 from MathInserts import *
 
-# symbols menu for mathematical symbols
-ID_SYMBOL_INFINITY = wx.Window.NewControlId() 
-ID_SYMBOL_MINUSPLUS = wx.Window.NewControlId() 
-ID_SYMBOL_PLUSMINUS = wx.Window.NewControlId() 
-ID_SYMBOL_TIMES = wx.Window.NewControlId() 
-ID_SYMBOL_PARTIAL = wx.Window.NewControlId() 
-ID_SYMBOL_LEFTPAREN = wx.Window.NewControlId() 
-ID_SYMBOL_RIGHTPAREN = wx.Window.NewControlId() 
-ID_SYMBOL_LEFTSQUARE = wx.Window.NewControlId() 
-ID_SYMBOL_RIGHTSQUARE = wx.Window.NewControlId() 
-ID_SYMBOL_LEFTCURLY = wx.Window.NewControlId() 
-ID_SYMBOL_RIGHTCURLY = wx.Window.NewControlId()
-ID_SYMBOL_GRTREQL = wx.Window.NewControlId() 
-ID_SYMBOL_LESSEQL = wx.Window.NewControlId() 
-ID_SYMBOL_NOTEQL = wx.Window.NewControlId() 
-
-
-ID_SQUAREROOT = wx.Window.NewControlId() 
-ID_MATHBAR = wx.Window.NewControlId() 
-ID_ABSVAL = wx.Window.NewControlId() 
-ID_FRACTION = wx.Window.NewControlId() 
-ID_SUMMATION = wx.Window.NewControlId() 
-ID_INTEGRAL = wx.Window.NewControlId() 
-ID_PRODUCT = wx.Window.NewControlId() 
-ID_LIMIT = wx.Window.NewControlId() 
-ID_DOUBLESUMMATION = wx.Window.NewControlId() 
-ID_DOUBLEINTEGRAL = wx.Window.NewControlId()
-
-
-# Greek menu for Greek letters
-ID_GREEK_ALPHA = wx.Window.NewControlId() 
-ID_GREEK_BETA = wx.Window.NewControlId() 
-ID_GREEK_GAMMA = wx.Window.NewControlId() 
-ID_GREEK_DELTA = wx.Window.NewControlId() 
-ID_GREEK_EPSILON = wx.Window.NewControlId() 
-ID_GREEK_VAREPSILON = wx.Window.NewControlId() 
-ID_GREEK_ZETA = wx.Window.NewControlId() 
-ID_GREEK_ETA = wx.Window.NewControlId() 
-ID_GREEK_THETA = wx.Window.NewControlId() 
-ID_GREEK_VARTHETA = wx.Window.NewControlId() 
-ID_GREEK_IOTA = wx.Window.NewControlId() 
-ID_GREEK_KAPPA = wx.Window.NewControlId() 
-ID_GREEK_LAMBDA = wx.Window.NewControlId() 
-ID_GREEK_MU = wx.Window.NewControlId() 
-ID_GREEK_NU = wx.Window.NewControlId() 
-ID_GREEK_XI = wx.Window.NewControlId() 
-ID_GREEK_OMICRON = wx.Window.NewControlId() 
-ID_GREEK_PI = wx.Window.NewControlId() 
-ID_GREEK_RHO = wx.Window.NewControlId() 
-ID_GREEK_SIGMA = wx.Window.NewControlId() 
-ID_GREEK_TAU = wx.Window.NewControlId() 
-ID_GREEK_UPSILON = wx.Window.NewControlId() 
-ID_GREEK_PHI = wx.Window.NewControlId() 
-ID_GREEK_CHI = wx.Window.NewControlId() 
-ID_GREEK_PSI = wx.Window.NewControlId() 
-ID_GREEK_OMEGA = wx.Window.NewControlId()
 
 
 
-def MakeMenu(self):
+
+def MakeMathsMenu(self):
         mathsMenu = wx.Menu()
         symbolsMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
-                 (ID_SYMBOL_INFINITY, "infinity\tCtrl+Shift+I", "insert infinity", self.OnSymbol_infinity), 
-                 (ID_SYMBOL_TIMES, "times\tCtrl+Shift+*", "insert times", self.OnSymbol_times), 
+                 (wx.ID_ANY, "infinity\tCtrl+Shift+I", "insert infinity", OnSymbol_infinity), 
+                 (wx.ID_ANY, "times\tCtrl+Shift+*", "insert times", OnSymbol_times), 
                  (ID_SYMBOL_PARTIAL, "partial derivative\tCtrl+Shift+D", "insert partial", self.OnSymbol_partial), 
                  (ID_SYMBOL_PLUSMINUS, "plus or minus\tCtrl+Shift+=", "insert plus or minus sign", self.OnSymbol_plusminus), 
                  (ID_SYMBOL_MINUSPLUS, "minus or plus\tCtrl+Shift+-", "insert minus or plus sign", self.OnSymbol_minusplus), 
@@ -85,7 +30,7 @@ def MakeMenu(self):
             if id == None:
                 symbolsMenu.AppendSeparator()
             else:
-                item = symbolsMenu.Append(id, label, helpText)
+                item = symbolsMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         mathsMenu.Append(-1, "Symbols", symbolsMenu)
         structuresMenu = wx.Menu()
@@ -104,7 +49,7 @@ def MakeMenu(self):
             if id == None:
                 structuresMenu.AppendSeparator()
             else:
-                item = structuresMenu.Append(id, label, helpText)
+                item = structuresMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         mathsMenu.Append(-1, "Structures", structuresMenu)# Add the structures Menu as a submenu to the main menu
         GreekMenu = wx.Menu()
@@ -139,8 +84,8 @@ def MakeMenu(self):
             if id == None:
                 GreekMenu.AppendSeparator()
             else:
-                item = GreekMenu.Append(id, label, helpText)
+                item = GreekMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         mathsMenu.Append(-1, "Greek letters", GreekMenu)
-        menuBar.Append(mathsMenu, "Maths")  # Add the maths Menu to the MenuBar
+#        menuBar.Append(mathsMenu, "Maths")  # Add the maths Menu to the MenuBar
 

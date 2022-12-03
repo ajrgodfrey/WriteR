@@ -17,7 +17,7 @@ def MakeStatsMenu(self):
             if id == None:
                 statsMenu.AppendSeparator()
             else:
-                item = statsMenu.Append(id, label, helpText)
+                item = statsMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(statsMenu, "Stats")  # Add the stats Menu to the MenuBar
 

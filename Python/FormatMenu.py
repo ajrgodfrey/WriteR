@@ -35,7 +35,7 @@ def MakeMenu(self):
             if id == None:
                 formatMenu.AppendSeparator()
             else:
-                item = formatMenu.Append(id, label, helpText)
+                item = formatMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(formatMenu, "F&ormat")  # Add the format Menu to the MenuBar
 

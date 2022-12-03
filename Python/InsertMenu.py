@@ -27,7 +27,7 @@ def MakeInsertMenu(self):
             if id == None:
                 headingsMenu.AppendSeparator()
             else:
-                item = headingsMenu.Append(id, label, helpText)
+                item = headingsMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         insertMenu.Append(-1, "Heading", headingsMenu)
         menuBar.Append(insertMenu, "Insert")  # Add the Insert Menu to the MenuBar

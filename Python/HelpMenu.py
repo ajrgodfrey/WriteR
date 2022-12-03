@@ -2,14 +2,15 @@
 #    so that we can be sure it remains useful for WriteR and WriteQuarto
 
 import wx
+from HelpMenuEvents import * 
 
 def MakeHelpMenu(self):
         helpMenu = wx.Menu()
         for id, label, helpText, handler in \
-                [(wx.ID_ABOUT, "About", "Information about this program", self.OnAbout)]:
+                [(wx.ID_ABOUT, "About", "Information about this program", OnAbout)]:
             if id == None:
-                fileMenu.AppendSeparator()
+                helpMenu.AppendSeparator()
             else:
-                item = helpMenu.Append(id, label, helpText)
+                item = helpMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        menuBar.Append(helpMenu, "&Help")  # Add the helpMenu to the MenuBar
+#        menuBar.Append(helpMenu, "&Help")  # Add the helpMenu to the MenuBar

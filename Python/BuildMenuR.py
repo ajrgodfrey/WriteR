@@ -33,7 +33,7 @@ def MakeBuildMenu(self):
             if id == None:
                 buildMenu.AppendSeparator()
             else:
-                item = buildMenu.Append(id, label, helpText)
+                item = buildMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(buildMenu, "Build")  # Add the Build Menu to the MenuBar
 

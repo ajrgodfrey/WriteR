@@ -109,13 +109,6 @@ def OnSelectRenderPdf(self, event):
 def OnSelectRenderSlidy(self, event):
     self.Bind(wx.EVT_MENU, self.OnRenderSlidy, self.Render)
 
-def OnRmdComment(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText(" -->\n\n")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("\n<!-- ")
-        self.editor.SetInsertionPoint(to + 15)
 
 STATE_NORMAL = "in text"
 STATE_START_HEADER = "start header"

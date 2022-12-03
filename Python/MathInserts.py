@@ -2,6 +2,11 @@
 #    This file needs careful checking to ensure it remains totally independent of implementation
 #    so that we can be sure it remains useful for WriteR and WriteQuarto
 
+def OnSymbol_infinity(self, event):
+        self.editor.WriteText("\\infty{}") 
+
+
+
 def OnMathSquareBrack(self, event):
         frm, to = self.editor.GetSelection()
         self.editor.SetInsertionPoint(to)
@@ -30,6 +35,7 @@ def OnMathRoundBrack(self, event):
 
 def OnSymbol_infinity(self, event):
         self.editor.WriteText("\\infty{}") 
+
 def OnSymbol_plusminus(self, event):
         self.editor.WriteText(" \\pm ") 
 def OnSymbol_minusplus(self, event):

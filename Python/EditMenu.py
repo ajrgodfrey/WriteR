@@ -26,6 +26,6 @@ def MakeEditMenu(self):
             if id == None:
                  editMenu.AppendSeparator()
             else:
-                 item = editMenu.Append(id, label, helpText)
+                 item = editMenu.Append(wx.ID_ANY, label, helpText)
                  self.Bind(wx.EVT_MENU, handler, item)
     menuBar.Append(editMenu, "&Edit")  # Add the editMenu to the MenuBar
