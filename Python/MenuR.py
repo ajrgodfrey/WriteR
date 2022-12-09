@@ -5,7 +5,7 @@ import wx
 # common menus
 import EditMenu, ViewMenu, MathsMenu
 # specific menus
-import HelpMenu
+import HelpMenu, StatsMenu
 
 def MakeMenu(self):
     MainMenu = wx.MenuBar()
@@ -35,6 +35,9 @@ def MakeMenu(self):
     # Maths Menu
     MathsMenu.MakeMathsMenu(self, MainMenu)
 
+    # Stats Menu
+#    StatsMenu.MakeStatsMenu(self, MainMenu)
+# this one is bound to have some differences in the subordinate functions
 
     # Help Menu
     HelpMenu.MakeHelpMenu(self, MainMenu)

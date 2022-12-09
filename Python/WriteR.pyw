@@ -12,14 +12,12 @@ import re
 import IDTags # must come first
 #from IDTags  import *
 import MenuR
-# import FileMenuEvents # problems with this one
-import EditMenuEvents
+# import FileMenuEvents # problems with this one = same problems as events do not actually run
 from EditMenuEvents import *
+import EditMenuEvents 
 from ViewMenuEvents import *
-from ViewMenu import *
 from MarkdownEvents import * 
 from MathInserts import *
-from MathsMenu import *
 import MyConsole 
 from REvents import * 
 
@@ -27,7 +25,6 @@ from REvents import *
 from RChunkEvents import * 
 from HelpMenuEvents import * 
 from RMarkdownEvents import *
-from HelpMenu import *
 
 
 # and yet more general imports
@@ -181,7 +178,6 @@ class MainWindow(wx.Frame):
 
     def CreateTextCtrl(self, text):
         text = wx.TextCtrl(self, -1, text, wx.Point(0, 0), wx.Size(150, 90),
-                           # wx.NO_BORDER | wx.TE_MULTILINE)
                            wx.TE_MULTILINE)
 
         text.SetFont(self.font)

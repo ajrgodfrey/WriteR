@@ -3,6 +3,7 @@
 
 import wx
 from MathInserts import *
+import MathInserts 
 
 
 
