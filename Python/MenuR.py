@@ -3,9 +3,9 @@
 
 import wx
 # common menus
-import EditMenu, ViewMenu, MathsMenu
+import EditMenu, ViewMenu, MathsMenu, InsertMenu, FormatMenu
 # specific menus
-import HelpMenu, StatsMenu
+import HelpMenu, StatsMenu, BuildMenuR
 
 def MakeMenu(self):
     MainMenu = wx.MenuBar()
@@ -30,6 +30,19 @@ def MakeMenu(self):
 
     # Edit Menu
     EditMenu.MakeEditMenu(self, MainMenu)
+
+    # View Menu
+#    ViewMenu.MakeViewMenu(self, MainMenu)
+
+
+        # BuildR Menu
+#    BuildRMenu.MakeBuildRMenu(self, MainMenu)
+
+# Insert Menu
+#    InsertMenu.MakeInsertMenu(self, MainMenu)
+
+    # Format Menu
+#    FormatMenu.MakeFormatMenu(self, MainMenu)
 
 
     # Maths Menu
