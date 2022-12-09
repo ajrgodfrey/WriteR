@@ -11,7 +11,9 @@ import re
 # imports for all implementations
 import IDTags # must come first
 #from IDTags  import *
+import MenuR
 # import FileMenuEvents # problems with this one
+import EditMenuEvents
 from EditMenuEvents import *
 from ViewMenuEvents import *
 from ViewMenu import *
@@ -150,11 +152,11 @@ class MainWindow(wx.Frame):
         self.sub_flag = Event()
         self.comp_thread = None
         # for find and find/replace dialogues we need...
-        self.Bind(wx.EVT_FIND, self.OnFind)
-        self.Bind(wx.EVT_FIND_NEXT, self.OnFind)
-        self.Bind(wx.EVT_FIND_REPLACE, self.OnFind)
-        self.Bind(wx.EVT_FIND_REPLACE_ALL, self.OnFind)
-        self.Bind(wx.EVT_FIND_CLOSE, self.OnFindClose)
+        self.Bind(wx.EVT_FIND, EditMenuEvents.OnFind)
+        self.Bind(wx.EVT_FIND_NEXT, EditMenuEvents.OnFind)
+        self.Bind(wx.EVT_FIND_REPLACE, EditMenuEvents.OnFind)
+        self.Bind(wx.EVT_FIND_REPLACE_ALL, EditMenuEvents.OnFind)
+        self.Bind(wx.EVT_FIND_CLOSE, EditMenuEvents.OnFindClose)
 
     def CreateInteriorWindowComponents(self):
         self.editor = self.CreateTextCtrl(self.settings['newText'])
@@ -172,37 +174,10 @@ class MainWindow(wx.Frame):
 
 
     def CreateExteriorWindowComponents(self):
-        self.CreateMenu()
+        MenuR.MakeMenu(self)
 #        self.StatusBar() ## want this back
         self.SetTitle()
 
-    def CreateMenu(self):
-        menuBar = wx.MenuBar()  # create the menu bar object
-        fileMenu = wx.Menu()
-        for id, label, helpText, handler in \
-                [(wx.ID_NEW, "New file\tCtrl+N", "Start a new file", self.OnNewFile),
-                 (wx.ID_OPEN, "&Open\tCtrl+O", "Open an existing file", self.OnOpen),
-                 (wx.ID_SAVE, "&Save\tCtrl+S", "Save the current file", self.OnSave),
-                 (wx.ID_SAVEAS, "Save &As\tCtrl+Shift+S", "Save the file under a different name", self.OnSaveAs),
-                 (None,) * 4,
-                 (wx.ID_EXIT, "Quit && save\tCtrl+Q", "Saves the current file and closes the program", self.OnSafeExit)]:
-            if id == None:
-                fileMenu.AppendSeparator()
-            else:
-                item = fileMenu.Append(wx.ID_ANY, label, helpText)
-                self.Bind(wx.EVT_MENU, handler, item)
-        menuBar.Append(fileMenu, "&File")  # Add the fileMenu to the MenuBar
-
-        import EditMenu
-        import ViewMenu
-        import BuildMenuR
-        import InsertMenu
-        import FormatMenu
-        import MathsMenu
-        import StatsMenu
-        import HelpMenu
-
-        self.SetMenuBar(menuBar)  # Add the menuBar to the Frame
 
     def CreateTextCtrl(self, text):
         text = wx.TextCtrl(self, -1, text, wx.Point(0, 0), wx.Size(150, 90),
@@ -336,24 +311,9 @@ class MainWindow(wx.Frame):
         pt = self.ClientToScreen(wx.Point(0, 0))
         return wx.Point(pt.x + x, pt.y + x)
 
-    def OnShowFind(self, event):
-        data = wx.FindReplaceData()
-        data.SetFlags(wx.FR_DOWN)
-        dlg = wx.FindReplaceDialog(self, data, "Find")
-        dlg.data = data  # save a reference to it...
-        dlg.Show(True)
-
-    def OnSetMark(self, event):
-        self.mark = self.editor.GetInsertionPoint()
-        if beep:
-           winsound.Beep(1000, 250)
-
     def SetFocusConsole(self, toConsole):
         if toConsole != self.focusConsole:
            self.ActuallyAlternateFocus()
-
-    def AlternateFocus(self, event):
-        self.ActuallyAlternateFocus()
 
     def TellUser(self, text):
         self.SetStatusText(text)
@@ -369,13 +329,6 @@ class MainWindow(wx.Frame):
               print ("Problem setting notification {}".format(error))
               pass
 
-    def OnWordCount(self, event):
-        text=self.editor.GetValue()
-        word_count=len(text.split())
-        (on, x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
-        line_count = self.editor.GetNumberOfLines()
-        markdownState = RMarkdownEvents.CurrentMarkdown(self)
-        self.TellUser("Line {}/{}. WordCount {}. State {}".format(y, line_count, word_count, markdownState))
 
     def ActuallyAlternateFocus(self):
         if self.focusConsole:
@@ -389,24 +342,6 @@ class MainWindow(wx.Frame):
            if beep:
               winsound.Beep(3000, 250)
         self.focusConsole = not self.focusConsole
-
-    def OnSelectToMark(self, event):
-        insertionPoint = self.editor.GetInsertionPoint()
-        if (self.mark < insertionPoint):
-           self.editor.SetSelection(self.mark, insertionPoint)
-           if beep:
-              winsound.Beep(750, 250)
-        elif (self.mark > insertionPoint):
-           self.editor.SetSelection(insertionPoint, self.mark)
-           if beep:
-              winsound.Beep(1500, 250)
-
-    def OnShowFindReplace(self, event):
-        data = wx.FindReplaceData()
-        data.SetFlags(wx.FR_DOWN)
-        dlg = wx.FindReplaceDialog(self, data, "Find & Replace", wx.FR_REPLACEDIALOG)
-        dlg.data = data  # save a reference to it...
-        dlg.Show(True)
 
     def ComputeFindString(self, event):
         if event.GetFlags() & wx.FR_WHOLEWORD:
@@ -484,31 +419,6 @@ class MainWindow(wx.Frame):
         insertionPoint = self.editor.GetInsertionPoint()
         self.editor.SetValue(newText)
         self.editor.SetInsertionPoint(insertionPoint)
-
-    def F3Next(self, event):
-        self.FindFrom(self.priorMatchCol, self.priorMatchRow, False)
-
-    def ShiftF3Previous(self, event):
-        self.FindFrom(self.priorMatchCol, self.priorMatchRow, True)
-
-    def OnFind(self, event):
-        et = event.GetEventType()
-        self.regex = re.compile(self.ComputeFindString(event), self.ComputeReFlags(event))
-        self.forward = event.GetFlags() & wx.FR_DOWN
-        if et == wx.wxEVT_COMMAND_FIND:
-            (ok, col, row) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
-            self.FindFrom(col, row, False)
-        elif et == wx.wxEVT_COMMAND_FIND_NEXT:
-            self.FindFrom(self.priorMatchCol, self.priorMatchRow, False)
-        elif et == wx.wxEVT_COMMAND_FIND_REPLACE:
-            self.ReplaceNext(event)
-        elif et == wx.wxEVT_COMMAND_FIND_REPLACE_ALL:
-            self.ReplaceAll(event)
-        else:
-            self.console.write("unexpected eventType %s -- %s\n" % (et, event))
-
-    def OnFindClose(self, event):
-        event.GetDialog().Destroy()
 
 # mandatory lines to get program running.
 if __name__ == "__main__":

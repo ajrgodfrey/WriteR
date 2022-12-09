@@ -4,7 +4,7 @@
 import wx
 from IDTags  import *
 
-def MakeViewMenu(self):
+def MakeViewMenu(self, MainMenu):
     viewMenu = wx.Menu()
     self.ShowStatusBar = viewMenu.Append(wx.ID_ANY, "Show status bar", 
         "Show Status bar", kind=wx.ITEM_CHECK)
@@ -16,7 +16,7 @@ def MakeViewMenu(self):
     self.Bind(wx.EVT_MENU, self.OnDecreaseFontSize, self.DecreaseFont) 
     self.ChooseFont = viewMenu.Append(wx.ID_ANY, "Choose font\tCtrl+D", "Choose the font size and other details")
     self.Bind(wx.EVT_MENU, self.OnSelectFont, self.ChooseFont )
-    menuBar.Append(viewMenu, "View")  # Add the view Menu to the MenuBar
+    MainMenu.Append(viewMenu, "View")  # Add the view Menu to the MenuBar
 
-if __name__ == "__main__":
-    MakeViewMenu(self)
+
+

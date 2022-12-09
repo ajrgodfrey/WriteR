@@ -18,7 +18,7 @@ ID_BCRLBRK = wx.Window.NewControlId()
 
 
 
-def MakeMenu(self):
+def MakeMenu(self, MainMenu):
         formatMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
@@ -37,5 +37,5 @@ def MakeMenu(self):
             else:
                 item = formatMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        menuBar.Append(formatMenu, "F&ormat")  # Add the format Menu to the MenuBar
+        MainMenu.Append(formatMenu, "F&ormat")  # Add the format Menu to the MenuBar
 

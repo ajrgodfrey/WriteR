@@ -56,3 +56,11 @@ def OnSelectFont(self, evt):
         # dialog!
         dlg.Destroy()
 
+
+# not yet included
+def fullscreen(self,e):
+        if self.fullscr.IsChecked()==True:
+            self.ShowFullScreen(True)
+        else:
+            self.ShowFullScreen(False)
+

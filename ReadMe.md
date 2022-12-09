@@ -3,6 +3,10 @@
 
 WriteR  was created so that blind users could draft and compile R markdown documents. Sighted users do this in RStudio, but this software does not work well enough with the screen reading software blind people use.
 
+![OpenSource](https://img.shields.io/badge/OpenSource-Yes-green)
+![OSc](https://img.shields.io/badge/OS-Multi-blue)
+![License](https://img.shields.io/badge/License-GPL2-yellow)
+
 
 ## Latest news
 
