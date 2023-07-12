@@ -1,5 +1,4 @@
-# 2022.11.29 This file is for the quarto implementation of WriteR ; a separate file exists for the WriteR implementation
-
+# 2023.07.12 This file is for the ScriptR implementation of WriteR ; a separate file exists for the WriteR implementation
 
 import wx
 from version import *
@@ -7,8 +6,8 @@ from version import *
 
 
 def OnAbout(self, event):
-        Version = quartoWriteR_version()
-        Text = quartoWriteRHelpText()
+        Version = ScriptR_version()
+        Text = ScriptRHelpText()
         CommonText = CommonHelpText()
         WholeText = Text + CommonText + "\nVersion: " + Version
         dialog = wx.MessageDialog(self, WholeText,
