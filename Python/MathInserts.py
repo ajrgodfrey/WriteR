@@ -2,10 +2,10 @@
 #    This file needs careful checking to ensure it remains totally independent of implementation
 #    so that we can be sure it remains useful for WriteR and WriteQuarto
 
+import wx
+
 def OnSymbol_infinity(self, event):
         self.editor.WriteText("\\infty{}") 
-
-
 
 def OnMathSquareBrack(self, event):
         frm, to = self.editor.GetSelection()
@@ -23,7 +23,6 @@ def OnMathCurlyBrack(self, event):
         self.editor.WriteText(" \\left{")
         self.editor.SetInsertionPoint(to + 15)
 
-
 def OnMathRoundBrack(self, event):
         frm, to = self.editor.GetSelection()
         self.editor.SetInsertionPoint(to)
@@ -31,10 +30,6 @@ def OnMathRoundBrack(self, event):
         self.editor.SetInsertionPoint(frm)
         self.editor.WriteText(" \\left(")
         self.editor.SetInsertionPoint(to + 15)
-
-
-def OnSymbol_infinity(self, event):
-        self.editor.WriteText("\\infty{}") 
 
 def OnSymbol_plusminus(self, event):
         self.editor.WriteText(" \\pm ") 
@@ -75,7 +70,6 @@ def OnAbsVal(self, event):
 
 def OnMathBar(self, event):
         self.editor.WriteText(" \\bar{} ") 
-
 
 def OnSquareRoot(self, event):
         self.editor.WriteText("\\sqrt{}") 
