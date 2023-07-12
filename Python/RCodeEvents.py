@@ -30,7 +30,11 @@ def OnRCommand(self, event):
 
 def OnRPipe(self, event):
     self.editor.WriteText(" |> ") 
+
 def OnRLAssign(self, event):
     self.editor.WriteText(" <- ") 
+
 def OnRRAssign(self, event):
     self.editor.WriteText(" -> ") 
+
+# end of file
