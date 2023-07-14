@@ -1,7 +1,7 @@
 def WriteR_version():
     return("2022.2")
 
-def QuartoWriter_version():
+def QuartoWriteR_version():
     return("2022.2")
 
 def ScriptR_version():
@@ -12,8 +12,8 @@ def WriteRHelpText():
     return("WriteR is an app for writing and processing R markdown documents.\n")
 
 
-def quartoWriteRHelpText():
-    return("This new implementation of WriteR is designed ot work with Quarto, the next generation of R markdown documents.\n")
+def QuartoWriteRHelpText():
+    return("This new implementation of WriteR is designed to work with Quarto, the next generation of R markdown documents.\n")
 
 
 def ScriptRHelpText():

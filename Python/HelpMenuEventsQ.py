@@ -7,8 +7,8 @@ from version import *
 
 
 def OnAbout(self, event):
-        Version = quartoWriteR_version()
-        Text = quartoWriteRHelpText()
+        Version = QuartoWriteR_version()
+        Text = QuartoWriteRHelpText()
         CommonText = CommonHelpText()
         WholeText = Text + CommonText + "\nVersion: " + Version
         dialog = wx.MessageDialog(self, WholeText,

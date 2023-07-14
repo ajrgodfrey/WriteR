@@ -19,11 +19,15 @@ from six import iteritems
 
 # import our modules
 # first bring in modules used for all versions
+from GlobalSettings import *
+from IDTags import *
 import EditMenuEvents
+import ViewMenuEvents
 import MyConsole
 import RMarkdownEvents 
 import RCodeEvents
 import MarkdownEvents 
+import MathInserts 
 
 # then modules for specific versions (conditioning to come later)
 import HelpMenuEventsQ
@@ -66,7 +70,7 @@ ID_RRASSIGN = wx.NewIdRef()
 
 
 # set up global text strings
-SBText = "This program is for editing R Markdown files"
+#SBText = "This program is for editing R Markdown files"
 
 
 def dcf_dumps(data, sort_keys=True):
@@ -131,7 +135,7 @@ class MainWindow(wx.Frame):
     def __init__(self, parent=None, id=-1, title="", pos=wx.DefaultPosition,
                  size=(1200,700), style=wx.DEFAULT_FRAME_STYLE |
                                         wx.SUNKEN_BORDER |
-                                        wx.CLIP_CHILDREN, filename="untitled.R"):
+                                        wx.CLIP_CHILDREN, filename="untitled."+FileExtension):
         super(MainWindow, self).__init__(parent, id, title, pos, size, style)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self._mgr = AuiManager()
@@ -142,7 +146,7 @@ class MainWindow(wx.Frame):
 #                         'templates': 'none',
                          'lastdir': '.',
                          'filename': 'none',
-                         'newText': "# Use ScriptR to edit and process your R scripts",
+                         'newText': StartingText, # set in GlobalSettings modules
                          'RDirectory': self.GetRDirectory()}
         if len(sys.argv) > 1:
             self.settings['lastdir'], self.settings['filename'] = split(realpath(sys.argv[-1]))
@@ -270,6 +274,34 @@ class MainWindow(wx.Frame):
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(CodeMenu, "Code")  # Add the Code Menu to the MenuBar
 
+        # Only use the Maths menu for WriteR and QuartoWriteR
+        mathsMenu = wx.Menu()
+        symbolsMenu = wx.Menu()
+        for id, label, helpText, handler in \
+                [
+                 (ID_SYMBOL_INFINITY, "infinity\tCtrl+Shift+I", "insert infinity", self.OnSymbol_infinity), 
+                 (ID_SYMBOL_TIMES, "times\tCtrl+Shift+*", "insert times", self.OnSymbol_times), 
+                 (ID_SYMBOL_PARTIAL, "partial derivative\tCtrl+Shift+D", "insert partial", self.OnSymbol_partial), 
+                 (ID_SYMBOL_PLUSMINUS, "plus or minus\tCtrl+Shift+=", "insert plus or minus sign", self.OnSymbol_plusminus), 
+                 (ID_SYMBOL_MINUSPLUS, "minus or plus\tCtrl+Shift+-", "insert minus or plus sign", self.OnSymbol_minusplus), 
+                 (ID_SYMBOL_LESSEQL, "less than or equal\tCtrl+Shift+<", "insert less than or equal sign", self.OnSymbol_leq), 
+                 (ID_SYMBOL_GRTREQL, "greater than or equal \tCtrl+Shift+>", "insert greater than or equal sign", self.OnSymbol_geq), 
+                 (ID_SYMBOL_NOTEQL, "not equal\tCtrl+Shift+!", "insert not equal sign", self.OnSymbol_neq), 
+                 (ID_SYMBOL_LEFTPAREN, "Left Parenthesis\tCtrl+9", "insert variable size left parenthesis", self.OnSymbol_LeftParen), 
+                 (ID_SYMBOL_RIGHTPAREN, "Right Parenthesis\tCtrl+0", "insert variable size right parenthesis", self.OnSymbol_RightParen), 
+                 (ID_SYMBOL_LEFTSQUARE, "Left Square bracket\tCtrl+[", "insert variable size left square bracket", self.OnSymbol_LeftSquare), 
+                 (ID_SYMBOL_RIGHTSQUARE, "Right Square bracket\tCtrl+]", "insert variable size right square bracket", self.OnSymbol_RightSquare), 
+                 (ID_SYMBOL_LEFTCURLY, "Left Curly bracket\tCtrl+Shift+{", "insert variable size left curly bracket", self.OnSymbol_LeftCurly), 
+                 (ID_SYMBOL_RIGHTCURLY, "Right Curly bracket\tCtrl+Shift+}", "insert variable size right curly bracket", self.OnSymbol_RightCurly)]:
+            if id == None:
+                symbolsMenu.AppendSeparator()
+            else:
+                item = symbolsMenu.Append(wx.NewIdRef(), label, helpText)
+                self.Bind(wx.EVT_MENU, handler, item)
+        mathsMenu.Append(-1, "Symbols", symbolsMenu)
+        if(AppName != "ScriptR"):
+            menuBar.Append(mathsMenu, "Maths")  # Add the maths Menu to the MenuBar
+
         helpMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [(wx.ID_ABOUT, "About", "Information about this program", self.OnAbout)]:
@@ -292,7 +324,7 @@ class MainWindow(wx.Frame):
     def SetTitle(self, *args, **kwargs):
         # MainWindow.SetTitle overrides wx.Frame.SetTitle, so we have to
         # call it using super:
-        super(MainWindow, self).SetTitle("ScriptR -  %s" % self.filename)
+        super(MainWindow, self).SetTitle(AppName + " -  %s" % self.filename)
 
     # Helper methods:
     def defaultFileDialogOptions(self):
@@ -377,8 +409,73 @@ class MainWindow(wx.Frame):
     OnRLAssign = RCodeEvents.OnRLAssign
     OnRRAssign = RCodeEvents.OnRRAssign
 
-    # help menu events ##condition needed
-    OnAbout = HelpMenuEventsS.OnAbout
+    # MathInserts are all LaTeX input for math mode; they are all included even though not used by ScriptR
+    OnSymbol_infinity = MathInserts.OnSymbol_infinity
+    OnSymbol_plusminus = MathInserts.OnSymbol_plusminus
+    OnSymbol_minusplus = MathInserts.OnSymbol_minusplus
+    OnSymbol_geq = MathInserts.OnSymbol_geq
+    OnSymbol_leq = MathInserts.OnSymbol_leq
+    OnSymbol_neq = MathInserts.OnSymbol_neq
+    OnSymbol_times = MathInserts.OnSymbol_times
+    OnSymbol_partial = MathInserts.OnSymbol_partial
+    OnSymbol_LeftParen = MathInserts.OnSymbol_LeftParen
+    OnSymbol_RightParen = MathInserts.OnSymbol_RightParen
+    OnSymbol_LeftSquare = MathInserts.OnSymbol_LeftSquare
+    OnSymbol_RightSquare = MathInserts.OnSymbol_RightSquare
+    OnSymbol_LeftCurly = MathInserts.OnSymbol_LeftCurly
+    OnSymbol_RightCurly = MathInserts.OnSymbol_RightCurly
+    OnAbsVal = MathInserts.OnAbsVal
+    OnMathBar = MathInserts.OnMathBar
+    OnSquareRoot = MathInserts.OnSquareRoot
+    OnFraction = MathInserts.OnFraction
+    OnSummation = MathInserts.OnSummation
+    Onintegral = MathInserts.Onintegral
+    OnProduct = MathInserts.OnProduct
+    OnLimit = MathInserts.OnLimit
+    OnDoubleSummation = MathInserts.OnDoubleSummation
+    OnDoubleIntegral = MathInserts.OnDoubleIntegral
+    OnGreek_alpha = MathInserts.OnGreek_alpha
+    OnGreek_beta = MathInserts.OnGreek_beta
+    OnGreek_gamma = MathInserts.OnGreek_gamma
+    OnGreek_delta = MathInserts.OnGreek_delta
+    OnGreek_epsilon = MathInserts.OnGreek_epsilon
+    OnGreek_varepsilon = MathInserts.OnGreek_varepsilon
+    OnGreek_zeta = MathInserts.OnGreek_zeta
+    OnGreek_eta = MathInserts.OnGreek_eta
+    OnGreek_theta = MathInserts.OnGreek_theta
+    OnGreek_vartheta = MathInserts.OnGreek_vartheta
+    OnGreek_iota = MathInserts.OnGreek_iota
+    OnGreek_kappa = MathInserts.OnGreek_kappa
+    OnGreek_lambda = MathInserts.OnGreek_lambda
+    OnGreek_mu = MathInserts.OnGreek_mu
+    OnGreek_nu = MathInserts.OnGreek_nu
+    OnGreek_xi = MathInserts.OnGreek_xi
+    OnGreek_omicron = MathInserts.OnGreek_omicron
+    OnGreek_pi = MathInserts.OnGreek_pi
+    OnGreek_rho = MathInserts.OnGreek_rho
+    OnGreek_sigma = MathInserts.OnGreek_sigma
+    OnGreek_tau = MathInserts.OnGreek_tau
+    OnGreek_upsilon = MathInserts.OnGreek_upsilon
+    OnGreek_phi = MathInserts.OnGreek_phi
+    OnGreek_chi = MathInserts.OnGreek_chi
+    OnGreek_psi = MathInserts.OnGreek_psi
+    OnGreek_omega = MathInserts.OnGreek_omega
+
+    OnMathRoundBrack = MathInserts.OnMathRoundBrack
+    OnMathCurlyBrack = MathInserts.OnMathCurlyBrack
+    OnMathSquareBrack = MathInserts.OnMathSquareBrack
+
+
+    # help menu events
+    if(AppName == "ScriptR"):
+        OnAbout = HelpMenuEventsS.OnAbout
+    elif(AppName == "WriteR"):
+        OnAbout = HelpMenuEventsR.OnAbout
+    else:
+        OnAbout = HelpMenuEventsQ.OnAbout
+
+
+
 
     # edit menu events ##checking some required
     OnSelectAll = EditMenuEvents.OnSelectAll
@@ -388,54 +485,14 @@ class MainWindow(wx.Frame):
     OnCut = EditMenuEvents.OnCut
     OnGoToLine = EditMenuEvents.OnGoToLine
 
-    # view menu events ##can these be moved out?
-    def ToggleStatusBar(self, event):
-        if self.statusbar.IsShown():
-            self.statusbar.Hide()
-        else:
-            self.statusbar.Show()
-            self.SetStatusText(SBText)
+    # view menu events 
+    ToggleStatusBar= ViewMenuEvents.ToggleStatusBar
 
-    def StatusBar(self):
-        self.statusbar = self.CreateStatusBar()
-        self.statusbar.SetFieldsCount(3)
-        self.statusbar.SetStatusWidths([-5, -2, -1])
-        self.SetStatusText(SBText)
-       
-    def OnIncreaseFontSize(self, event):
-        self.font.SetPointSize(self.font.GetPointSize()+1)
-        self.UpdateUI()
-    def OnDecreaseFontSize(self, event):
-        self.font.SetPointSize(self.font.GetPointSize()-1)
-        self.UpdateUI()
-
-    def UpdateUI(self):
-        self.editor.SetFont(self.font)
-        #self.editor.SetForegroundColour(self.curClr)
-        #self.ps.SetLabel(str(self.font.GetPointSize()))
-        #self.family.SetLabel(self.font.GetFamilyString())
-        #self.style.SetLabel(self.font.GetStyleString())
-        #self.weight.SetLabel(self.font.GetWeightString())
-        #self.face.SetLabel(self.font.GetFaceName())
-        #self.nfi.SetLabel(self.font.GetNativeFontInfo().ToString())
-        self.Layout()
-
-    def OnSelectFont(self, evt):
-        data = wx.FontData()
-        data.EnableEffects(False)
-        #data.SetColour(self.curClr)         # set colour
-        data.SetInitialFont(self.font)
-        dlg = wx.FontDialog(self, data)
-        if dlg.ShowModal() == wx.ID_OK:
-            data = dlg.GetFontData()
-            font = data.GetChosenFont()
-            #colour = data.GetColour()
-            self.font = font
-            #self.curClr = colour
-            self.UpdateUI()
-        # Don't destroy the dialog until you get everything you need from the
-        # dialog!
-        dlg.Destroy()
+    StatusBar = ViewMenuEvents.StatusBar
+    OnIncreaseFontSize=  ViewMenuEvents.OnIncreaseFontSize
+    OnDecreaseFontSize = ViewMenuEvents.OnDecreaseFontSize
+    UpdateUI = ViewMenuEvents.UpdateUI
+    OnSelectFont = ViewMenuEvents.OnSelectFont
 
     # general events
     def StartThread(self, input_object):
