@@ -216,7 +216,6 @@ class MainWindow(wx.Frame):
         menuBar = wx.MenuBar()  # create the menu bar object
         menuBar.Append(fileMenu, "&File")  # Add the fileMenu to the MenuBar
 
-
         editMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [(wx.ID_CUT, "Cu&t\tCtrl+X", "Cut highlighted text to clipboard", self.OnCut),
@@ -258,8 +257,58 @@ class MainWindow(wx.Frame):
 
         buildMenu = wx.Menu()
         self.Render = buildMenu.Append(wx.ID_ANY, "Render the document\tF5", "Use the rmarkdown package to render the current file")
-        self.Bind(wx.EVT_MENU, self.OnRenderNull, self.Render)
+        self.Bind(wx.EVT_MENU, self.OnRenderNull, self.Render)  
+      # Create render menu for WriteR
+        if AppName == "WriteR":
+            renderMenu = wx.Menu()
+            self.ChooseRenderNull = renderMenu.Append(wx.ID_ANY, "Render using defaults", 
+                "Use the rmarkdown package and render function to create HTML or only the first of multiple formats specified in YAML header", wx.ITEM_RADIO)
+            self.Bind(wx.EVT_MENU, self.OnSelectRenderNull, self.ChooseRenderNull)
+            self.ChooseRenderHtml = renderMenu.Append(wx.ID_ANY, "Render into HTML only", 
+                "Use the rmarkdown package and render function to create HTML", wx.ITEM_RADIO)
+            self.Bind(wx.EVT_MENU, self.OnSelectRenderHtml, self.ChooseRenderHtml) 
+            self.ChooseRenderWord = renderMenu.Append(wx.ID_ANY, "Render into Microsoft Word only", 
+                "Use the rmarkdown package and render function to create Microsoft Word", wx.ITEM_RADIO)
+            self.Bind(wx.EVT_MENU, self.OnSelectRenderWord, self.ChooseRenderWord) 
+            self.ChooseRenderSlidy = renderMenu.Append(wx.ID_ANY, "Render into slidy only", 
+                "Use the rmarkdown package and render function to create a slidy presentation", wx.ITEM_RADIO)
+            self.Bind(wx.EVT_MENU, self.OnSelectRenderSlidy, self.ChooseRenderSlidy) 
+            self.ChooseRenderPdf = renderMenu.Append(wx.ID_ANY, "Render into pdf only", 
+                "Use the rmarkdown package and render function to create pdf", wx.ITEM_RADIO)
+            self.Bind(wx.EVT_MENU, self.OnSelectRenderPdf, self.ChooseRenderPdf) 
+            self.ChooseRenderAll = renderMenu.Append(wx.ID_ANY, "Render into all specified formats", 
+                "Use the rmarkdown package and render function to create multiple output documents", wx.ITEM_RADIO)
+            self.Bind(wx.EVT_MENU, self.OnSelectRenderAll, self.ChooseRenderAll) 
+            buildMenu.AppendSubMenu(-1, "Set render process to...", renderMenu) # Add the render Menu as a submenu to the build menu
+            for id, label, helpText, handler in \
+                [
+                 (ID_KNIT2HTML, "Knit to html\tF6", "Knit the script to HTML", self.OnKnit2html),
+                 (ID_KNIT2PDF, "Knit to pdf\tShift+F6", "Knit the script to a pdf file using LaTeX", self.OnKnit2pdf)]:
+                if id == None:
+                    buildMenu.AppendSeparator()
+                else:
+                    item = buildMenu.Append(wx.ID_ANY, label, helpText)
+                    self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(buildMenu, "Build")  # Add the Build Menu to the MenuBar
+
+        formatMenu = wx.Menu()
+        menuBar.Append(formatMenu, "format")  # Add the format Menu to the MenuBar
+
+
+        insertMenu = wx.Menu()
+        headingsMenu = wx.Menu()
+        for id, label, helpText, handler in \
+                [
+                 (ID_H1, "level &1\tAlt+1", "insert heading level 1", self.OnHeading1), 
+                 (ID_H2, "level &2\tAlt+2", "insert heading level 2", self.OnHeading2), 
+                 (ID_H3, "level &3\tAlt+3", "insert heading level 3", self.OnHeading3), 
+                 (ID_H4, "level &4\tAlt+4", "insert heading level 4", self.OnHeading4), 
+                 (ID_H5, "level &5\tAlt+5", "insert heading level 5", self.OnHeading5), 
+                 (ID_H6, "level &6\tAlt+6", "insert heading level 6", self.OnHeading6)]:
+            item = headingsMenu.Append(wx.ID_ANY, label, helpText)
+            self.Bind(wx.EVT_MENU, handler, item)
+        insertMenu.Append(-1, "Heading", headingsMenu)
+        menuBar.Append(insertMenu, "insert")  # Add the insert Menu to the MenuBar
 
         CodeMenu = wx.Menu()
         for id, label, helpText, handler in \
@@ -279,7 +328,7 @@ class MainWindow(wx.Frame):
         symbolsMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [
-                 (ID_SYMBOL_INFINITY, "infinity\tCtrl+Shift+I", "insert infinity", self.OnSymbol_infinity), 
+                (ID_SYMBOL_INFINITY, "infinity\tCtrl+Shift+I", "insert infinity", self.OnSymbol_infinity), 
                  (ID_SYMBOL_TIMES, "times\tCtrl+Shift+*", "insert times", self.OnSymbol_times), 
                  (ID_SYMBOL_PARTIAL, "partial derivative\tCtrl+Shift+D", "insert partial", self.OnSymbol_partial), 
                  (ID_SYMBOL_PLUSMINUS, "plus or minus\tCtrl+Shift+=", "insert plus or minus sign", self.OnSymbol_plusminus), 
@@ -299,6 +348,7 @@ class MainWindow(wx.Frame):
                 item = symbolsMenu.Append(wx.NewIdRef(), label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         mathsMenu.Append(-1, "Symbols", symbolsMenu)
+# bits to add here
         if(AppName != "ScriptR"):
             menuBar.Append(mathsMenu, "Maths")  # Add the maths Menu to the MenuBar
 
@@ -317,7 +367,6 @@ class MainWindow(wx.Frame):
         text = wx.TextCtrl(self, -1, text, wx.Point(0, 0), wx.Size(150, 90),
                            # wx.NO_BORDER | wx.TE_MULTILINE)
                            wx.TE_MULTILINE)
-
         text.SetFont(self.font)
         return text
 
@@ -342,11 +391,41 @@ class MainWindow(wx.Frame):
         dialog.Destroy()
         return userProvidedFilename
 
-    # Event handlers:
+   # Event handlers:
+    # general events
+    def StartThread(self, input_object):
+        if self.sub_flag.isSet(): return
+        if self.comp_thread is not None:
+            self.sub_flag.set()
+            while self.comp_thread.isAlive():
+                sleep(1)
+            self.sub_flag.clear()
+            self.console.Reset()
+        self.comp_thread = BashProcessThread(self.sub_flag, input_object, self.console.CreateWriteText, self.console.DoneFunc)
+        self.comp_thread.start()
+
     # file menu events
     def OnOpen(self, event):
         if self.askUserForFilename(style=wx.FD_OPEN, **self.defaultFileDialogOptions()):
             self.fileOpen(self.dirname, self.filename)
+
+    def OnClose(self, event):
+        self.settings['filename'] = self.filename
+        self.settings['lastdir'] = self.dirname
+        if event.CanVeto() and self.editor.IsModified():
+            hold = wx.MessageBox("Would you like to save your work?",
+                                 "Save before exit?",
+                                 wx.ICON_QUESTION | wx.YES_NO | wx.CANCEL | wx.YES_DEFAULT)
+            if hold == wx.YES:
+                self.OnSave(event)
+                self.Destroy()
+            elif hold == wx.NO:
+                self.Destroy()
+            else:
+                event.Veto()
+        else:
+            self.Destroy()
+
 
     def fatalError(self, message):
         dialog = wx.MessageDialog(self, message, "Fatal Error", wx.OK)
@@ -357,22 +436,20 @@ class MainWindow(wx.Frame):
     def fileOpen(self, dirname, filename):
         path = join(dirname.strip(), filename)
         try: 
-           textfile = open(path, "r")
+            textfile = open(path, "r")
         except Exception as error:
-           self.fatalError("Unable to open {} because {}".format(path, error))
-           self.OnExit()
-
+            self.fatalError("Unable to open {} because {}".format(path, error))
+            self.OnExit()
         try: 
-           self.editor.SetValue(textfile.read())
+            self.editor.SetValue(textfile.read())
         except Exception as error:
-           self.fatalError("Unable to read {} into editor because {}".format(path, error))
-           self.OnExit()
-
+            self.fatalError("Unable to read {} into editor because {}".format(path, error))
+            self.OnExit()
         try: 
-           textfile.close()
+            textfile.close()
         except Exception as error:
-           self.fatalError("Unable to close {} because {}".format(path, error))
-           self.OnExit()
+            self.fatalError("Unable to close {} because {}".format(path, error))
+            self.OnExit()
 
     def OnNewFile(self, event):
         self.olddirname = self.dirname
@@ -401,8 +478,24 @@ class MainWindow(wx.Frame):
         self.OnSave(event)
         self.OnExit()
 
-    # Build Menu events ##condition needed for additions
+
+    # Build Menu events # conditioning needed for apps is done in RMarkdownEvents.py or in menu construction
     OnRenderNull = RMarkdownEvents.OnRenderNull
+    OnProcess = RMarkdownEvents.OnProcess
+    OnRenderHtml = RMarkdownEvents.OnRenderHtml
+    OnRenderAll = RMarkdownEvents.OnRenderAll 
+    OnRenderWord = RMarkdownEvents.OnRenderWord 
+    OnRenderPdf = RMarkdownEvents.OnRenderPdf 
+    OnRenderSlidy = RMarkdownEvents.OnRenderSlidy 
+    OnKnit2html = RMarkdownEvents.OnKnit2html 
+    OnKnit2pdf = RMarkdownEvents.OnKnit2pdf 
+    OnSelectRenderNull = RMarkdownEvents.OnSelectRenderNull 
+    OnSelectRenderHtml = RMarkdownEvents.OnSelectRenderHtml 
+    OnSelectRenderAll = RMarkdownEvents.OnSelectRenderAll 
+    OnSelectRenderWord = RMarkdownEvents.OnSelectRenderWord 
+    OnSelectRenderPdf = RMarkdownEvents.OnSelectRenderPdf 
+    OnSelectRenderSlidy = RMarkdownEvents.OnSelectRenderSlidy 
+    CurrentMarkdown= RMarkdownEvents.CurrentMarkdown
 
     # Code Menu events
     OnRPipe = RCodeEvents.OnRPipe
@@ -484,126 +577,39 @@ class MainWindow(wx.Frame):
     OnCopy = EditMenuEvents.OnCopy
     OnCut = EditMenuEvents.OnCut
     OnGoToLine = EditMenuEvents.OnGoToLine
+    OnSettings = EditMenuEvents.OnSettings
 
     # view menu events 
     ToggleStatusBar= ViewMenuEvents.ToggleStatusBar
-
     StatusBar = ViewMenuEvents.StatusBar
     OnIncreaseFontSize=  ViewMenuEvents.OnIncreaseFontSize
     OnDecreaseFontSize = ViewMenuEvents.OnDecreaseFontSize
     UpdateUI = ViewMenuEvents.UpdateUI
     OnSelectFont = ViewMenuEvents.OnSelectFont
 
-    # general events
-    def StartThread(self, input_object):
-        if self.sub_flag.isSet(): return
-        if self.comp_thread is not None:
-            self.sub_flag.set()
-            while self.comp_thread.isAlive():
-                sleep(1)
-            self.sub_flag.clear()
-            self.console.Reset()
-        self.comp_thread = BashProcessThread(self.sub_flag, input_object, self.console.CreateWriteText, self.console.DoneFunc)
-        self.comp_thread.start()
 
+    # format/Insert menu events 
+    OnSquareBrack = MarkdownEvents.OnSquareBrack
+    OnCurlyBrack = MarkdownEvents.OnCurlyBrack
+    OnRoundBrack = MarkdownEvents.OnRoundBrack
+    OnItalic = MarkdownEvents.OnItalic
+    OnBold = MarkdownEvents.OnBold
+    OnCode = MarkdownEvents.OnCode
+    OnMath = MarkdownEvents.OnMath
+    OnAddHeadBlock = MarkdownEvents.OnAddHeadBlock
+    OnAddURL = MarkdownEvents.OnAddURL
+    OnAddReference = MarkdownEvents.OnAddReference
+    OnAddEMail = MarkdownEvents.OnAddEMail
+    OnAddFigure = MarkdownEvents.OnAddFigure
+    OnHeading1 = MarkdownEvents.OnHeading1
+    OnHeading2 = MarkdownEvents.OnHeading2
+    OnHeading3 = MarkdownEvents.OnHeading3
+    OnHeading4 = MarkdownEvents.OnHeading4
+    OnHeading5 = MarkdownEvents.OnHeading5
+    OnHeading6 = MarkdownEvents.OnHeading6
 
-
-    # format menu events ##can these be moved out?
-    def OnSquareBrack(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("]")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("[")
-        self.editor.SetInsertionPoint(to + 2)
-
-    def OnCurlyBrack(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("}")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("{")
-        self.editor.SetInsertionPoint(to + 2)
-
-    def OnRoundBrack(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText(")")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("(")
-        self.editor.SetInsertionPoint(to + 2)
-
-    def OnItalic(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("*")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("*")
-        self.editor.SetInsertionPoint(to + 2)
-
-    def OnBold(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("**")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("**")
-        self.editor.SetInsertionPoint(to + 4)
-
-    def OnCode(self, event):
-        frm, to = self.editor.GetSelection()
-        self.editor.SetInsertionPoint(to)
-        self.editor.WriteText("`")
-        self.editor.SetInsertionPoint(frm)
-        self.editor.WriteText("`")
-        self.editor.SetInsertionPoint(to + 2)
-
-    def OnAddHeadBlock(self, event):
-        self.editor.SetInsertionPoint(0)
-        self.editor.WriteText('---\ntitle: ""\nauthor: ""\ndate: ""\noutput: html_document\n---\n') 
-        self.editor.SetInsertionPoint(13)
-
-    def OnAddReference(self, event):
-        self.editor.WriteText(" [@ref] ") 
-
-    def OnAddURL(self, event):
-        self.editor.WriteText(" [alt text](http://) ") 
-    def OnAddEMail(self, event):
-        self.editor.WriteText(" [name](Mailto:) ") 
-    def OnAddFigure(self, event):
-        self.editor.WriteText(" ![alt tag](filename) ") 
-
-    def OnHeading1(self, event):
-        self.editor.WriteText("\n# ") 
-    def OnHeading2(self, event):
-        self.editor.WriteText("\n## ") 
-    def OnHeading3(self, event):
-        self.editor.WriteText("\n### ") 
-    def OnHeading4(self, event):
-        self.editor.WriteText("\n#### ") 
-    def OnHeading5(self, event):
-        self.editor.WriteText("\n##### ") 
-    def OnHeading6(self, event):
-        self.editor.WriteText("\n###### ")
-
-
-    ##what is this one?
-    def OnClose(self, event):
-        self.settings['filename'] = self.filename
-        self.settings['lastdir'] = self.dirname
-        if event.CanVeto() and self.editor.IsModified():
-            hold = wx.MessageBox("Would you like to save your work?",
-                                 "Save before exit?",
-                                 wx.ICON_QUESTION | wx.YES_NO | wx.CANCEL | wx.YES_DEFAULT)
-            if hold == wx.YES:
-                self.OnSave(event)
-                self.Destroy()
-            elif hold == wx.NO:
-                self.Destroy()
-            else:
-                event.Veto()
-        else:
-            self.Destroy()
-
+    # processing events (all apps)
+#move    GetRDirectory = GetRDirectory
     def GetRDirectory(self):
         def splitter(path, interest):
             look = split(path)
@@ -650,9 +656,6 @@ class MainWindow(wx.Frame):
         x = self.x
         pt = self.ClientToScreen(wx.Point(0, 0))
         return wx.Point(pt.x + x, pt.y + x)
-
-    def OnSettings(self, event):
-        wx.MessageBox("You wanted to see the settings")
 
     def OnShowFind(self, event):
         data = wx.FindReplaceData()

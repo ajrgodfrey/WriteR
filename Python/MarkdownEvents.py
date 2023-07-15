@@ -32,7 +32,6 @@ def OnCurlyBrack(self, event):
         self.editor.WriteText("{")
         self.editor.SetInsertionPoint(to + 2)
 
-
 def OnRoundBrack(self, event):
         frm, to = self.editor.GetSelection()
         self.editor.SetInsertionPoint(to)
@@ -45,9 +44,6 @@ def OnAddHeadBlock(self, event):
         self.editor.SetInsertionPoint(0)
         self.editor.WriteText('---\ntitle: ""\nauthor: ""\ndate: ""\noutput: html_document\n---\n') 
         self.editor.SetInsertionPoint(13)
-
-
-
 
 def OnAddReference(self, event):
         self.editor.WriteText(" [@ref] ") 
@@ -63,18 +59,21 @@ def OnAddFigure(self, event):
 
 def OnHeading1(self, event):
         self.editor.WriteText("\n# ") 
+
 def OnHeading2(self, event):
         self.editor.WriteText("\n## ") 
+
 def OnHeading3(self, event):
         self.editor.WriteText("\n### ") 
+
 def OnHeading4(self, event):
         self.editor.WriteText("\n#### ") 
+
 def OnHeading5(self, event):
         self.editor.WriteText("\n##### ") 
+
 def OnHeading6(self, event):
         self.editor.WriteText("\n###### ")
-
-
 
 def OnMath(self, event):
         frm, to = self.editor.GetSelection()
@@ -109,11 +108,7 @@ def OnCode(self, event):
         self.editor.WriteText("`")
         self.editor.SetInsertionPoint(to + 2)
 
-
-
-
-# accept that the following is misnamed and move on
-def OnRmdComment(self, event):
+def OnHTMLComment(self, event):
         frm, to = self.editor.GetSelection()
         self.editor.SetInsertionPoint(to)
         self.editor.WriteText(" -->\n\n")
@@ -121,3 +116,4 @@ def OnRmdComment(self, event):
         self.editor.WriteText("\n<!-- ")
         self.editor.SetInsertionPoint(to + 15)
 
+# end of file

@@ -18,8 +18,7 @@ ID_BCRLBRK = wx.Window.NewControlId()
 
 
 
-def MakeMenu(self, MainMenu):
-        formatMenu = wx.Menu()
+
         for id, label, helpText, handler in \
                 [
                  (ID_BOLD, "Bold\tCtrl+B", "move to bold face font", self.OnBold),
@@ -37,5 +36,5 @@ def MakeMenu(self, MainMenu):
             else:
                 item = formatMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        MainMenu.Append(formatMenu, "F&ormat")  # Add the format Menu to the MenuBar
+
 

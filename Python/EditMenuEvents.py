@@ -31,8 +31,9 @@ def OnSelectAll(self, event):
         self.editor.SelectAll()
 
 
-def OnSettings(self, event):
-        wx.MessageBox("You wanted to see the settings")
+
+def OnSettings(self, event): # not properly implemented
+        wx.MessageBox("You wanted to see the settings, but this is not properly implemented yet")
 
 def OnWordCount(self, event):
         text=self.editor.GetValue()
