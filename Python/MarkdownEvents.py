@@ -1,6 +1,6 @@
 # 2022.11.29 this file is for the processing of files using markdown
 #      It is therefore intended for both WriteR, and WriteQuarto
-# N.B. need to bring standard markdown actions into here; still lurking in WriteR.pyw
+# N.B. need to bring standard markdown actions into here; Might still be lurking in WriteR.pyw
 
 # N.B. some of the following imports are almost certainly redundant
 
@@ -14,6 +14,7 @@ from os.path import join, split, isdir, expanduser, realpath
 from os import walk
 from time import asctime, sleep
 
+from GlobalSettings import *
 
 
 def OnSquareBrack(self, event):
@@ -58,7 +59,10 @@ def OnAddFigure(self, event):
         self.editor.WriteText(" ![alt tag](filename) ") 
 
 def OnHeading1(self, event):
-        self.editor.WriteText("\n# ") 
+        self.editor.WriteText("\n")
+        if AppName == "ScriptR":
+            self.editor.WriteText("#' ")
+        self.editor.WriteText("# ") 
 
 def OnHeading2(self, event):
         self.editor.WriteText("\n## ") 
@@ -115,5 +119,14 @@ def OnHTMLComment(self, event):
         self.editor.SetInsertionPoint(frm)
         self.editor.WriteText("\n<!-- ")
         self.editor.SetInsertionPoint(to + 15)
+
+
+def OnAddSeparator(self, event):
+        self.editor.WriteText("\n")
+        if AppName == "ScriptR":
+            self.editor.WriteText("#' ")
+        self.editor.WriteText("--- \n")
+
+
 
 # end of file

@@ -607,6 +607,7 @@ class MainWindow(wx.Frame):
     OnHeading4 = MarkdownEvents.OnHeading4
     OnHeading5 = MarkdownEvents.OnHeading5
     OnHeading6 = MarkdownEvents.OnHeading6
+    OnAddSeparator = MarkdownEvents.OnAddSeparator
 
     # processing events (all apps)
 #move    GetRDirectory = GetRDirectory
