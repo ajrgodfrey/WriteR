@@ -59,15 +59,6 @@ ID_SELECTTOMARK = wx.NewIdRef()
 
 ID_ALTERNATE_FOCUS = wx.NewIdRef()
 
-
-
-D_RCOMMAND = wx.NewIdRef()
-ID_COMMENTOUT = wx.NewIdRef()
-
-
-
-
-
 def dcf_dumps(data, sort_keys=True):
     string = ""
     for k, v in sorted(iteritems(data)):
@@ -307,7 +298,7 @@ class MainWindow(wx.Frame):
             elif whichApp=="all":
                 item = formatMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        menuBar.Append(formatMenu, "format")  # Add the format Menu to the MenuBar
+        menuBar.Append(formatMenu, "f&ormat")  # Add the format Menu to the MenuBar
 
 
         insertMenu = wx.Menu()

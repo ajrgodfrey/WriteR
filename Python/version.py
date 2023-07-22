@@ -2,10 +2,10 @@ def WriteR_version():
     return("2022.2")
 
 def QuartoWriteR_version():
-    return("2022.2")
+    return("2023.0.1)
 
 def ScriptR_version():
-    return("2023.0")
+    return("2023.0.1")
 
 
 def WriteRHelpText():
