@@ -4,5 +4,5 @@
 AppName = "ScriptR"
 StatusBarText = "This program is for editing R scripts"
 FileExtension = "R"
-StartingText = "# Use ScriptR to edit and process your R scripts"
+StartingText = "#' Use ScriptR to edit and process your R scripts"
 

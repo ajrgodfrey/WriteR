@@ -64,13 +64,8 @@ ID_ALTERNATE_FOCUS = wx.NewIdRef()
 D_RCOMMAND = wx.NewIdRef()
 ID_COMMENTOUT = wx.NewIdRef()
 
-ID_RPIPE = wx.NewIdRef()
-ID_RLASSIGN = wx.NewIdRef()
-ID_RRASSIGN = wx.NewIdRef()
 
 
-# set up global text strings
-#SBText = "This program is for editing R Markdown files"
 
 
 def dcf_dumps(data, sort_keys=True):
@@ -208,7 +203,7 @@ class MainWindow(wx.Frame):
                  (wx.ID_SAVEAS, "Save &As\tCtrl+Shift+S", "Save the file under a different name", self.OnSaveAs),
                  (None,) * 4,
                  (wx.ID_EXIT, "Quit && save\tCtrl+Q", "Saves the current file and closes the program", self.OnSafeExit)]:
-            if id == None:
+            if label == None:
                 fileMenu.AppendSeparator()
             else:
                 item = fileMenu.Append(id, label, helpText)
@@ -235,10 +230,10 @@ class MainWindow(wx.Frame):
                  (ID_ALTERNATE_FOCUS , "Alternate Focus\tF4", "Alternate Focus", self.AlternateFocus),
                  (None,) * 4,
                  (ID_SETTINGS, 'Settings', "Setup the editor to your liking", self.OnSettings)]:
-            if id == None:
+            if label == None:
                 editMenu.AppendSeparator()
             else:
-                item = editMenu.Append(id, label, helpText)
+                item = editMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(editMenu, "&Edit")  # Add the editMenu to the MenuBar
 
@@ -280,11 +275,11 @@ class MainWindow(wx.Frame):
                 "Use the rmarkdown package and render function to create multiple output documents", wx.ITEM_RADIO)
             self.Bind(wx.EVT_MENU, self.OnSelectRenderAll, self.ChooseRenderAll) 
             buildMenu.AppendSubMenu(-1, "Set render process to...", renderMenu) # Add the render Menu as a submenu to the build menu
-            for id, label, helpText, handler in \
+            for label, helpText, handler in \
                 [
-                 (ID_KNIT2HTML, "Knit to html\tF6", "Knit the script to HTML", self.OnKnit2html),
-                 (ID_KNIT2PDF, "Knit to pdf\tShift+F6", "Knit the script to a pdf file using LaTeX", self.OnKnit2pdf)]:
-                if id == None:
+                 ("Knit to html\tF6", "Knit the script to HTML", self.OnKnit2html),
+                 ("Knit to pdf\tShift+F6", "Knit the script to a pdf file using LaTeX", self.OnKnit2pdf)]:
+                if label == None:
                     buildMenu.AppendSeparator()
                 else:
                     item = buildMenu.Append(wx.ID_ANY, label, helpText)
@@ -292,135 +287,150 @@ class MainWindow(wx.Frame):
         menuBar.Append(buildMenu, "Build")  # Add the Build Menu to the MenuBar
 
         formatMenu = wx.Menu()
-        for id, label, helpText, handler, whichApp  in \
+        for label, helpText, handler, whichApp  in \
                 [
-                 (ID_BOLD, "Bold\tCtrl+B", "move to bold face font", self.OnBold, "md"),
-                 (ID_ITALIC, "Italic\tCtrl+I", "move to italic face font", self.OnItalic, "md"),
-                 (ID_CODE, "Code\tCtrl+`", "present using a typewriter font commonly seen when showing code", self.OnCode, "md"),
-                 (ID_MATH, "Maths mode\tCtrl+4", "move text to maths mode", self.OnMath, "md"),
-                 (ID_RNDBRK, "Round brackets\tAlt+Shift+(", "Wrap text in round () brackets", self.OnRoundBrack, "all"),
-                 (ID_SQBRK, "Square brackets\tAlt+[", "Wrap text in square brackets", self.OnSquareBrack, "all"),
-                 (ID_CRLBRK, "Curly brackets\tAlt+Shift+{", "Wrap text in curly brackets", self.OnCurlyBrack, "all"),
-                 (ID_BRNDBRK, "Round brackets (math)\tAlt+Shift+)", "Wrap math in round () brackets", self.OnMathRoundBrack, "md"),
-                 (ID_BSQBRK, "Square brackets (math)\tAlt+]", "Wrap math in square brackets", self.OnMathSquareBrack, "md"),
-                 (ID_BCRLBRK, "Curly brackets (math)\tAlt+Shift+}", "Wrap math in curly brackets", self.OnMathCurlyBrack, "md")]:
-            if id == None:
+                 ("Bold\tCtrl+B", "move to bold face font", self.OnBold, "md"),
+                 ("Italic\tCtrl+I", "move to italic face font", self.OnItalic, "md"),
+                 ("Code\tCtrl+`", "present using a typewriter font commonly seen when showing code", self.OnCode, "md"),
+                 ("Maths mode\tCtrl+4", "move text to maths mode", self.OnMath, "md"),
+                 ("Round brackets\tAlt+Shift+(", "Wrap text in round () brackets", self.OnRoundBrack, "all"),
+                 ("Square brackets\tAlt+[", "Wrap text in square brackets", self.OnSquareBrack, "all"),
+                 ("Curly brackets\tAlt+Shift+{", "Wrap text in curly brackets", self.OnCurlyBrack, "all"),
+                 ("Round brackets (math)\tAlt+Shift+)", "Wrap math in round () brackets", self.OnMathRoundBrack, "md"),
+                 ("Square brackets (math)\tAlt+]", "Wrap math in square brackets", self.OnMathSquareBrack, "md"),
+                 ("Curly brackets (math)\tAlt+Shift+}", "Wrap math in curly brackets", self.OnMathCurlyBrack, "md")]:
+            if label == None:
                 formatMenu.AppendSeparator()
             elif AppName!="ScriptR" and whichApp=="md":
-                item = formatMenu.Append(id, label, helpText)
+                item = formatMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
             elif whichApp=="all":
-                item = formatMenu.Append(id, label, helpText)
+                item = formatMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(formatMenu, "format")  # Add the format Menu to the MenuBar
 
 
         insertMenu = wx.Menu()
         headingsMenu = wx.Menu()
-        for id, label, helpText, handler in \
+        for label, helpText, handler in \
                 [
-                 (ID_H1, "level &1\tAlt+1", "insert heading level 1", self.OnHeading1), 
-                 (ID_H2, "level &2\tAlt+2", "insert heading level 2", self.OnHeading2), 
-                 (ID_H3, "level &3\tAlt+3", "insert heading level 3", self.OnHeading3), 
-                 (ID_H4, "level &4\tAlt+4", "insert heading level 4", self.OnHeading4), 
-                 (ID_H5, "level &5\tAlt+5", "insert heading level 5", self.OnHeading5), 
-                 (ID_H6, "level &6\tAlt+6", "insert heading level 6", self.OnHeading6)]:
+                 ("level &1\tAlt+1", "insert heading level 1", self.OnHeading1), 
+                 ("level &2\tAlt+2", "insert heading level 2", self.OnHeading2), 
+                 ("level &3\tAlt+3", "insert heading level 3", self.OnHeading3), 
+                 ("level &4\tAlt+4", "insert heading level 4", self.OnHeading4), 
+                 ("level &5\tAlt+5", "insert heading level 5", self.OnHeading5), 
+                 ("level &6\tAlt+6", "insert heading level 6", self.OnHeading6)]:
             item = headingsMenu.Append(wx.ID_ANY, label, helpText)
             self.Bind(wx.EVT_MENU, handler, item)
         insertMenu.Append(-1, "Heading", headingsMenu)
-
+        for label, helpText, handler, whichApp  in \
+                [
+                 ("header/preamble\tCtrl+Shift+H", "", self.OnAddHeadBlock, "md"),
+                 ("Separator\tCtrl+Shift+-", "", self.OnAddSeparator, "all"),
+                 ("URL\tCtrl+Shift+U", "", self.OnAddURL, "md"),
+                 ("e-mail\tCtrl+Shift+E", "", self.OnAddEMail, "md"),
+                 ("Figure\tCtrl+Shift+F", "", self.OnAddFigure, "md"),
+                 ("Reference\tCtrl+Shift+R", "", self.OnAddReference, "md")]:
+            if label == None:
+                insertMenu.AppendSeparator()
+            elif AppName!="ScriptR" and whichApp=="md":
+                item = insertMenu.Append(wx.ID_ANY, label, helpText)
+                self.Bind(wx.EVT_MENU, handler, item)
+            elif whichApp=="all":
+                item = insertMenu.Append(wx.ID_ANY, label, helpText)
+                self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(insertMenu, "insert")  # Add the insert Menu to the MenuBar
 
         CodeMenu = wx.Menu()
-        for id, label, helpText, handler in \
+        for label, helpText, handler in \
                 [
-                 (ID_RLASSIGN, "Insert a left assignment\tCtrl+<", "insert R code for the left assignment <-", self.OnRLAssign),
-                 (ID_RRASSIGN, "Insert a right assignment\tCtrl+>", "insert R code for the right assignment ->", self.OnRRAssign),
-                 (ID_RPIPE, "Insert a pipe operator\tCtrl+Shift+P", "insert R code for the pipe operator |>", self.OnRPipe)]:
-            if id == None:
+                 ("Insert a left assignment\tCtrl+<", "insert R code for the left assignment <-", self.OnRLAssign),
+                 ("Insert a right assignment\tCtrl+>", "insert R code for the right assignment ->", self.OnRRAssign),
+                 ("Insert a pipe operator\tCtrl+Shift+P", "insert R code for the pipe operator |>", self.OnRPipe)]:
+            if label == None:
                 CodeMenu.AppendSeparator()
             else:
-                item = CodeMenu.Append(id, label, helpText)
+                item = CodeMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(CodeMenu, "Code")  # Add the Code Menu to the MenuBar
 
         # Only use the Maths menu for WriteR and QuartoWriteR
         mathsMenu = wx.Menu()
         symbolsMenu = wx.Menu()
-        for id, label, helpText, handler in \
+        for label, helpText, handler in \
                 [
-                (ID_SYMBOL_INFINITY, "infinity\tCtrl+Shift+I", "insert infinity", self.OnSymbol_infinity), 
-                 (ID_SYMBOL_TIMES, "times\tCtrl+Shift+*", "insert times", self.OnSymbol_times), 
-                 (ID_SYMBOL_PARTIAL, "partial derivative\tCtrl+Shift+D", "insert partial", self.OnSymbol_partial), 
-                 (ID_SYMBOL_PLUSMINUS, "plus or minus\tCtrl+Shift+=", "insert plus or minus sign", self.OnSymbol_plusminus), 
-                 (ID_SYMBOL_MINUSPLUS, "minus or plus\tCtrl+Shift+-", "insert minus or plus sign", self.OnSymbol_minusplus), 
-                 (ID_SYMBOL_LESSEQL, "less than or equal\tCtrl+Shift+<", "insert less than or equal sign", self.OnSymbol_leq), 
-                 (ID_SYMBOL_GRTREQL, "greater than or equal \tCtrl+Shift+>", "insert greater than or equal sign", self.OnSymbol_geq), 
-                 (ID_SYMBOL_NOTEQL, "not equal\tCtrl+Shift+!", "insert not equal sign", self.OnSymbol_neq), 
-                 (ID_SYMBOL_LEFTPAREN, "Left Parenthesis\tCtrl+9", "insert variable size left parenthesis", self.OnSymbol_LeftParen), 
-                 (ID_SYMBOL_RIGHTPAREN, "Right Parenthesis\tCtrl+0", "insert variable size right parenthesis", self.OnSymbol_RightParen), 
-                 (ID_SYMBOL_LEFTSQUARE, "Left Square bracket\tCtrl+[", "insert variable size left square bracket", self.OnSymbol_LeftSquare), 
-                 (ID_SYMBOL_RIGHTSQUARE, "Right Square bracket\tCtrl+]", "insert variable size right square bracket", self.OnSymbol_RightSquare), 
-                 (ID_SYMBOL_LEFTCURLY, "Left Curly bracket\tCtrl+Shift+{", "insert variable size left curly bracket", self.OnSymbol_LeftCurly), 
-                 (ID_SYMBOL_RIGHTCURLY, "Right Curly bracket\tCtrl+Shift+}", "insert variable size right curly bracket", self.OnSymbol_RightCurly)]:
-            if id == None:
+                ("infinity\tCtrl+Shift+I", "insert infinity", self.OnSymbol_infinity), 
+                 ("times\tCtrl+Shift+*", "insert times", self.OnSymbol_times), 
+                 ("partial derivative\tCtrl+Shift+D", "insert partial", self.OnSymbol_partial), 
+                 ("plus or minus\tCtrl+Shift+=", "insert plus or minus sign", self.OnSymbol_plusminus), 
+                 ("minus or plus\tCtrl+Shift+-", "insert minus or plus sign", self.OnSymbol_minusplus), 
+                 ("less than or equal\tCtrl+Shift+<", "insert less than or equal sign", self.OnSymbol_leq), 
+                 ("greater than or equal \tCtrl+Shift+>", "insert greater than or equal sign", self.OnSymbol_geq), 
+                 ("not equal\tCtrl+Shift+!", "insert not equal sign", self.OnSymbol_neq), 
+                 ("Left Parenthesis\tCtrl+9", "insert variable size left parenthesis", self.OnSymbol_LeftParen), 
+                 ("Right Parenthesis\tCtrl+0", "insert variable size right parenthesis", self.OnSymbol_RightParen), 
+                 ("Left Square bracket\tCtrl+[", "insert variable size left square bracket", self.OnSymbol_LeftSquare), 
+                 ("Right Square bracket\tCtrl+]", "insert variable size right square bracket", self.OnSymbol_RightSquare), 
+                 ("Left Curly bracket\tCtrl+Shift+{", "insert variable size left curly bracket", self.OnSymbol_LeftCurly), 
+                 ("Right Curly bracket\tCtrl+Shift+}", "insert variable size right curly bracket", self.OnSymbol_RightCurly)]:
+            if label == None:
                 symbolsMenu.AppendSeparator()
             else:
-                item = symbolsMenu.Append(wx.NewIdRef(), label, helpText)
+                item = symbolsMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         mathsMenu.Append(-1, "Symbols", symbolsMenu)
         structuresMenu = wx.Menu()
-        for id, label, helpText, handler in \
+        for label, helpText, handler in \
                 [
-                 (ID_SQUAREROOT, "Square root\tAlt+Ctrl+Shift+R", "insert a square root", self.OnSquareRoot), 
-                 (ID_MATHBAR, "bar \tCtrl+Shift+B", "insert a bar operator", self.OnMathBar), 
-                 (ID_ABSVAL, "Absolute values\tCtrl+Shift+A", "insert left and right absolute value delimiters", self.OnAbsVal), 
-                 (ID_FRACTION, "Fraction\tCtrl+Shift+/", "insert a fraction", self.OnFraction), 
-                 (ID_SUMMATION, "Summation\tAlt+Ctrl+Shift+S", "insert a summation", self.OnSummation), 
-                 (ID_INTEGRAL, "Integral\tAlt+Ctrl+Shift+I", "insert an integral", self.Onintegral), 
-                 (ID_PRODUCT, "Product\tAlt+Ctrl+Shift+P", "insert a product", self.OnProduct), 
-                 (ID_LIMIT, "Limit\tAlt+Ctrl+Shift+L", "insert a limit", self.OnLimit), 
-                 (ID_DOUBLESUMMATION, "Double summation\tAlt+Ctrl+Shift+D", "insert a double summation", self.OnDoubleSummation), 
-                 (ID_DOUBLEINTEGRAL, "Double integral", "insert a double integral", self.OnDoubleIntegral)]:
-            if id == None:
+                 ("Square root\tAlt+Ctrl+Shift+R", "insert a square root", self.OnSquareRoot), 
+                 ("bar \tCtrl+Shift+B", "insert a bar operator", self.OnMathBar), 
+                 ("Absolute values\tCtrl+Shift+A", "insert left and right absolute value delimiters", self.OnAbsVal), 
+                 ("Fraction\tCtrl+Shift+/", "insert a fraction", self.OnFraction), 
+                 ("Summation\tAlt+Ctrl+Shift+S", "insert a summation", self.OnSummation), 
+                 ("Integral\tAlt+Ctrl+Shift+I", "insert an integral", self.Onintegral), 
+                 ("Product\tAlt+Ctrl+Shift+P", "insert a product", self.OnProduct), 
+                 ("Limit\tAlt+Ctrl+Shift+L", "insert a limit", self.OnLimit), 
+                 ("Double summation\tAlt+Ctrl+Shift+D", "insert a double summation", self.OnDoubleSummation), 
+                 ("Double integral", "insert a double integral", self.OnDoubleIntegral)]:
+            if label == None:
                 structuresMenu.AppendSeparator()
             else:
-                item = structuresMenu.Append(id, label, helpText)
+                item = structuresMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         mathsMenu.Append(-1, "Structures", structuresMenu)# Add the structures Menu as a submenu to the main menu
         GreekMenu = wx.Menu()
-        for id, label, helpText, handler in \
+        for label, helpText, handler in \
                 [
-                 (ID_GREEK_ALPHA, "alpha\tAlt+Shift+A", "insert greek letter alpha", self.OnGreek_alpha), 
-                 (ID_GREEK_BETA, "beta\tAlt+Shift+B", "insert greek letter beta", self.OnGreek_beta), 
-                 (ID_GREEK_GAMMA, "gamma\tAlt+Shift+G", "insert greek letter gamma", self.OnGreek_gamma), 
-                 (ID_GREEK_DELTA, "delta\tAlt+Shift+D", "insert greek letter delta", self.OnGreek_delta), 
-                 (ID_GREEK_EPSILON, "epsilon\tAlt+Shift+E", "insert greek letter epsilon", self.OnGreek_epsilon), 
-                 (ID_GREEK_VAREPSILON, "epsilon (variant)\tAlt+Shift+V", "insert variant of greek letter epsilon", self.OnGreek_varepsilon), 
-                 (ID_GREEK_ZETA, "zeta\tAlt+Shift+Z", "insert greek letter zeta", self.OnGreek_zeta), 
-                 (ID_GREEK_ETA, "eta\tAlt+Shift+W", "insert greek letter eta", self.OnGreek_eta), 
-                 (ID_GREEK_THETA, "theta\tAlt+Shift+H", "insert greek letter theta", self.OnGreek_theta), 
-                 (ID_GREEK_VARTHETA, "theta (variant)\tAlt+Shift+/", "insert variant of greek letter theta", self.OnGreek_vartheta), 
-                 (ID_GREEK_IOTA, "iota\tAlt+Shift+I", "insert greek letter iota", self.OnGreek_iota), 
-                 (ID_GREEK_KAPPA, "kappa\tAlt+Shift+K", "insert greek letter kappa", self.OnGreek_kappa), 
-                 (ID_GREEK_LAMBDA, "lambda\tAlt+Shift+L", "insert greek letter lambda", self.OnGreek_lambda), 
-                 (ID_GREEK_MU, "mu\tAlt+Shift+M", "insert greek letter mu", self.OnGreek_mu), 
-                 (ID_GREEK_NU, "nu\tAlt+Shift+N", "insert greek letter nu", self.OnGreek_nu), 
-                 (ID_GREEK_XI, "xi\tAlt+Shift+X", "insert greek letter xi", self.OnGreek_xi), 
-                 (ID_GREEK_OMICRON, "omicron\tAlt+Shift+O", "insert greek letter omicron", self.OnGreek_omicron), 
-                 (ID_GREEK_PI, "pi\tAlt+Shift+P", "insert greek letter pi", self.OnGreek_pi), 
-                 (ID_GREEK_RHO, "rho\tAlt+Shift+R", "insert greek letter rho", self.OnGreek_rho), 
-                 (ID_GREEK_SIGMA, "sigma\tAlt+Shift+S", "insert greek letter sigma", self.OnGreek_sigma), 
-                 (ID_GREEK_TAU, "tau\tAlt+Shift+T", "insert greek letter tau", self.OnGreek_tau), 
-                 (ID_GREEK_UPSILON, "upsilon\tAlt+Shift+U", "insert greek letter upsilon", self.OnGreek_upsilon), 
-                 (ID_GREEK_PHI, "phi\tAlt+Shift+F", "insert greek letter phi", self.OnGreek_phi), 
-                 (ID_GREEK_CHI, "chi\tAlt+Shift+C", "insert greek letter chi", self.OnGreek_chi), 
-                 (ID_GREEK_PSI, "psi\tAlt+Shift+Y", "insert greek letter psi", self.OnGreek_psi), 
-                 (ID_GREEK_OMEGA, "omega\tAlt+Shift+.", "insert greek letter omega", self.OnGreek_omega)]:
-            if id == None:
+                 ("alpha\tAlt+Shift+A", "insert greek letter alpha", self.OnGreek_alpha), 
+                 ("beta\tAlt+Shift+B", "insert greek letter beta", self.OnGreek_beta), 
+                 ("gamma\tAlt+Shift+G", "insert greek letter gamma", self.OnGreek_gamma), 
+                 ("delta\tAlt+Shift+D", "insert greek letter delta", self.OnGreek_delta), 
+                 ("epsilon\tAlt+Shift+E", "insert greek letter epsilon", self.OnGreek_epsilon), 
+                 ("epsilon (variant)\tAlt+Shift+V", "insert variant of greek letter epsilon", self.OnGreek_varepsilon), 
+                 ("zeta\tAlt+Shift+Z", "insert greek letter zeta", self.OnGreek_zeta), 
+                 ("eta\tAlt+Shift+W", "insert greek letter eta", self.OnGreek_eta), 
+                 ("theta\tAlt+Shift+H", "insert greek letter theta", self.OnGreek_theta), 
+                 ("theta (variant)\tAlt+Shift+/", "insert variant of greek letter theta", self.OnGreek_vartheta), 
+                 ("iota\tAlt+Shift+I", "insert greek letter iota", self.OnGreek_iota), 
+                 ("kappa\tAlt+Shift+K", "insert greek letter kappa", self.OnGreek_kappa), 
+                 ("lambda\tAlt+Shift+L", "insert greek letter lambda", self.OnGreek_lambda), 
+                 ("mu\tAlt+Shift+M", "insert greek letter mu", self.OnGreek_mu), 
+                 ("nu\tAlt+Shift+N", "insert greek letter nu", self.OnGreek_nu), 
+                 ("xi\tAlt+Shift+X", "insert greek letter xi", self.OnGreek_xi), 
+                 ("omicron\tAlt+Shift+O", "insert greek letter omicron", self.OnGreek_omicron), 
+                 ("pi\tAlt+Shift+P", "insert greek letter pi", self.OnGreek_pi), 
+                 ("rho\tAlt+Shift+R", "insert greek letter rho", self.OnGreek_rho), 
+                 ("sigma\tAlt+Shift+S", "insert greek letter sigma", self.OnGreek_sigma), 
+                 ("tau\tAlt+Shift+T", "insert greek letter tau", self.OnGreek_tau), 
+                 ("upsilon\tAlt+Shift+U", "insert greek letter upsilon", self.OnGreek_upsilon), 
+                 ("phi\tAlt+Shift+F", "insert greek letter phi", self.OnGreek_phi), 
+                 ("chi\tAlt+Shift+C", "insert greek letter chi", self.OnGreek_chi), 
+                 ("psi\tAlt+Shift+Y", "insert greek letter psi", self.OnGreek_psi), 
+                 ("omega\tAlt+Shift+.", "insert greek letter omega", self.OnGreek_omega)]:
+            if label == None:
                 GreekMenu.AppendSeparator()
             else:
-                item = GreekMenu.Append(id, label, helpText)
+                item = GreekMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         mathsMenu.Append(-1, "Greek letters", GreekMenu)
         if(AppName != "ScriptR"):
@@ -429,10 +439,10 @@ class MainWindow(wx.Frame):
         helpMenu = wx.Menu()
         for id, label, helpText, handler in \
                 [(wx.ID_ABOUT, "About", "Information about this program", self.OnAbout)]:
-            if id == None:
+            if label == None:
                 fileMenu.AppendSeparator()
             else:
-                item = helpMenu.Append(id, label, helpText)
+                item = helpMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(helpMenu, "&Help")  # Add the helpMenu to the MenuBar
         self.SetMenuBar(menuBar)  # Add the menuBar to the Frame
