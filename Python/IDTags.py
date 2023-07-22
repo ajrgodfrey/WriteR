@@ -1,5 +1,5 @@
 # 2022.11.29 This file contains all ID tags so that we can be completely sure there are no clashes between WriteR and WriteQuarto
-# it shoudl become redundant as wx.ID_ANY gets rolled out
+# it should become redundant as wx.ID_ANY gets rolled out
 
 import wx
 
@@ -32,6 +32,19 @@ ID_RGRAPH = wx.Window.NewControlId()
 ID_RPIPE = wx.Window.NewControlId()
 ID_RLASSIGN = wx.Window.NewControlId()
 ID_RRASSIGN = wx.Window.NewControlId()
+
+
+# format menu items
+ID_BOLD = wx.Window.NewControlId()
+ID_ITALIC = wx.Window.NewControlId()
+ID_MATH = wx.Window.NewControlId()
+ID_CODE = wx.Window.NewControlId()
+ID_RNDBRK = wx.Window.NewControlId()
+ID_SQBRK = wx.Window.NewControlId()
+ID_CRLBRK = wx.Window.NewControlId()
+ID_BRNDBRK = wx.Window.NewControlId()
+ID_BSQBRK = wx.Window.NewControlId()
+ID_BCRLBRK = wx.Window.NewControlId()
 
 # IDs for headings
 ID_H1 = wx.Window.NewControlId() 
