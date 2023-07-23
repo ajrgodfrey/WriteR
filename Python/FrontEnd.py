@@ -311,11 +311,11 @@ class MainWindow(wx.Frame):
         for label, helpText, handler, whichApp  in \
                 [
                  ("header/preamble\tCtrl+Shift+H", "", self.OnAddHeadBlock, "md"),
-                 ("Separator\tCtrl+Shift+-", "", self.OnAddSeparator, "all"),
-                 ("URL\tCtrl+Shift+U", "", self.OnAddURL, "md"),
-                 ("e-mail\tCtrl+Shift+E", "", self.OnAddEMail, "md"),
-                 ("Figure\tCtrl+Shift+F", "", self.OnAddFigure, "md"),
-                 ("Reference\tCtrl+Shift+R", "", self.OnAddReference, "md")]:
+                 ("Separator\tCtrl+Shift+Space", "insert a code separation line", self.OnAddSeparator, "all"),
+                 ("URL\tCtrl+Shift+U", "insert a link to a website or file", self.OnAddURL, "md"),
+                 ("e-mail\tCtrl+Shift+E", "insert a link to send an email", self.OnAddEMail, "md"),
+                 ("Figure\tCtrl+Shift+F", "insert the markdown needed to insert a graphic file", self.OnAddFigure, "md"),
+                 ("Reference\tCtrl+Shift+R", "insert the markdown for a citation", self.OnAddReference, "md")]:
             if label == None:
                 insertMenu.AppendSeparator()
             elif AppName!="ScriptR" and whichApp=="md":
@@ -329,7 +329,7 @@ class MainWindow(wx.Frame):
         codeMenu = wx.Menu()
         for label, helpText, handler, whichApp  in \
                 [
-                 ("Insert inline R command\tAlt+c", "insert an in-line R command", self.OnRCommand, "md"),
+                 ("Insert inline R command\tCtrl+Shift+C", "insert an in-line R command", self.OnRCommand, "md"),
                  ("Insert R code chunk\tAlt+R", "insert standard R code chunk", self.OnRChunk, "md"),
                  ("Insert R code chunk for a graph\tAlt+G", "insert R code chunk for a graph", self.OnRGraph, "md"),
                  ("Insert Python code chunk\tAlt+P", "insert standard Python code chunk", self.OnPythonChunk, "md"),
@@ -343,7 +343,7 @@ class MainWindow(wx.Frame):
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(codeMenu, "Code")  # Add the Code Menu to the MenuBar
 
-        # Only use the Maths menu for WriteR and QuartoWriteR
+        # We only use the Maths menu for WriteR and QuartoWriteR, but it gets built anyway
         mathsMenu = wx.Menu()
         symbolsMenu = wx.Menu()
         for label, helpText, handler in \
