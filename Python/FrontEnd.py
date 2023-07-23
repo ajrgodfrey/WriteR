@@ -40,9 +40,6 @@ beep = 'winsound' in sys.modules
 system_tray = True
 
 # set up some ID tags
-ID_BUILD = wx.NewIdRef()
-ID_KNIT2HTML = wx.NewIdRef()
-ID_KNIT2PDF = wx.NewIdRef()
 ID_SETTINGS = wx.NewIdRef()
 
 ID_FINDONLY = wx.NewIdRef()
@@ -241,7 +238,7 @@ class MainWindow(wx.Frame):
         self.Render = buildMenu.Append(wx.ID_ANY, "Render the document\tF5", "Use the rmarkdown package to render the current file")
         self.Bind(wx.EVT_MENU, self.OnRenderNull, self.Render)  
       # Create render menu for WriteR
-        if AppName == "WriteR":
+        if AppName != "ScriptR":
             renderMenu = wx.Menu()
             self.ChooseRenderNull = renderMenu.Append(wx.ID_ANY, "Render using defaults", 
                 "Use the rmarkdown package and render function to create HTML or only the first of multiple formats specified in YAML header", wx.ITEM_RADIO)
@@ -261,14 +258,14 @@ class MainWindow(wx.Frame):
             self.ChooseRenderAll = renderMenu.Append(wx.ID_ANY, "Render into all specified formats", 
                 "Use the rmarkdown package and render function to create multiple output documents", wx.ITEM_RADIO)
             self.Bind(wx.EVT_MENU, self.OnSelectRenderAll, self.ChooseRenderAll) 
-            buildMenu.AppendSubMenu(-1, "Set render process to...", renderMenu) # Add the render Menu as a submenu to the build menu
-            for label, helpText, handler in \
+            buildMenu.Append(-1, "Set render process to...", renderMenu) # Add the render Menu as a submenu to the build menu
+            for label, helpText, handler, whichApp in \
                 [
-                 ("Knit to html\tF6", "Knit the script to HTML", self.OnKnit2html),
-                 ("Knit to pdf\tShift+F6", "Knit the script to a pdf file using LaTeX", self.OnKnit2pdf)]:
+                 ("Knit to html\tF6", "Knit the script to HTML", self.OnKnit2html, "R"),
+                 ("Knit to pdf\tShift+F6", "Knit the script to a pdf file using LaTeX", self.OnKnit2pdf, "R")]:
                 if label == None:
                     buildMenu.AppendSeparator()
-                else:
+                elif (whichApp == "R" and AppName == "WriteR") or (whichApp == "Q" and AppName == "QuartoWriteR") or whichApp == "md":
                     item = buildMenu.Append(wx.ID_ANY, label, helpText)
                     self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(buildMenu, "Build")  # Add the Build Menu to the MenuBar
