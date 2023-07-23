@@ -19,21 +19,18 @@ from six import iteritems
 
 # import our modules
 # first bring in modules used for all versions
-from GlobalSettings import *
-from IDTags import *
-import FileMenuEvents
-import EditMenuEvents
-import ViewMenuEvents
-import MyConsole
-import RMarkdownEvents 
-import RCodeEvents
-import MarkdownEvents 
-import MathInserts 
+from GlobalSettings import * # for making sure the correct app is being opened.
+from IDTags import * # hopefully redundant
+import FileMenuEvents # for opening and closing files
+import EditMenuEvents # for editing content
+import ViewMenuEvents # for managing the main window
+import MyConsole # for displaying outcome of processing
+import RMarkdownEvents # for processing files
+import RCodeEvents # for code inserts
+import MarkdownEvents  # for formatting and inserts in text
+import MathInserts  # for equations
+import HelpMenuEvents # for help with the specific apps
 
-# then modules for specific versions (conditioning to be done elsewhere
-import HelpMenuEventsQ
-import HelpMenuEventsR
-import HelpMenuEventsS
 
 
 
@@ -110,9 +107,7 @@ class BashProcessThread(Thread):
 
 ID_DIRECTORY_CHANGE = wx.NewIdRef()
 ID_CRAN = wx.NewIdRef()
-ID_R_PATH = wx.NewIdRef()
-ID_BUILD_COMMAND = wx.NewIdRef()
-ID_KNIT2HTML_COMMAND = wx.NewIdRef()
+
 ID_KNIT2PDF_COMMAND = wx.NewIdRef()
 ID_NEWTEXT = wx.NewIdRef()
 
@@ -434,10 +429,12 @@ class MainWindow(wx.Frame):
             menuBar.Append(mathsMenu, "Maths")  # Add the maths Menu to the MenuBar
 
         helpMenu = wx.Menu()
-        for id, label, helpText, handler in \
-                [(wx.ID_ABOUT, "About", "Information about this program", self.OnAbout)]:
+        for id, label, helpText, handler, whichApp  in \
+                [
+                 (wx.ID_ANY, "Basic help", "just a bit about using this program", self.OnBasicHelp , "all"),
+                 (wx.ID_ABOUT, "About", "Information about this program", self.OnAbout, "all")]:
             if label == None:
-                fileMenu.AppendSeparator()
+                helpMenu.AppendSeparator()
             else:
                 item = helpMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
@@ -578,13 +575,9 @@ class MainWindow(wx.Frame):
     OnMathCurlyBrack = MathInserts.OnMathCurlyBrack
     OnMathSquareBrack = MathInserts.OnMathSquareBrack
 
-   # help menu events
-    if(AppName == "ScriptR"):
-        OnAbout = HelpMenuEventsS.OnAbout
-    elif(AppName == "WriteR"):
-        OnAbout = HelpMenuEventsR.OnAbout
-    else:
-        OnAbout = HelpMenuEventsQ.OnAbout
+    # help menu events
+    OnAbout = HelpMenuEvents.OnAbout
+    OnBasicHelp = HelpMenuEvents.OnBasicHelp
 
 
 
