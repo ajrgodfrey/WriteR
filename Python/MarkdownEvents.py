@@ -120,7 +120,6 @@ def OnHTMLComment(self, event):
         self.editor.WriteText("\n<!-- ")
         self.editor.SetInsertionPoint(to + 15)
 
-
 def OnAddSeparator(self, event):
         self.editor.WriteText("\n")
         if AppName == "ScriptR":

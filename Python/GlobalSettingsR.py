@@ -4,4 +4,4 @@
 AppName = "WriteR"
 StatusBarText = "This program is for editing R markdown files"
 FileExtension = "Rmd"
-StartingText = "# Use QuartoWriteR to edit and process your R markdown documents.
+StartingText = "# Use WriteR to edit and process your R markdown documents.

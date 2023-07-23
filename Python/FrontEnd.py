@@ -285,6 +285,7 @@ class MainWindow(wx.Frame):
                  ("Italic\tCtrl+I", "move to italic face font", self.OnItalic, "md"),
                  ("Code\tCtrl+`", "present using a typewriter font commonly seen when showing code", self.OnCode, "md"),
                  ("Maths mode\tCtrl+4", "move text to maths mode", self.OnMath, "md"),
+                 ("Comment out a selection\tAlt+q", "Comment out some selected text or insert the delimiters for a comment", self.OnHTMLComment, "md"),
                  ("Round brackets\tAlt+Shift+(", "Wrap text in round () brackets", self.OnRoundBrack, "all"),
                  ("Square brackets\tAlt+[", "Wrap text in square brackets", self.OnSquareBrack, "all"),
                  ("Curly brackets\tAlt+Shift+{", "Wrap text in curly brackets", self.OnCurlyBrack, "all"),
@@ -333,18 +334,22 @@ class MainWindow(wx.Frame):
                 self.Bind(wx.EVT_MENU, handler, item)
         menuBar.Append(insertMenu, "insert")  # Add the insert Menu to the MenuBar
 
-        CodeMenu = wx.Menu()
-        for label, helpText, handler in \
+        codeMenu = wx.Menu()
+        for label, helpText, handler, whichApp  in \
                 [
-                 ("Insert a left assignment\tCtrl+<", "insert R code for the left assignment <-", self.OnRLAssign),
-                 ("Insert a right assignment\tCtrl+>", "insert R code for the right assignment ->", self.OnRRAssign),
-                 ("Insert a pipe operator\tCtrl+Shift+P", "insert R code for the pipe operator |>", self.OnRPipe)]:
+                 ("Insert inline R command\tAlt+c", "insert an in-line R command", self.OnRCommand, "md"),
+                 ("Insert R code chunk\tAlt+R", "insert standard R code chunk", self.OnRChunk, "md"),
+                 ("Insert R code chunk for a graph\tAlt+G", "insert R code chunk for a graph", self.OnRGraph, "md"),
+                 ("Insert Python code chunk\tAlt+P", "insert standard Python code chunk", self.OnPythonChunk, "md"),
+                 ("Insert a left assignment\tCtrl+<", "insert R code for the left assignment <-", self.OnRLAssign, "all"),
+                 ("Insert a right assignment\tCtrl+>", "insert R code for the right assignment ->", self.OnRRAssign, "all"),
+                 ("Insert a pipe operator\tCtrl+Shift+P", "insert R code for the pipe operator |>", self.OnRPipe, "all")]:
             if label == None:
-                CodeMenu.AppendSeparator()
-            else:
-                item = CodeMenu.Append(wx.ID_ANY, label, helpText)
+                codeMenu.AppendSeparator()
+            elif (AppName!="ScriptR" and whichApp=="md") or whichApp=="all":
+                item = codeMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        menuBar.Append(CodeMenu, "Code")  # Add the Code Menu to the MenuBar
+        menuBar.Append(codeMenu, "Code")  # Add the Code Menu to the MenuBar
 
         # Only use the Maths menu for WriteR and QuartoWriteR
         mathsMenu = wx.Menu()
@@ -513,6 +518,10 @@ class MainWindow(wx.Frame):
     OnRPipe = RCodeEvents.OnRPipe
     OnRLAssign = RCodeEvents.OnRLAssign
     OnRRAssign = RCodeEvents.OnRRAssign
+    OnRChunk = RCodeEvents.OnRChunk
+    OnRGraph = RCodeEvents.OnRGraph
+    OnPythonChunk = RCodeEvents.OnPythonChunk
+    OnRCommand = RCodeEvents.OnRCommand
 
     # MathInserts are all LaTeX input for math mode; they are all included even though not used by ScriptR; menu is blanked out for ScriptR
     OnSymbol_infinity = MathInserts.OnSymbol_infinity
@@ -588,6 +597,23 @@ class MainWindow(wx.Frame):
     OnCut = EditMenuEvents.OnCut
     OnGoToLine = EditMenuEvents.OnGoToLine
     OnSettings = EditMenuEvents.OnSettings
+    OnWordCount = EditMenuEvents.OnWordCount 
+    OnShowFind = EditMenuEvents.OnShowFind 
+    OnSetMark = EditMenuEvents.OnSetMark 
+    F3Next = EditMenuEvents.F3Next 
+    ShiftF3Previous = EditMenuEvents.ShiftF3Previous 
+    OnFind = EditMenuEvents.OnFind 
+    OnFindClose = EditMenuEvents.OnFindClose 
+    OnShowFindReplace = EditMenuEvents.OnShowFindReplace 
+    OnSelectToMark = EditMenuEvents.OnSelectToMark 
+    AlternateFocus = EditMenuEvents.AlternateFocus 
+    duplicateline = EditMenuEvents.duplicateline 
+    lineup = EditMenuEvents.lineup 
+    linedown = EditMenuEvents.linedown 
+    uppercase = EditMenuEvents.uppercase 
+    lowercase = EditMenuEvents.lowercase 
+    unindent = EditMenuEvents.unindent 
+    indent = EditMenuEvents.indent
 
     # view menu events 
     ToggleStatusBar= ViewMenuEvents.ToggleStatusBar
@@ -606,6 +632,7 @@ class MainWindow(wx.Frame):
     OnBold = MarkdownEvents.OnBold
     OnCode = MarkdownEvents.OnCode
     OnMath = MarkdownEvents.OnMath
+    OnHTMLComment = MarkdownEvents.OnHTMLComment
     OnAddHeadBlock = MarkdownEvents.OnAddHeadBlock
     OnAddURL = MarkdownEvents.OnAddURL
     OnAddReference = MarkdownEvents.OnAddReference

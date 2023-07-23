@@ -30,8 +30,6 @@ def OnDelete(self, event):
 def OnSelectAll(self, event):
         self.editor.SelectAll()
 
-
-
 def OnSettings(self, event): # not properly implemented
         wx.MessageBox("You wanted to see the settings, but this is not properly implemented yet")
 
@@ -86,7 +84,6 @@ def OnShowFindReplace(self, event):
         dlg.data = data  # save a reference to it...
         dlg.Show(True)
 
-
 def OnSelectToMark(self, event):
         insertionPoint = self.editor.GetInsertionPoint()
         if (self.mark < insertionPoint):
@@ -98,27 +95,31 @@ def OnSelectToMark(self, event):
            if beep:
               winsound.Beep(1500, 250)
 
-
-
-
 def AlternateFocus(self, event):
         self.ActuallyAlternateFocus()
 
 
 
-# not implemented yet
+# the following are not implemented yet and might be moved to different module
+
 def duplicateline(self,e):
         self.control.SelectionDuplicate()
+
 def lineup(self,e):
         self.control.MoveSelectedLinesUp()
+
 def linedown(self,e):
         self.control.MoveSelectedLinesDown()
+
 def uppercase(self,e):
         self.control.UpperCase()
+
 def lowercase(self,e):
         self.control.LowerCase()
+
 def unindent(self,e):
         self.control.BackTab()
+
 def indent(self,e):
         self.control.Tab()
 
