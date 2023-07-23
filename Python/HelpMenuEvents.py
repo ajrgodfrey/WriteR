@@ -87,22 +87,19 @@ CommonHelpText = """This software was created using wxPython. \nDevelopment star
             Send all feedback to Jonathan Godfrey at a.j.godfrey@massey.ac.nz\n"""
 
 def OnAboutQ(self, event):
-        Version = QuartoWriteR_version()
-        WholeText = AboutQuartoWriteR + CommonHelpText + "\nVersion: " + Version
+        WholeText = AboutQuartoWriteR + CommonHelpText + "\nVersion: " + QuartoWriteR_version
         dialog = wx.MessageDialog(self, WholeText, "About this R Markdown Editor", wx.OK)
         dialog.ShowModal()
         dialog.Destroy()
 
 def OnAboutR(self, event):
-        Version = WriteR_version()
-        WholeText = AboutWriteR + CommonHelpText + "\nVersion: " + Version
+        WholeText = AboutWriteR + CommonHelpText + "\nVersion: " + WriteR_version()
         dialog = wx.MessageDialog(self, WholeText, "About this R Markdown Editor", wx.OK)
         dialog.ShowModal()
         dialog.Destroy()
               
 def OnAboutS(self, event):
-        Version = ScriptR_version()
-        WholeText = AboutScriptR + CommonHelpText + "\nVersion: " + Version
+        WholeText = AboutScriptR + CommonHelpText + "\nVersion: " + ScriptR_version
         dialog = wx.MessageDialog(self, WholeText, "About this R script Editor", wx.OK)
         dialog.ShowModal()
         dialog.Destroy()

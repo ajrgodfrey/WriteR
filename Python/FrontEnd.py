@@ -283,10 +283,7 @@ class MainWindow(wx.Frame):
                  ("Comment out a selection\tAlt+q", "Comment out some selected text or insert the delimiters for a comment", self.OnHTMLComment, "md"),
                  ("Round brackets\tAlt+Shift+(", "Wrap text in round () brackets", self.OnRoundBrack, "all"),
                  ("Square brackets\tAlt+[", "Wrap text in square brackets", self.OnSquareBrack, "all"),
-                 ("Curly brackets\tAlt+Shift+{", "Wrap text in curly brackets", self.OnCurlyBrack, "all"),
-                 ("Round brackets (math)\tAlt+Shift+)", "Wrap math in round () brackets", self.OnMathRoundBrack, "md"),
-                 ("Square brackets (math)\tAlt+]", "Wrap math in square brackets", self.OnMathSquareBrack, "md"),
-                 ("Curly brackets (math)\tAlt+Shift+}", "Wrap math in curly brackets", self.OnMathCurlyBrack, "md")]:
+                 ("Curly brackets\tAlt+Shift+{", "Wrap text in curly brackets", self.OnCurlyBrack, "all")]:
             if label == None:
                 formatMenu.AppendSeparator()
             elif AppName!="ScriptR" and whichApp=="md":
@@ -374,6 +371,9 @@ class MainWindow(wx.Frame):
         structuresMenu = wx.Menu()
         for label, helpText, handler in \
                 [
+                 ("Round brackets (math)\tAlt+Shift+)", "Wrap math in round () brackets", self.OnMathRoundBrack),
+                 ("Square brackets (math)\tAlt+]", "Wrap math in square brackets", self.OnMathSquareBrack),
+                 ("Curly brackets (math)\tAlt+Shift+}", "Wrap math in curly brackets", self.OnMathCurlyBrack),
                  ("Square root\tAlt+Ctrl+Shift+R", "insert a square root", self.OnSquareRoot), 
                  ("bar \tCtrl+Shift+B", "insert a bar operator", self.OnMathBar), 
                  ("Absolute values\tCtrl+Shift+A", "insert left and right absolute value delimiters", self.OnAbsVal), 

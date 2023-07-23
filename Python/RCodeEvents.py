@@ -20,7 +20,7 @@ def OnPythonChunk(self, event):
         self.editor.WriteText("\n```\n\n")
         self.editor.SetInsertionPoint(frm)
         self.editor.WriteText("\n```{python}\n")
-        self.editor.SetInsertionPoint(frm + 12)
+        self.editor.SetInsertionPoint(frm + 14)
 
 
 def OnRChunk(self, event):

@@ -1,11 +1,9 @@
 # this file is just for version numbers now
 
-def WriteR_version():
-    return("2022.2")
 
-def QuartoWriteR_version():
-    return("2023.0.1")
+WriteR_version = "2022.2"
 
-def ScriptR_version():
-    return("2023.0.1")
+QuartoWriteR_version = "2023.0.1"
+
+ScriptR_version = "2023.0.1"
 
