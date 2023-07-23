@@ -127,5 +127,12 @@ def OnAddSeparator(self, event):
         self.editor.WriteText("--- \n")
 
 
+### NOT WORKING
+def OnIndent(self, event):
+    frm, to = self.editor.GetSelection()
+    selected_text = self.editor.GetValue()[(frm-2):(to-5)]
+    lines = selected_text.split('\n')
+    new_text = "\n    ".join(lines)
+    self.editor.Replace(frm, to, new_text)
 
 # end of file

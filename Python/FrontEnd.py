@@ -273,6 +273,7 @@ class MainWindow(wx.Frame):
         formatMenu = wx.Menu()
         for label, helpText, handler, whichApp  in \
                 [
+                 ("indent", "", self.OnIndent, "md"),
                  ("Bold\tCtrl+B", "move to bold face font", self.OnBold, "md"),
                  ("Italic\tCtrl+I", "move to italic face font", self.OnItalic, "md"),
                  ("Code\tCtrl+`", "present using a typewriter font commonly seen when showing code", self.OnCode, "md"),
@@ -602,8 +603,6 @@ class MainWindow(wx.Frame):
     linedown = EditMenuEvents.linedown 
     uppercase = EditMenuEvents.uppercase 
     lowercase = EditMenuEvents.lowercase 
-    unindent = EditMenuEvents.unindent 
-    indent = EditMenuEvents.indent
 
     # view menu events 
     ToggleStatusBar= ViewMenuEvents.ToggleStatusBar
@@ -635,6 +634,7 @@ class MainWindow(wx.Frame):
     OnHeading5 = MarkdownEvents.OnHeading5
     OnHeading6 = MarkdownEvents.OnHeading6
     OnAddSeparator = MarkdownEvents.OnAddSeparator
+    OnIndent = MarkdownEvents.OnIndent
 
     # processing events (all apps)
 #move    GetRDirectory = GetRDirectory

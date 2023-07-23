@@ -120,6 +120,4 @@ def lowercase(self,e):
 def unindent(self,e):
         self.control.BackTab()
 
-def indent(self,e):
-        self.control.Tab()
 
