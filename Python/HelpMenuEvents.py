@@ -2,7 +2,7 @@
 
 import wx
 from version import *
-from GlobalSettings import * # for making sure the correct app is being opened.
+from Settings import * # for making sure the correct app is being opened.
 
 ## Basic help
 

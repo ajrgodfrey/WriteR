@@ -19,7 +19,8 @@ from six import iteritems
 
 # import our modules
 # first bring in modules used for all versions
-from GlobalSettings import * # for making sure the correct app is being opened.
+from Settings import * # for making sure the correct app is being opened.
+#from GlobalSettings import * # for making sure the correct app is being opened.
 from IDTags import * # hopefully redundant
 import FileMenuEvents # for opening and closing files
 import EditMenuEvents # for editing content

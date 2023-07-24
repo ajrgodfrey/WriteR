@@ -15,7 +15,7 @@ from os.path import join, split, isdir, expanduser, realpath
 from os import walk
 from time import asctime, sleep
 
-from GlobalSettings import *
+from Settings import *
 
 
 def OnSquareBrack(self, event):

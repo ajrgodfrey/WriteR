@@ -1,7 +1,7 @@
 # View menu events 
 
 import wx
-from GlobalSettings import *
+from Settings import *
 
 def ToggleStatusBar(self, event):
         if self.statusbar.IsShown():
