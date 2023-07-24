@@ -298,6 +298,7 @@ class MainWindow(wx.Frame):
                  ("snake case", "convert all words to snake case", self.MakeSnakeCase),
                  ("camel case", "convert all words to a camel case string", self.MakeCamelCase),
                  ("snake to camel case", "convert a snake case string to a camel case string", self.SnakeToCamelCase),
+                 ("camel to snake case", "convert a camel case string to a snake case string", self.CamelToSnakeCase),
                  ("capi&talise all words", "convert initials of all words to capitals", self.MakeTitleCase), 
                  ("capitalise &first letter", "convert initial letters of lines to upper case", self.MakeCapsCase)]:
             item = caseMenu.Append(wx.ID_ANY, label, helpText)
@@ -630,6 +631,7 @@ class MainWindow(wx.Frame):
     MakeLowerCase = MarkdownEvents.MakeLowerCase 
     MakeUpperCase = MarkdownEvents.MakeUpperCase
     MakeSnakeCase = MarkdownEvents.MakeSnakeCase 
+    CamelToSnakeCase = MarkdownEvents.CamelToSnakeCase
     MakeCamelCase = MarkdownEvents.MakeCamelCase 
     MakeTitleCase = MarkdownEvents.MakeTitleCase 
     SnakeToCamelCase = MarkdownEvents.SnakeToCamelCase

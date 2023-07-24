@@ -188,6 +188,14 @@ def SnakeToCamelCase(self, event):
     self.editor.Replace(frm, to, camel_case_string)
 
 
+def CamelToSnakeCase(self, event):
+    frm, to = self.editor.GetSelection()
+    camel_case_string = self.editor.GetValue()[frm:to]
+    snake_case_string = re.sub(r'(?<!^)(?=[A-Z])', '_', camel_case_string)
+    # Convert to lowercase
+    snake_case_string = snake_case_string.lower()
+    self.editor.Replace(frm, to, snake_case_string)
+
 ### NOT WORKING
 def OnIndent(self, event):
     frm, to = self.editor.GetSelection()
