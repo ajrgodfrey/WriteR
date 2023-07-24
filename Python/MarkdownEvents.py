@@ -5,6 +5,7 @@
 # N.B. some of the following imports are almost certainly redundant
 
 import wx
+import re
 import sys
 from wx.py.shell import Shell
 from wx.aui import AuiManager, AuiPaneInfo
@@ -151,6 +152,40 @@ def MakeCapsCase(self, event):
     selected_text = self.editor.GetValue()[frm:to]
     new_text = selected_text.capitalize() 
     self.editor.Replace(frm, to, new_text)
+
+def MakeSnakeCase(self, event):
+    frm, to = self.editor.GetSelection()
+    selected_text = self.editor.GetValue()[frm:to]
+    # Replace spaces and special characters with underscores
+    snake_case_text = re.sub(r'[\W_]+', '_', selected_text)
+    # Convert to lowercase
+    snake_case_text = snake_case_text.lower()
+    # Remove leading and trailing underscores
+    snake_case_text = snake_case_text.strip('_')
+    self.editor.Replace(frm, to, snake_case_text)
+
+def MakeCamelCase(self, event):
+    frm, to = self.editor.GetSelection()
+    text = self.editor.GetValue()[frm:to]
+    # Split the text by spaces
+    words = text.split()
+    # Capitalize the first letter of each word (except the first word)
+    camel_case_words = [words[0].lower()] + [word.capitalize() for word in words[1:]]
+    # Join the words to form the camel case string
+    camel_case_string = ''.join(camel_case_words)
+    self.editor.Replace(frm, to, camel_case_string)
+
+
+def SnakeToCamelCase(self, event):
+    frm, to = self.editor.GetSelection()
+    snake_case_string  = self.editor.GetValue()[frm:to]
+    # Split the snake case string by underscores
+    words = snake_case_string.split('_')
+    # Capitalize the first letter of each word (except the first word)
+    camel_case_words = [words[0]] + [word.capitalize() for word in words[1:]]
+    # Join the words to form the camel case string
+    camel_case_string = ''.join(camel_case_words)
+    self.editor.Replace(frm, to, camel_case_string)
 
 
 ### NOT WORKING
