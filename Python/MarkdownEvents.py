@@ -142,7 +142,7 @@ def MakeUpperCase(self, event):
 def MakeTitleCase(self, event):
     frm, to = self.editor.GetSelection()
     selected_text = self.editor.GetValue()[frm:to]
-    new_text = selected_text.Title() 
+    new_text = selected_text.title() 
     self.editor.Replace(frm, to, new_text)
 
 
