@@ -18,4 +18,3 @@ elif AppName == "ScriptR":
 
     FileExtension = "R"
     StartingText = "#' Use ScriptR to edit and process your R scripts"
-

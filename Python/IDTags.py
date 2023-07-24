@@ -17,7 +17,7 @@ ID_FINDONLY = wx.Window.NewControlId()
 ID_FINDNEXT = wx.Window.NewControlId()
 ID_FINDPREV = wx.Window.NewControlId()
 ID_FINDREPLACE = wx.Window.NewControlId()
-ID_GOTO  = wx.Window.NewControlId()
+ID_GOTO = wx.Window.NewControlId()
 ID_WORDCOUNT = wx.Window.NewControlId()
 
 ID_SETMARK = wx.Window.NewControlId()

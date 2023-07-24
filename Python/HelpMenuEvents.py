@@ -2,21 +2,22 @@
 
 import wx
 from version import *
-from Settings import * # for making sure the correct app is being opened.
+from Settings import *  # for making sure the correct app is being opened.
 
 ## Basic help
 
 
 def OnBasicHelp(self, event):
-    if(AppName == "ScriptR"):
+    if AppName == "ScriptR":
         OnBasicHelpS(self, event)
-    elif(AppName == "WriteR"):
+    elif AppName == "WriteR":
         OnBasicHelpR(self, event)
     else:
         OnBasicHelpQ(self, event)
 
-def CommonBasicHelpText(): 
-    return("""This editor was designed for use with a screen reader and has been tested with JAWS and NVDA.\n
+
+def CommonBasicHelpText():
+    return """This editor was designed for use with a screen reader and has been tested with JAWS and NVDA.\n
             It makes extensive use of hot keys, many of which are in common use by other software.\n
             All hot keys are indicated in the menus.\n
             The file you create here will be converted to HTML if you press the f5 key.\n
@@ -24,12 +25,11 @@ def CommonBasicHelpText():
             If you have success, then the resulting file will be read in your browser; 
             you may need to refresh the browser using the f5 key while in the browser.\n
             Once you review the processing, hit the f4 key to return to the original window.\n
-            Use Alt+tab to switch between applications.""")
-
-
+            Use Alt+tab to switch between applications."""
 
 
 ### some fixes below here
+
 
 def OnBasicHelpQ(self, event):
     ScriptRBasicHelpText = """ScriptR has fewer features than WriteR and QuartoWriteR.\n
@@ -41,6 +41,7 @@ def OnBasicHelpQ(self, event):
     dialog.ShowModal()
     dialog.Destroy()
 
+
 def OnBasicHelpR(self, event):
     ScriptRBasicHelpText = """ScriptR has fewer features than WriteR and QuartoWriteR.\n
             It was designed to be used by people wanting to work with simple R scripts.\n
@@ -50,6 +51,7 @@ def OnBasicHelpR(self, event):
     dialog = wx.MessageDialog(self, Text, "Basic help for this R script Editor", wx.OK)
     dialog.ShowModal()
     dialog.Destroy()
+
 
 def OnBasicHelpS(self, event):
     ScriptRBasicHelpText = """ScriptR has fewer features than WriteR and QuartoWriteR.\n
@@ -61,15 +63,18 @@ def OnBasicHelpS(self, event):
     dialog.ShowModal()
     dialog.Destroy()
 
+
 ## About the editors
 
+
 def OnAbout(self, event):
-    if(AppName == "ScriptR"):
+    if AppName == "ScriptR":
         OnAboutS(self, event)
-    elif(AppName == "WriteR"):
+    elif AppName == "WriteR":
         OnAboutR(self, event)
     else:
         OnAboutQ(self, event)
+
 
 AboutQuartoWriteR = "This new implementation of WriteR is designed to work with Quarto, the next generation of R markdown documents.\n"
 
@@ -86,22 +91,25 @@ CommonHelpText = """This software was created using wxPython. \nDevelopment star
             The assistance of these contributors is hugely appreciated. \n
             Send all feedback to Jonathan Godfrey at a.j.godfrey@massey.ac.nz\n"""
 
+
 def OnAboutQ(self, event):
-        WholeText = AboutQuartoWriteR + CommonHelpText + "\nVersion: " + QuartoWriteR_version
-        dialog = wx.MessageDialog(self, WholeText, "About this R Markdown Editor", wx.OK)
-        dialog.ShowModal()
-        dialog.Destroy()
+    WholeText = (
+        AboutQuartoWriteR + CommonHelpText + "\nVersion: " + QuartoWriteR_version
+    )
+    dialog = wx.MessageDialog(self, WholeText, "About this R Markdown Editor", wx.OK)
+    dialog.ShowModal()
+    dialog.Destroy()
+
 
 def OnAboutR(self, event):
-        WholeText = AboutWriteR + CommonHelpText + "\nVersion: " + WriteR_version
-        dialog = wx.MessageDialog(self, WholeText, "About this R Markdown Editor", wx.OK)
-        dialog.ShowModal()
-        dialog.Destroy()
-              
+    WholeText = AboutWriteR + CommonHelpText + "\nVersion: " + WriteR_version
+    dialog = wx.MessageDialog(self, WholeText, "About this R Markdown Editor", wx.OK)
+    dialog.ShowModal()
+    dialog.Destroy()
+
+
 def OnAboutS(self, event):
-        WholeText = AboutScriptR + CommonHelpText + "\nVersion: " + ScriptR_version
-        dialog = wx.MessageDialog(self, WholeText, "About this R script Editor", wx.OK)
-        dialog.ShowModal()
-        dialog.Destroy()
-
-
+    WholeText = AboutScriptR + CommonHelpText + "\nVersion: " + ScriptR_version
+    dialog = wx.MessageDialog(self, WholeText, "About this R script Editor", wx.OK)
+    dialog.ShowModal()
+    dialog.Destroy()
