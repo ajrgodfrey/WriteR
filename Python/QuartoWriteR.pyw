@@ -1,4 +1,6 @@
-# For this app to run properly, the GlobalSettings.py must be replaced by GlobalSettingsQ.py 
+# This is QuartoWriteR
+## change settings in settings.py or version number in version.py
+## everything else uses the name of this Python script to select functionality
 
 from FrontEnd  import *
 

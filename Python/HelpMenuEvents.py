@@ -93,7 +93,7 @@ def OnAboutQ(self, event):
         dialog.Destroy()
 
 def OnAboutR(self, event):
-        WholeText = AboutWriteR + CommonHelpText + "\nVersion: " + WriteR_version()
+        WholeText = AboutWriteR + CommonHelpText + "\nVersion: " + WriteR_version
         dialog = wx.MessageDialog(self, WholeText, "About this R Markdown Editor", wx.OK)
         dialog.ShowModal()
         dialog.Destroy()
