@@ -1,14 +1,9 @@
 # This file is for functions relating to processing of files, not for file content.
 
+from os.path import join
+
 import wx
-import sys
-from wx.py.shell import Shell
-from wx.aui import AuiManager, AuiPaneInfo
-from threading import Thread, Event
-from subprocess import Popen, PIPE, STDOUT
-from os.path import join, split, isdir, expanduser, realpath
-from os import walk
-from time import asctime, sleep
+
 
 quiet = "TRUE"  # or 'FALSE', since these are 'R' constants
 

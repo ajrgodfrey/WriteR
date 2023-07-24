@@ -2,20 +2,11 @@
 #      It is therefore intended for both WriteR, and WriteQuarto
 # N.B. need to bring standard markdown actions into here; Might still be lurking in WriteR.pyw
 
-# N.B. some of the following imports are almost certainly redundant
 
-import wx
 import re
-import sys
-from wx.py.shell import Shell
-from wx.aui import AuiManager, AuiPaneInfo
-from threading import Thread, Event
-from subprocess import Popen, PIPE, STDOUT
-from os.path import join, split, isdir, expanduser, realpath
-from os import walk
-from time import asctime, sleep
+import wx
 
-from Settings import *
+from Settings import AppName
 
 
 def OnSquareBrack(self, event):

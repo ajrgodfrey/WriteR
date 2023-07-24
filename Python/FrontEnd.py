@@ -1,20 +1,20 @@
 # import external modules
-import wx
-import wx.adv
 import sys
 import re
+from threading import Thread, Event
+from subprocess import Popen, PIPE, STDOUT
+from os.path import join, split, isdir, realpath
+from os import walk
+from time import sleep
+
+import wx
+import wx.adv
 
 try:
     import winsound
 except ImportError:
     print("Winsound module not found\n")
-from wx.py.shell import Shell
 from wx.aui import AuiManager, AuiPaneInfo
-from threading import Thread, Event
-from subprocess import Popen, PIPE, STDOUT
-from os.path import join, split, isdir, expanduser, realpath
-from os import walk
-from time import asctime, sleep
 from six import iteritems
 
 

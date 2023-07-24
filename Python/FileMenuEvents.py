@@ -1,7 +1,7 @@
 ## module for file menu events, created July 2023
 
-import wx
 from os.path import join
+import wx
 
 
 def OnOpen(self, event):
