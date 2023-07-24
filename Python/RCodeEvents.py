@@ -2,9 +2,6 @@
 #    so that we can be sure it remains useful for WriteR and WriteQuarto
 
 
-import wx
-
-
 def OnRPipe(self, event):
     self.editor.WriteText(" |> ")
 

@@ -2,7 +2,6 @@
 #    This file needs careful checking to ensure it remains totally independent of implementation
 #    so that we can be sure it remains useful for and QuartoWriteR
 
-import wx
 
 
 def OnSymbol_infinity(self, event):

@@ -1,7 +1,7 @@
 # View menu events
 
 import wx
-from Settings import *
+from Settings import StatusBarText
 
 
 def ToggleStatusBar(self, event):

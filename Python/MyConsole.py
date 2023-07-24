@@ -1,4 +1,4 @@
-from wx.aui import AuiManager, AuiPaneInfo
+from wx.aui import AuiPaneInfo
 
 
 class MyConsole:

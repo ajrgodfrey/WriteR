@@ -2,7 +2,7 @@
 
 import wx
 from version import *
-from Settings import *  # for making sure the correct app is being opened.
+from Settings import AppName
 
 ## Basic help
 

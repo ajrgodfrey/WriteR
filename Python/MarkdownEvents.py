@@ -4,7 +4,7 @@
 
 
 import re
-import wx
+
 
 from Settings import AppName
 
