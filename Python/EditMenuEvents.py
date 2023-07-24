@@ -111,11 +111,6 @@ def lineup(self,e):
 def linedown(self,e):
         self.control.MoveSelectedLinesDown()
 
-def uppercase(self,e):
-        self.control.UpperCase()
-
-def lowercase(self,e):
-        self.control.LowerCase()
 
 def unindent(self,e):
         self.control.BackTab()

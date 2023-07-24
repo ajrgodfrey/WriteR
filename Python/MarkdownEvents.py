@@ -127,6 +127,32 @@ def OnAddSeparator(self, event):
         self.editor.WriteText("--- \n")
 
 
+def MakeLowerCase(self, event):
+    frm, to = self.editor.GetSelection()
+    selected_text = self.editor.GetValue()[frm:to]
+    new_text = selected_text.lower() 
+    self.editor.Replace(frm, to, new_text)
+
+def MakeUpperCase(self, event):
+    frm, to = self.editor.GetSelection()
+    selected_text = self.editor.GetValue()[frm:to]
+    new_text = selected_text.upper() 
+    self.editor.Replace(frm, to, new_text)
+
+def MakeTitleCase(self, event):
+    frm, to = self.editor.GetSelection()
+    selected_text = self.editor.GetValue()[frm:to]
+    new_text = selected_text.Title() 
+    self.editor.Replace(frm, to, new_text)
+
+
+def MakeCapsCase(self, event):
+    frm, to = self.editor.GetSelection()
+    selected_text = self.editor.GetValue()[frm:to]
+    new_text = selected_text.capitalize() 
+    self.editor.Replace(frm, to, new_text)
+
+
 ### NOT WORKING
 def OnIndent(self, event):
     frm, to = self.editor.GetSelection()
@@ -134,5 +160,6 @@ def OnIndent(self, event):
     lines = selected_text.split('\n')
     new_text = "\n    ".join(lines)
     self.editor.Replace(frm, to, new_text)
+
 
 # end of file

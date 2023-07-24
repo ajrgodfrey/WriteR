@@ -290,6 +290,16 @@ class MainWindow(wx.Frame):
             elif whichApp=="all":
                 item = formatMenu.Append(wx.ID_ANY, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
+        caseMenu = wx.Menu()
+        for label, helpText, handler in \
+                [
+                 ("all &lower", "convert all letters to lower case", self.MakeLowerCase), 
+                 ("all &upper", "convert all letters to upper case", self.MakeUpperCase),
+                 ("capi&talise all words", "convert initials of all words to capitals", self.MakeTitleCase), 
+                 ("capitalise first letter", "convert initial letters of lines to upper case", self.MakeCapsCase)]:
+            item = caseMenu.Append(wx.ID_ANY, label, helpText)
+            self.Bind(wx.EVT_MENU, handler, item)
+        formatMenu.Append(-1, "Convert case", caseMenu)
         menuBar.Append(formatMenu, "f&ormat")  # Add the format Menu to the MenuBar
 
 
@@ -601,8 +611,7 @@ class MainWindow(wx.Frame):
     duplicateline = EditMenuEvents.duplicateline 
     lineup = EditMenuEvents.lineup 
     linedown = EditMenuEvents.linedown 
-    uppercase = EditMenuEvents.uppercase 
-    lowercase = EditMenuEvents.lowercase 
+
 
     # view menu events 
     ToggleStatusBar= ViewMenuEvents.ToggleStatusBar
@@ -614,6 +623,12 @@ class MainWindow(wx.Frame):
 
 
     # format/Insert menu events 
+
+    MakeLowerCase = MarkdownEvents.MakeLowerCase 
+    MakeUpperCase = MarkdownEvents.MakeUpperCase
+    MakeTitleCase = MarkdownEvents.MakeTitleCase 
+    MakeCapsCase = MarkdownEvents.MakeCapsCase 
+
     OnSquareBrack = MarkdownEvents.OnSquareBrack
     OnCurlyBrack = MarkdownEvents.OnCurlyBrack
     OnRoundBrack = MarkdownEvents.OnRoundBrack
