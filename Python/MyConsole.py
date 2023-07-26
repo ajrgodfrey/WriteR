@@ -2,6 +2,8 @@ from wx.aui import AuiPaneInfo
 
 
 class MyConsole:
+    """ This si the second window that shows how processing went.
+    """
     def __init__(self, parent):
         self.console = parent.CreateTextCtrl("")
         self.console.SetEditable(True)

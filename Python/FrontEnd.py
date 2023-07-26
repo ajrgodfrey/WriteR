@@ -82,6 +82,10 @@ def printing(*args):
 
 
 class BashProcessThread(Thread):
+    """ This is the main document processing workhorse of the apps.
+    """
+
+
     def __init__(self, flag, input_list, writelineFunc, doneFunc):
         Thread.__init__(self)
         busy = wx.BusyInfo("Please wait")
@@ -114,6 +118,8 @@ ID_NEWTEXT = wx.NewIdRef()
 
 # get on with the program
 class MainWindow(wx.Frame):
+    """ This is the front facing document editor space and all its menus and events
+    """
     def __init__(
         self,
         parent=None,
