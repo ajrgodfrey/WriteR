@@ -332,48 +332,24 @@ class MainWindow(wx.Frame):
         # Create render menu for WriteR
         if AppName != "ScriptR":
             renderMenu = wx.Menu()
-            self.ChooseRenderNull = renderMenu.Append(
-                wx.ID_ANY,
-                "Render using defaults",
-                "Use the rmarkdown package and render function to create HTML or only the first of multiple formats specified in YAML header",
-                wx.ITEM_RADIO,
-            )
-            self.Bind(wx.EVT_MENU, self.OnSelectRenderNull, self.ChooseRenderNull)
-            self.ChooseRenderHtml = renderMenu.Append(
-                wx.ID_ANY,
-                "Render into HTML only",
-                "Use the rmarkdown package and render function to create HTML",
-                wx.ITEM_RADIO,
-            )
-            self.Bind(wx.EVT_MENU, self.OnSelectRenderHtml, self.ChooseRenderHtml)
-            self.ChooseRenderWord = renderMenu.Append(
-                wx.ID_ANY,
-                "Render into Microsoft Word only",
-                "Use the rmarkdown package and render function to create Microsoft Word",
-                wx.ITEM_RADIO,
-            )
-            self.Bind(wx.EVT_MENU, self.OnSelectRenderWord, self.ChooseRenderWord)
-            self.ChooseRenderSlidy = renderMenu.Append(
-                wx.ID_ANY,
-                "Render into slidy only",
-                "Use the rmarkdown package and render function to create a slidy presentation",
-                wx.ITEM_RADIO,
-            )
-            self.Bind(wx.EVT_MENU, self.OnSelectRenderSlidy, self.ChooseRenderSlidy)
-            self.ChooseRenderPdf = renderMenu.Append(
-                wx.ID_ANY,
-                "Render into pdf only",
-                "Use the rmarkdown package and render function to create pdf",
-                wx.ITEM_RADIO,
-            )
-            self.Bind(wx.EVT_MENU, self.OnSelectRenderPdf, self.ChooseRenderPdf)
-            self.ChooseRenderAll = renderMenu.Append(
-                wx.ID_ANY,
-                "Render into all specified formats",
-                "Use the rmarkdown package and render function to create multiple output documents",
-                wx.ITEM_RADIO,
-            )
-            self.Bind(wx.EVT_MENU, self.OnSelectRenderAll, self.ChooseRenderAll)
+            renderMenu = wx.Menu()
+            for label, helpText, handler in [
+
+                ("defaults", "Use the rmarkdown package and render function to create HTML or only the first of multiple formats specified in YAML header", 
+                    self.OnSelectRenderNull),
+                ("HTML only", "Use the rmarkdown package and render function to create HTML", 
+                    self.OnSelectRenderHtml),
+                ("Microsoft &Word only", "Use the rmarkdown package and render function to create Microsoft Word", 
+                    self.OnSelectRenderWord),
+                ("slidy only", "Use the rmarkdown package and render function to create a slidy presentation", 
+                    self.OnSelectRenderSlidy),
+                ("pdf only", "Use the rmarkdown package and render function to create pdf", 
+                    self.OnSelectRenderPdf),
+                ("all specified formats", "Use the rmarkdown package and render function to create multiple output documents", 
+                    self.OnSelectRenderAll)]:
+                item = renderMenu.Append(wx.ID_ANY, label, helpText, wx.ITEM_RADIO)
+                self.Bind(wx.EVT_MENU, handler, item)
+
             buildMenu.Append(
                 -1, "Set render process to...", renderMenu
             )  # Add the render Menu as a submenu to the build menu
@@ -385,12 +361,22 @@ class MainWindow(wx.Frame):
                     self.OnKnit2pdf,
                     "R",
                 ),
+                ("Render into &HTML\tShift+f5", "Use the render function to create HTML", 
+                    self.OnRenderHtml, "md"),
+                ("Render into Microsoft &Word", "Use the render function to create Microsoft Word", 
+                    self.OnRenderWord, "md"),
+                ("Render into &slidy", "Use the render function to create a slidy presentation", 
+                    self.OnRenderSlidy, "md"),
+                ("Render into &pdf", "Use the render function to create pdf", 
+                    self.OnRenderPdf, "md"),
+                ("Render into &all specified formats", "Use the render function to create multiple output documents", 
+                    self.OnRenderAll, "md")
             ]:
                 if label == None:
                     buildMenu.AppendSeparator()
                 elif (
                     (whichApp == "R" and AppName == "WriteR")
-                    or (whichApp == "Q" and AppName == "QuartoWriteR")
+                   or (whichApp == "Q" and AppName == "QuartoWriteR")
                     or whichApp == "md"
                 ):
                     item = buildMenu.Append(wx.ID_ANY, label, helpText)
