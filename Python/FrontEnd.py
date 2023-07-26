@@ -931,6 +931,7 @@ class MainWindow(wx.Frame):
     OnGoToLine = EditMenuEvents.OnGoToLine
     OnSettings = EditMenuEvents.OnSettings
     OnWordCount = EditMenuEvents.OnWordCount
+    TellUser = EditMenuEvents.TellUser
     OnShowFind = EditMenuEvents.OnShowFind
     OnSetMark = EditMenuEvents.OnSetMark
     F3Next = EditMenuEvents.F3Next
@@ -953,7 +954,6 @@ class MainWindow(wx.Frame):
     OnSelectFont = ViewMenuEvents.OnSelectFont
 
     # format/Insert menu events
-
     MakeLowerCase = MarkdownEvents.MakeLowerCase
     MakeUpperCase = MarkdownEvents.MakeUpperCase
     MakeSnakeCase = MarkdownEvents.MakeSnakeCase
@@ -962,7 +962,6 @@ class MainWindow(wx.Frame):
     MakeTitleCase = MarkdownEvents.MakeTitleCase
     SnakeToCamelCase = MarkdownEvents.SnakeToCamelCase
     MakeCapsCase = MarkdownEvents.MakeCapsCase
-
     OnSquareBrack = MarkdownEvents.OnSquareBrack
     OnCurlyBrack = MarkdownEvents.OnCurlyBrack
     OnRoundBrack = MarkdownEvents.OnRoundBrack
@@ -995,7 +994,6 @@ class MainWindow(wx.Frame):
             if len(look[0]) == 0:
                 return None
             return splitter(look[0], interest)
-
         rscript = "Rscript.exe"
         warn = "Cannot find {} in default install location.".format(rscript)
         version = "R-0.0.0"
@@ -1055,163 +1053,4 @@ class MainWindow(wx.Frame):
 
     def AlternateFocus(self, event):
         self.ActuallyAlternateFocus()
-
-    def TellUser(self, text):
-        self.SetStatusText(text)
-        if system_tray:
-            try:
-                nm = wx.adv.NotificationMessage()
-                nm.SetMessage(text)
-                nm.SetParent(self)
-                nm.SetTitle("")
-                nm.SetFlags(wx.ICON_INFORMATION)
-                nm.Show(1)
-            except Exception as error:
-                print("Problem setting notification {}".format(error))
-                pass
-
-    def OnWordCount(self, event):
-        text = self.editor.GetValue()
-        word_count = len(text.split())
-        (on, x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
-        line_count = self.editor.GetNumberOfLines()
-        markdownState = RMarkdownEvents.CurrentMarkdown(self)
-        self.TellUser(
-            "Line {}/{}. WordCount {}. State {}".format(
-                y, line_count, word_count, markdownState
-            )
-        )
-
-    def ActuallyAlternateFocus(self):
-        if self.focusConsole:
-            self.editor.SetFocus()
-            self.TellUser("editor")
-            if beep:
-                winsound.Beep(2000, 250)
-        else:
-            self.console.SetFocus()
-            self.TellUser("console")
-            if beep:
-                winsound.Beep(3000, 250)
-        self.focusConsole = not self.focusConsole
-
-    def OnSelectToMark(self, event):
-        insertionPoint = self.editor.GetInsertionPoint()
-        if self.mark < insertionPoint:
-            self.editor.SetSelection(self.mark, insertionPoint)
-            if beep:
-                winsound.Beep(750, 250)
-        elif self.mark > insertionPoint:
-            self.editor.SetSelection(insertionPoint, self.mark)
-            if beep:
-                winsound.Beep(1500, 250)
-
-    def OnShowFindReplace(self, event):
-        data = wx.FindReplaceData()
-        data.SetFlags(wx.FR_DOWN)
-        dlg = wx.FindReplaceDialog(self, data, "Find & Replace", wx.FR_REPLACEDIALOG)
-        dlg.data = data  # save a reference to it...
-        dlg.Show(True)
-
-    def ComputeFindString(self, event):
-        if event.GetFlags() & wx.FR_WHOLEWORD:
-            return "".join([r"\b", re.escape(event.GetFindString()), r"\b"])
-        else:
-            return "".join([re.escape(event.GetFindString())])
-
-    def ComputeReFlags(self, event):
-        if event.GetFlags() & wx.FR_MATCHCASE:
-            return 0
-        else:
-            return re.IGNORECASE
-
-    def ComputeReplacementString(self, event):
-        return event.GetReplaceString()
-
-    def MoveTo(self, row, col):
-        self.priorMatchRow = row
-        self.priorMatchCol = col
-        message = "Line {} Col {}".format(row, col)
-        self.TellUser(message)
-        position = self.editor.XYToPosition(col, row)
-        self.editor.SetInsertionPoint(position)
-        self.editor.ShowPosition(position)
-        if beep:
-            winsound.Beep(1000, 250)
-
-    def FindFrom(self, currentColumn, currentRow, reverseDirection):
-        # Special logic for checking just part of current line
-        currentLine = self.editor.GetLineText(currentRow)
-        searchForward = self.forward != reverseDirection
-        if searchForward:
-            matchObject = self.regex.search(currentLine[currentColumn + 1 :])
-            if matchObject:
-                self.MoveTo(currentRow, currentColumn + 1 + matchObject.start())
-                return
-        else:
-            matchObject = self.regex.search(currentLine[:currentColumn])
-            if matchObject:
-                for matchObject in self.regex.finditer(currentLine[:currentColumn]):
-                    pass
-                self.MoveTo(currentRow, matchObject.start())
-                return
-
-        # General case for checking whole lines
-        if searchForward:
-            lineRange = range(currentRow + 1, self.editor.GetNumberOfLines())
-        else:
-            lineRange = reversed(range(0, currentRow))
-        for i in lineRange:
-            line = self.editor.GetLineText(i)
-            matchObject = self.regex.search(line)
-            if matchObject:
-                if not searchForward:
-                    for matchObject in self.regex.finditer(line):
-                        pass
-                self.MoveTo(i, matchObject.start())
-                return
-        if beep:
-            winsound.Beep(500, 500)
-
-    def ReplaceNext(self, event):
-        return
-
-    def ReplaceAll(self, event):
-        findString = self.ComputeFindString(event)
-        reFlags = self.ComputeReFlags(event)
-        replaceString = self.ComputeReplacementString(event)
-        oldText = self.editor.GetValue()
-        newText = re.sub(findString, replaceString, oldText, flags=reFlags)
-        insertionPoint = self.editor.GetInsertionPoint()
-        self.editor.SetValue(newText)
-        self.editor.SetInsertionPoint(insertionPoint)
-
-    def OnFindClose(self, event):
-        event.GetDialog().Destroy()
-
-    def F3Next(self, event):
-        self.FindFrom(self.priorMatchCol, self.priorMatchRow, False)
-
-    def ShiftF3Previous(self, event):
-        self.FindFrom(self.priorMatchCol, self.priorMatchRow, True)
-
-    def OnFind(self, event):
-        et = event.GetEventType()
-        self.regex = re.compile(
-            self.ComputeFindString(event), self.ComputeReFlags(event)
-        )
-        self.forward = event.GetFlags() & wx.FR_DOWN
-        if et == wx.wxEVT_COMMAND_FIND:
-            (ok, col, row) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
-            self.FindFrom(col, row, False)
-        elif et == wx.wxEVT_COMMAND_FIND_NEXT:
-            self.FindFrom(self.priorMatchCol, self.priorMatchRow, False)
-        elif et == wx.wxEVT_COMMAND_FIND_REPLACE:
-            self.ReplaceNext(event)
-        elif et == wx.wxEVT_COMMAND_FIND_REPLACE_ALL:
-            self.ReplaceAll(event)
-        else:
-            self.console.write("unexpected eventType %s -- %s\n" % (et, event))
-
-
 # end of file

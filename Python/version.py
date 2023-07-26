@@ -1,8 +1,14 @@
-# this file is just for version numbers now
+# this file is just for version numbers now, and based on the date the programs get processed
 
+from datetime import datetime
 
-WriteR_version = "2022.2"
+# Get the current date and time
+now = datetime.now()
+# Format the current date as yyyy.mm.dd
+formatted_date = now.strftime("%Y.%m.%d")
 
-QuartoWriteR_version = "2023.0.1"
+WriteR_version = formatted_date
 
-ScriptR_version = "2023.0.1"
+QuartoWriteR_version = formatted_date
+
+ScriptR_version = formatted_date
