@@ -24,11 +24,3 @@ ID_SETMARK = wx.Window.NewControlId()
 ID_SELECTTOMARK = wx.Window.NewControlId()
 
 ID_ALTERNATE_FOCUS = wx.Window.NewControlId()
-
-ID_DIRECTORY_CHANGE = wx.Window.NewControlId()
-ID_CRAN = wx.Window.NewControlId()
-ID_R_PATH = wx.Window.NewControlId()
-ID_BUILD_COMMAND = wx.Window.NewControlId()
-ID_KNIT2HTML_COMMAND = wx.Window.NewControlId()
-ID_KNIT2PDF_COMMAND = wx.Window.NewControlId()
-ID_NEWTEXT = wx.Window.NewControlId()

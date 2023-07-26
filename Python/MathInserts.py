@@ -3,7 +3,6 @@
 #    so that we can be sure it remains useful for and QuartoWriteR
 
 
-
 def OnSymbol_infinity(self, event):
     self.editor.WriteText("\\infty{}")
 

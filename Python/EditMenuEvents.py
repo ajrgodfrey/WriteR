@@ -6,6 +6,7 @@ import wx.stc  # needed for word count and go to line
 
 import RMarkdownEvents
 
+
 def OnGoToLine(self, event):
     (x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
     maxLine = self.editor.GetNumberOfLines()
@@ -58,7 +59,7 @@ def OnWordCount(self, event):
     (on, x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
     line_count = self.editor.GetNumberOfLines()
     markdownState = RMarkdownEvents.CurrentMarkdown(self)
-    self.TellUser( 
+    self.TellUser(
         "Line {}/{}. WordCount {}. State {}".format(
             y, line_count, word_count, markdownState
         )
@@ -105,11 +106,10 @@ def OnFind(self, event):
 
 
 def ComputeFindString(self, event):
-        if event.GetFlags() & wx.FR_WHOLEWORD:
-            return "".join([r"\b", re.escape(event.GetFindString()), r"\b"])
-        else:
-            return "".join([re.escape(event.GetFindString())])
-
+    if event.GetFlags() & wx.FR_WHOLEWORD:
+        return "".join([r"\b", re.escape(event.GetFindString()), r"\b"])
+    else:
+        return "".join([re.escape(event.GetFindString())])
 
 
 def OnFindClose(self, event):
@@ -141,106 +141,104 @@ def AlternateFocus(self, event):
 
 
 def ActuallyAlternateFocus(self):
-        if self.focusConsole:
-            self.editor.SetFocus()
-            self.TellUser("editor")
-            if beep:
-                winsound.Beep(2000, 250)
-        else:
-            self.console.SetFocus()
-            self.TellUser("console")
-            if beep:
-                winsound.Beep(3000, 250)
-        self.focusConsole = not self.focusConsole
-
+    if self.focusConsole:
+        self.editor.SetFocus()
+        self.TellUser("editor")
+        if beep:
+            winsound.Beep(2000, 250)
+    else:
+        self.console.SetFocus()
+        self.TellUser("console")
+        if beep:
+            winsound.Beep(3000, 250)
+    self.focusConsole = not self.focusConsole
 
 
 def TellUser(self, text):
-        self.SetStatusText(text)
-        if system_tray:
-            try:
-                nm = wx.adv.NotificationMessage()
-                nm.SetMessage(text)
-                nm.SetParent(self)
-                nm.SetTitle("")
-                nm.SetFlags(wx.ICON_INFORMATION)
-                nm.Show(1)
-            except Exception as error:
-                print("Problem setting notification {}".format(error))
-                pass
-
+    self.SetStatusText(text)
+    if system_tray:
+        try:
+            nm = wx.adv.NotificationMessage()
+            nm.SetMessage(text)
+            nm.SetParent(self)
+            nm.SetTitle("")
+            nm.SetFlags(wx.ICON_INFORMATION)
+            nm.Show(1)
+        except Exception as error:
+            print("Problem setting notification {}".format(error))
+            pass
 
 
 def ComputeReFlags(self, event):
-        if event.GetFlags() & wx.FR_MATCHCASE:
-            return 0
-        else:
-            return re.IGNORECASE
-
+    if event.GetFlags() & wx.FR_MATCHCASE:
+        return 0
+    else:
+        return re.IGNORECASE
 
 
 def ComputeReplacementString(self, event):
-        return event.GetReplaceString()
-
+    return event.GetReplaceString()
 
 
 def MoveTo(self, row, col):
-        self.priorMatchRow = row
-        self.priorMatchCol = col
-        message = "Line {} Col {}".format(row, col)
-        self.TellUser(message)
-        position = self.editor.XYToPosition(col, row)
-        self.editor.SetInsertionPoint(position)
-        self.editor.ShowPosition(position)
-        if beep:
-            winsound.Beep(1000, 250)
+    self.priorMatchRow = row
+    self.priorMatchCol = col
+    message = "Line {} Col {}".format(row, col)
+    self.TellUser(message)
+    position = self.editor.XYToPosition(col, row)
+    self.editor.SetInsertionPoint(position)
+    self.editor.ShowPosition(position)
+    if beep:
+        winsound.Beep(1000, 250)
+
 
 def FindFrom(self, currentColumn, currentRow, reverseDirection):
-        # Special logic for checking just part of current line
-        currentLine = self.editor.GetLineText(currentRow)
-        searchForward = self.forward != reverseDirection
-        if searchForward:
-            matchObject = self.regex.search(currentLine[currentColumn + 1 :])
-            if matchObject:
-                self.MoveTo(currentRow, currentColumn + 1 + matchObject.start())
-                return
-        else:
-            matchObject = self.regex.search(currentLine[:currentColumn])
-            if matchObject:
-                for matchObject in self.regex.finditer(currentLine[:currentColumn]):
+    # Special logic for checking just part of current line
+    currentLine = self.editor.GetLineText(currentRow)
+    searchForward = self.forward != reverseDirection
+    if searchForward:
+        matchObject = self.regex.search(currentLine[currentColumn + 1 :])
+        if matchObject:
+            self.MoveTo(currentRow, currentColumn + 1 + matchObject.start())
+            return
+    else:
+        matchObject = self.regex.search(currentLine[:currentColumn])
+        if matchObject:
+            for matchObject in self.regex.finditer(currentLine[:currentColumn]):
+                pass
+            self.MoveTo(currentRow, matchObject.start())
+            return
+    # General case for checking whole lines
+    if searchForward:
+        lineRange = range(currentRow + 1, self.editor.GetNumberOfLines())
+    else:
+        lineRange = reversed(range(0, currentRow))
+    for i in lineRange:
+        line = self.editor.GetLineText(i)
+        matchObject = self.regex.search(line)
+        if matchObject:
+            if not searchForward:
+                for matchObject in self.regex.finditer(line):
                     pass
-                self.MoveTo(currentRow, matchObject.start())
-                return
-        # General case for checking whole lines
-        if searchForward:
-            lineRange = range(currentRow + 1, self.editor.GetNumberOfLines())
-        else:
-            lineRange = reversed(range(0, currentRow))
-        for i in lineRange:
-            line = self.editor.GetLineText(i)
-            matchObject = self.regex.search(line)
-            if matchObject:
-                if not searchForward:
-                    for matchObject in self.regex.finditer(line):
-                        pass
-                self.MoveTo(i, matchObject.start())
-                return
-        if beep:
-            winsound.Beep(500, 500)
+            self.MoveTo(i, matchObject.start())
+            return
+    if beep:
+        winsound.Beep(500, 500)
+
 
 def ReplaceNext(self, event):
-        return
+    return
+
 
 def ReplaceAll(self, event):
-        findString = self.ComputeFindString(event)
-        reFlags = self.ComputeReFlags(event)
-        replaceString = self.ComputeReplacementString(event)
-        oldText = self.editor.GetValue()
-        newText = re.sub(findString, replaceString, oldText, flags=reFlags)
-        insertionPoint = self.editor.GetInsertionPoint()
-        self.editor.SetValue(newText)
-        self.editor.SetInsertionPoint(insertionPoint)
-
+    findString = self.ComputeFindString(event)
+    reFlags = self.ComputeReFlags(event)
+    replaceString = self.ComputeReplacementString(event)
+    oldText = self.editor.GetValue()
+    newText = re.sub(findString, replaceString, oldText, flags=reFlags)
+    insertionPoint = self.editor.GetInsertionPoint()
+    self.editor.SetValue(newText)
+    self.editor.SetInsertionPoint(insertionPoint)
 
 
 # the following are not implemented yet and might be moved to different module
@@ -260,4 +258,3 @@ def linedown(self, e):
 
 def unindent(self, e):
     self.control.BackTab()
-

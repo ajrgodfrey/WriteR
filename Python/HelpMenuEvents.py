@@ -1,7 +1,7 @@
 # attempted combination help event file
 
 import wx
-from version import *
+from version import QuartoWriteR_version, ScriptR_version, WriteR_version
 from Settings import AppName
 
 ## Basic help
