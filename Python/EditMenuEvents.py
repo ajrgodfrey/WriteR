@@ -1,10 +1,20 @@
 # 2022.11.29 This file needs careful checking to ensure it remains totally independent of implementation
 #    so that we can be sure it remains useful for WriteR and WriteQuarto
 
+import re
+import sys
+
+try:
+    import winsound
+except ImportError:
+    print("Winsound module not found\n")
+
 import wx
 import wx.stc  # needed for word count and go to line
 
 import RMarkdownEvents
+
+beep = "winsound" in sys.modules
 
 
 def OnGoToLine(self, event):

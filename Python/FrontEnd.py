@@ -20,8 +20,6 @@ from six import iteritems
 # import our modules
 # first bring in modules used for all versions
 from Settings import *  # for making sure the correct app is being opened.
-
-# from GlobalSettings import * # for making sure the correct app is being opened.
 from IDTags import *  # hopefully redundant
 import FileMenuEvents  # for opening and closing files
 import EditMenuEvents  # for editing content
@@ -41,17 +39,14 @@ system_tray = True
 
 # set up some ID tags
 ID_SETTINGS = wx.NewIdRef()
-
 ID_FINDONLY = wx.NewIdRef()
 ID_FINDNEXT = wx.NewIdRef()
 ID_FINDPREV = wx.NewIdRef()
 ID_FINDREPLACE = wx.NewIdRef()
 ID_GOTO = wx.NewIdRef()
 ID_WORDCOUNT = wx.NewIdRef()
-
 ID_SETMARK = wx.NewIdRef()
 ID_SELECTTOMARK = wx.NewIdRef()
-
 ID_ALTERNATE_FOCUS = wx.NewIdRef()
 
 

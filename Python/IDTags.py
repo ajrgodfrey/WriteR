@@ -8,9 +8,7 @@ import wx
 # wx.Window.NewControlId()
 
 # set up some ID tags
-ID_BUILD = wx.Window.NewControlId()
-ID_KNIT2HTML = wx.Window.NewControlId()
-ID_KNIT2PDF = wx.Window.NewControlId()
+
 ID_SETTINGS = wx.Window.NewControlId()
 
 ID_FINDONLY = wx.Window.NewControlId()

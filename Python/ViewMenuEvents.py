@@ -61,7 +61,7 @@ def OnSelectFont(self, evt):
 
 # not yet implemented
 def fullscreen(self, e):
-    if self.fullscr.IsChecked() == True:
+    if self.fullscr.IsChecked() is True:
         self.ShowFullScreen(True)
     else:
         self.ShowFullScreen(False)
