@@ -43,17 +43,17 @@ def fileOpen(self, dirname, filename):
     try:
         textfile = open(path, "r")
     except Exception as error:
-        self.fatalError("Unable to open {} because {}".format(path, error))
+        self.fatalError(f"Unable to open {path} because {error}")
         self.OnExit()
     try:
         self.editor.SetValue(textfile.read())
     except Exception as error:
-        self.fatalError("Unable to read {} into editor because {}".format(path, error))
+        self.fatalError(f"Unable to read {path} into editor because {error}")
         self.OnExit()
     try:
         textfile.close()
     except Exception as error:
-        self.fatalError("Unable to close {} because {}".format(path, error))
+        self.fatalError(f"Unable to close {path} because {error}")
         self.OnExit()
 
 

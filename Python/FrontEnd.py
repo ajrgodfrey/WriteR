@@ -104,7 +104,7 @@ class BashProcessThread(Thread):
             doneFunc(returnCode)
         except Exception as error:
             del busy
-            doneFunc("\nCaught error {} for {}".format(error, input_list))
+            doneFunc(f"\nCaught error {error} for {input_list}")
 
 
 ID_DIRECTORY_CHANGE = wx.NewIdRef()
@@ -1032,7 +1032,7 @@ class MainWindow(wx.Frame):
             return splitter(look[0], interest)
 
         rscript = "Rscript.exe"
-        warn = "Cannot find {} in default install location.".format(rscript)
+        warn = f"Cannot find {rscript} in default install location."
         version = "R-0.0.0"
         choice = None
         if "No settings file reference to settings":
