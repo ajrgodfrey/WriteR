@@ -70,10 +70,7 @@ def OnWordCount(self, event):
     line_count = self.editor.GetNumberOfLines()
     markdownState = RMarkdownEvents.CurrentMarkdown(self)
     self.TellUser(
-        "Line {}/{}. WordCount {}. State {}".format(
-            y, line_count, word_count, markdownState
-        )
-    )
+        f"Line {y}/{line_count}. WordCount {word_count}. State {markdownState}")
 
 
 def OnShowFind(self, event):
@@ -175,7 +172,7 @@ def TellUser(self, text):
             nm.SetFlags(wx.ICON_INFORMATION)
             nm.Show(1)
         except Exception as error:
-            print("Problem setting notification {}".format(error))
+            print(f"Problem setting notification {error)}"
             pass
 
 
@@ -193,7 +190,7 @@ def ComputeReplacementString(self, event):
 def MoveTo(self, row, col):
     self.priorMatchRow = row
     self.priorMatchCol = col
-    message = "Line {} Col {}".format(row, col)
+    message = f"Line {row} Col {col}"
     self.TellUser(message)
     position = self.editor.XYToPosition(col, row)
     self.editor.SetInsertionPoint(position)

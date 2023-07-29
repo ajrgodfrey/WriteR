@@ -1072,12 +1072,6 @@ class MainWindow(wx.Frame):
         pt = self.ClientToScreen(wx.Point(0, 0))
         return wx.Point(pt.x + x, pt.y + x)
 
-    def OnShowFind(self, event):
-        data = wx.FindReplaceData()
-        data.SetFlags(wx.FR_DOWN)
-        dlg = wx.FindReplaceDialog(self, data, "Find")
-        dlg.data = data  # save a reference to it...
-        dlg.Show(True)
 
     def SetFocusConsole(self, toConsole):
         if toConsole != self.focusConsole:
