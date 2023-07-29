@@ -36,5 +36,5 @@ class MyConsole:
         self.console.SetFocus()
 
     def DoneFunc(self, retcode):
-        self.console.write("Done {}".format(retcode))
+        self.console.write(f"Done {retcode}")
         self.parent.SetFocusConsole(True)

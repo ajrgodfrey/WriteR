@@ -69,8 +69,7 @@ def OnWordCount(self, event):
     (on, x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
     line_count = self.editor.GetNumberOfLines()
     markdownState = RMarkdownEvents.CurrentMarkdown(self)
-    self.TellUser(
-        f"Line {y}/{line_count}. WordCount {word_count}. State {markdownState}")
+    self.TellUser(f"Line {y}/{line_count}. WordCount {word_count}. State {markdownState}")
 
 
 def OnShowFind(self, event):
@@ -172,7 +171,7 @@ def TellUser(self, text):
             nm.SetFlags(wx.ICON_INFORMATION)
             nm.Show(1)
         except Exception as error:
-            print(f"Problem setting notification {error)}"
+            print(f"Problem setting notification {error}")
             pass
 
 
