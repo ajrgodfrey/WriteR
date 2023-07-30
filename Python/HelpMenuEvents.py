@@ -1,4 +1,4 @@
-# attempted combination help event file
+# combination help event file
 
 import wx
 from version import QuartoWriteR_version, ScriptR_version, WriteR_version
@@ -16,8 +16,7 @@ def OnBasicHelp(self, event):
         OnBasicHelpQ(self, event)
 
 
-def CommonBasicHelpText():
-    return """This editor was designed for use with a screen reader and has been tested with JAWS and NVDA.\n
+CommonBasicHelpText = """This editor was designed for use with a screen reader and has been tested with JAWS and NVDA.\n
             It makes extensive use of hot keys, many of which are in common use by other software.\n
             All hot keys are indicated in the menus.\n
             The file you create here will be converted to HTML if you press the f5 key.\n
@@ -36,7 +35,7 @@ def OnBasicHelpQ(self, event):
             It was designed to be used by people wanting to work with simple R scripts.\n
             You should move to using WriteR or QuartoWriteR when you want to take advantage of markdown.\n
             Each line of the file being edited must start with a # symbol if it is not valid R code.\n"""
-    Text = CommonBasicHelpText() + ScriptRBasicHelpText
+    Text = CommonBasicHelpText + ScriptRBasicHelpText
     dialog = wx.MessageDialog(self, Text, "Basic help for this R script Editor", wx.OK)
     dialog.ShowModal()
     dialog.Destroy()
@@ -47,7 +46,7 @@ def OnBasicHelpR(self, event):
             It was designed to be used by people wanting to work with simple R scripts.\n
             You should move to using WriteR or QuartoWriteR when you want to take advantage of markdown.\n
             Each line of the file being edited must start with a # symbol if it is not valid R code.\n"""
-    Text = CommonBasicHelpText() + ScriptRBasicHelpText
+    Text = CommonBasicHelpText + ScriptRBasicHelpText
     dialog = wx.MessageDialog(self, Text, "Basic help for this R script Editor", wx.OK)
     dialog.ShowModal()
     dialog.Destroy()
@@ -58,7 +57,7 @@ def OnBasicHelpS(self, event):
             It was designed to be used by people wanting to work with simple R scripts.\n
             You should move to using WriteR or QuartoWriteR when you want to take advantage of markdown.\n
             Each line of the file being edited must start with a # symbol if it is not valid R code.\n"""
-    Text = CommonBasicHelpText() + ScriptRBasicHelpText
+    Text = CommonBasicHelpText + ScriptRBasicHelpText
     dialog = wx.MessageDialog(self, Text, "Basic help for this R script Editor", wx.OK)
     dialog.ShowModal()
     dialog.Destroy()
