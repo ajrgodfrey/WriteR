@@ -9,17 +9,13 @@ from time import sleep
 import wx
 import wx.adv
 
-try:
-    import winsound
-except ImportError:
-    print("Winsound module not found\n")
 from wx.aui import AuiManager, AuiPaneInfo
 from six import iteritems
 
 
 # import our modules
 # first bring in modules used for all versions
-from Settings import *  # for making sure the correct app is being opened.
+from Settings import AppName, FileExtension, StartingText  # for making sure the correct app is being opened.
 from IDTags import *  # hopefully redundant
 import FileMenuEvents  # for opening and closing files
 import EditMenuEvents  # for editing content
