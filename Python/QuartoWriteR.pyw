@@ -1,6 +1,6 @@
-# This is QuartoWriteR
-## change settings in settings.py or version number in version.py
-## everything else uses the name of this Python script to select functionality
+# This is QuartoWriter
+# change settings in settings.py or version number in version.py
+# everything else uses the name of this Python script to select functionality
 
 from FrontEnd import *
 

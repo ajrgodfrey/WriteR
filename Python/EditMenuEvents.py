@@ -69,7 +69,9 @@ def OnWordCount(self, event):
     (on, x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
     line_count = self.editor.GetNumberOfLines()
     markdownState = RMarkdownEvents.CurrentMarkdown(self)
-    self.TellUser(f"Line {y}/{line_count}. WordCount {word_count}. State {markdownState}")
+    self.TellUser(
+        f"Line {y}/{line_count}. WordCount {word_count}. State {markdownState}"
+    )
 
 
 def OnShowFind(self, event):
@@ -142,39 +144,6 @@ def OnSelectToMark(self, event):
             winsound.Beep(1500, 250)
 
 
-def AlternateFocus(self, event):
-    self.ActuallyAlternateFocus()
-
-
-def ActuallyAlternateFocus(self):
-    if self.focusConsole:
-        self.editor.SetFocus()
-        self.TellUser("editor")
-        if beep:
-            winsound.Beep(2000, 250)
-    else:
-        self.console.SetFocus()
-        self.TellUser("console")
-        if beep:
-            winsound.Beep(3000, 250)
-    self.focusConsole = not self.focusConsole
-
-
-def TellUser(self, text):
-    self.SetStatusText(text)
-    if system_tray:
-        try:
-            nm = wx.adv.NotificationMessage()
-            nm.SetMessage(text)
-            nm.SetParent(self)
-            nm.SetTitle("")
-            nm.SetFlags(wx.ICON_INFORMATION)
-            nm.Show(1)
-        except Exception as error:
-            print(f"Problem setting notification {error}")
-            pass
-
-
 def ComputeReFlags(self, event):
     if event.GetFlags() & wx.FR_MATCHCASE:
         return 0
@@ -203,7 +172,7 @@ def FindFrom(self, currentColumn, currentRow, reverseDirection):
     currentLine = self.editor.GetLineText(currentRow)
     searchForward = self.forward != reverseDirection
     if searchForward:
-        matchObject = self.regex.search(currentLine[currentColumn + 1 :])
+        matchObject = self.regex.search(currentLine[currentColumn + 1:])
         if matchObject:
             self.MoveTo(currentRow, currentColumn + 1 + matchObject.start())
             return

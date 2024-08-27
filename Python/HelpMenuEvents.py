@@ -1,15 +1,22 @@
 # combination help event file
 
 import wx
-from version import QuartoWriteR_version, ScriptR_version, WriteR_version
+from version import (
+    mdWriter_version,
+    QuartoWriter_version,
+    ScriptR_version,
+    WriteR_version,
+)
 from Settings import AppName
 
-## Basic help
+# Basic help
 
 
 def OnBasicHelp(self, event):
     if AppName == "ScriptR":
         OnBasicHelpS(self, event)
+    elif AppName == "mdWriter":
+        OnBasicHelpM(self, event)
     elif AppName == "WriteR":
         OnBasicHelpR(self, event)
     else:
@@ -27,13 +34,23 @@ CommonBasicHelpText = """This editor was designed for use with a screen reader a
             Use Alt+tab to switch between applications."""
 
 
-### some fixes below here
+# some fixes below here
+
+
+def OnBasicHelpM(self, event):
+    mdWriterBasicHelpText = """mdWriter has fewer features than WriteR and QuartoWriter.\n
+            It was designed to be used by people wanting to work with simple markdown. \n
+            You should move to using WriteR or QuartoWriter when you want to take advantage of markdown.\n"""
+    Text = CommonBasicHelpText + mdWriterBasicHelpText
+    dialog = wx.MessageDialog(self, Text, "Basic help for this R script Editor", wx.OK)
+    dialog.ShowModal()
+    dialog.Destroy()
 
 
 def OnBasicHelpQ(self, event):
-    ScriptRBasicHelpText = """ScriptR has fewer features than WriteR and QuartoWriteR.\n
+    ScriptRBasicHelpText = """QuartoWriter is designed for people wanting to process R and Python commands in their markdown files.\n
             It was designed to be used by people wanting to work with simple R scripts.\n
-            You should move to using WriteR or QuartoWriteR when you want to take advantage of markdown.\n
+            You should move to using WriteR or QuartoWriter when you want to take advantage of markdown.\n
             Each line of the file being edited must start with a # symbol if it is not valid R code.\n"""
     Text = CommonBasicHelpText + ScriptRBasicHelpText
     dialog = wx.MessageDialog(self, Text, "Basic help for this R script Editor", wx.OK)
@@ -42,9 +59,9 @@ def OnBasicHelpQ(self, event):
 
 
 def OnBasicHelpR(self, event):
-    ScriptRBasicHelpText = """ScriptR has fewer features than WriteR and QuartoWriteR.\n
+    ScriptRBasicHelpText = """ScriptR has fewer features than WriteR and QuartoWriter.\n
             It was designed to be used by people wanting to work with simple R scripts.\n
-            You should move to using WriteR or QuartoWriteR when you want to take advantage of markdown.\n
+            You should move to using WriteR or QuartoWriter when you want to take advantage of markdown.\n
             Each line of the file being edited must start with a # symbol if it is not valid R code.\n"""
     Text = CommonBasicHelpText + ScriptRBasicHelpText
     dialog = wx.MessageDialog(self, Text, "Basic help for this R script Editor", wx.OK)
@@ -53,9 +70,9 @@ def OnBasicHelpR(self, event):
 
 
 def OnBasicHelpS(self, event):
-    ScriptRBasicHelpText = """ScriptR has fewer features than WriteR and QuartoWriteR.\n
+    ScriptRBasicHelpText = """ScriptR has fewer features than WriteR and QuartoWriter.\n
             It was designed to be used by people wanting to work with simple R scripts.\n
-            You should move to using WriteR or QuartoWriteR when you want to take advantage of markdown.\n
+            You should move to using WriteR or QuartoWriter when you want to take advantage of markdown.\n
             Each line of the file being edited must start with a # symbol if it is not valid R code.\n"""
     Text = CommonBasicHelpText + ScriptRBasicHelpText
     dialog = wx.MessageDialog(self, Text, "Basic help for this R script Editor", wx.OK)
@@ -63,19 +80,21 @@ def OnBasicHelpS(self, event):
     dialog.Destroy()
 
 
-## About the editors
+# About the editors
 
 
 def OnAbout(self, event):
     if AppName == "ScriptR":
         OnAboutS(self, event)
+    elif AppName == "mdWriter":
+        OnAboutM(self, event)
     elif AppName == "WriteR":
         OnAboutR(self, event)
     else:
         OnAboutQ(self, event)
 
 
-AboutQuartoWriteR = "This new implementation of WriteR is designed to work with Quarto, the next generation of R markdown documents.\n"
+AboutQuartoWriter = "This new implementation of WriteR is designed to work with Quarto, the next generation of R markdown documents.\n"
 
 AboutWriteR = "WriteR is an app for writing and processing R markdown documents.\n"
 
@@ -91,9 +110,18 @@ CommonHelpText = """This software was created using wxPython. \nDevelopment star
             Send all feedback to Jonathan Godfrey at a.j.godfrey@massey.ac.nz\n"""
 
 
+def OnAboutM(self, event):
+    WholeText = (
+        AboutQuartoWriter + CommonHelpText + "\nVersion: " + QuartoWriter_version
+    )
+    dialog = wx.MessageDialog(self, WholeText, "About this R Markdown Editor", wx.OK)
+    dialog.ShowModal()
+    dialog.Destroy()
+
+
 def OnAboutQ(self, event):
     WholeText = (
-        AboutQuartoWriteR + CommonHelpText + "\nVersion: " + QuartoWriteR_version
+        AboutQuartoWriter + CommonHelpText + "\nVersion: " + QuartoWriter_version
     )
     dialog = wx.MessageDialog(self, WholeText, "About this R Markdown Editor", wx.OK)
     dialog.ShowModal()

@@ -5,6 +5,7 @@ from subprocess import Popen, PIPE, STDOUT
 from os.path import join, split, isdir, realpath
 from os import walk
 from time import sleep
+import winsound
 
 import wx
 import wx.adv
@@ -15,7 +16,11 @@ from six import iteritems
 
 # import our modules
 # first bring in modules used for all versions
-from Settings import AppName, FileExtension, StartingText  # for making sure the correct app is being opened.
+from Settings import (
+    AppName,
+    FileExtension,
+    StartingText,
+)  # for making sure the correct app is being opened.
 from IDTags import *  # hopefully redundant
 import FileMenuEvents  # for opening and closing files
 import EditMenuEvents  # for editing content
@@ -963,7 +968,7 @@ class MainWindow(wx.Frame):
     OnGoToLine = EditMenuEvents.OnGoToLine
     OnSettings = EditMenuEvents.OnSettings
     OnWordCount = EditMenuEvents.OnWordCount
-    TellUser = EditMenuEvents.TellUser
+    #    TellUser = EditMenuEvents.TellUser
     OnShowFind = EditMenuEvents.OnShowFind
     OnSetMark = EditMenuEvents.OnSetMark
     F3Next = EditMenuEvents.F3Next
@@ -972,7 +977,8 @@ class MainWindow(wx.Frame):
     OnFindClose = EditMenuEvents.OnFindClose
     OnShowFindReplace = EditMenuEvents.OnShowFindReplace
     OnSelectToMark = EditMenuEvents.OnSelectToMark
-    AlternateFocus = EditMenuEvents.AlternateFocus
+    #    AlternateFocus = EditMenuEvents.AlternateFocus
+    #    ActuallyAlternateFocus = EditMenuEvents.ActuallyAlternateFocus
     duplicateline = EditMenuEvents.duplicateline
     lineup = EditMenuEvents.lineup
     linedown = EditMenuEvents.linedown
@@ -1068,13 +1074,39 @@ class MainWindow(wx.Frame):
         pt = self.ClientToScreen(wx.Point(0, 0))
         return wx.Point(pt.x + x, pt.y + x)
 
-
     def SetFocusConsole(self, toConsole):
         if toConsole != self.focusConsole:
             self.ActuallyAlternateFocus()
 
     def AlternateFocus(self, event):
         self.ActuallyAlternateFocus()
+
+    def ActuallyAlternateFocus(self):
+        if self.focusConsole:
+            self.editor.SetFocus()
+            self.TellUser("editor")
+            if beep:
+                winsound.Beep(2000, 250)
+        else:
+            self.console.SetFocus()
+            self.TellUser("console")
+            if beep:
+                winsound.Beep(3000, 250)
+        self.focusConsole = not self.focusConsole
+
+    def TellUser(self, text):
+        self.SetStatusText(text)
+        if system_tray:
+            try:
+                nm = wx.adv.NotificationMessage()
+                nm.SetMessage(text)
+                nm.SetParent(self)
+                nm.SetTitle("")
+                nm.SetFlags(wx.ICON_INFORMATION)
+                nm.Show(1)
+            except Exception as error:
+                print(f"Problem setting notification {error}")
+                pass
 
 
 # end of file

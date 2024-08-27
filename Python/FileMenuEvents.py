@@ -1,4 +1,4 @@
-## module for file menu events, created July 2023
+# module for file menu events, created July 2023
 
 from os.path import join
 from time import asctime
