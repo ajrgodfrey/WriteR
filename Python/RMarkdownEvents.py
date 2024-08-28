@@ -116,9 +116,7 @@ STATE_END_LATEX_BRACKET = (
 
 
 def CurrentMarkdown(self):
-    (ok, currentCol, currentRow) = self.editor.PositionToXY(
-        self.editor.GetInsertionPoint()
-    )
+    _, _, currentRow = self.editor.PositionToXY(self.editor.GetInsertionPoint())
     state = STATE_NORMAL
     for i in range(0, currentRow + 1):
         line = self.editor.GetLineText(i)
