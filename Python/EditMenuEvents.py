@@ -18,7 +18,7 @@ beep = "winsound" in sys.modules
 
 
 def OnGoToLine(self, event):
-    (x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
+    _, y = self.editor.PositionToXY(self.editor.GetInsertionPoint())
     maxLine = self.editor.GetNumberOfLines()
     dialog = wx.NumberEntryDialog(
         self,
@@ -66,7 +66,7 @@ def OnSettings(self, event):  # not properly implemented
 def OnWordCount(self, event):
     text = self.editor.GetValue()
     word_count = len(text.split())
-    (on, x, y) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
+    _, _, y = self.editor.PositionToXY(self.editor.GetInsertionPoint())
     line_count = self.editor.GetNumberOfLines()
     markdownState = RMarkdownEvents.CurrentMarkdown(self)
     self.TellUser(
@@ -101,7 +101,7 @@ def OnFind(self, event):
     self.regex = re.compile(self.ComputeFindString(event), self.ComputeReFlags(event))
     self.forward = event.GetFlags() & wx.FR_DOWN
     if et == wx.wxEVT_COMMAND_FIND:
-        (ok, col, row) = self.editor.PositionToXY(self.editor.GetInsertionPoint())
+        _, col, row = self.editor.PositionToXY(self.editor.GetInsertionPoint())
         self.FindFrom(col, row, False)
     elif et == wx.wxEVT_COMMAND_FIND_NEXT:
         self.FindFrom(self.priorMatchCol, self.priorMatchRow, False)
@@ -110,14 +110,14 @@ def OnFind(self, event):
     elif et == wx.wxEVT_COMMAND_FIND_REPLACE_ALL:
         self.ReplaceAll(event)
     else:
-        self.console.write("unexpected eventType %s -- %s\n" % (et, event))
+        self.console.write(f"unexpected eventType {et} -- {event}\n")
+
 
 
 def ComputeFindString(self, event):
     if event.GetFlags() & wx.FR_WHOLEWORD:
         return "".join([r"\b", re.escape(event.GetFindString()), r"\b"])
-    else:
-        return "".join([re.escape(event.GetFindString())])
+    return "".join([re.escape(event.GetFindString())])
 
 
 def OnFindClose(self, event):
@@ -147,8 +147,7 @@ def OnSelectToMark(self, event):
 def ComputeReFlags(self, event):
     if event.GetFlags() & wx.FR_MATCHCASE:
         return 0
-    else:
-        return re.IGNORECASE
+    return re.IGNORECASE
 
 
 def ComputeReplacementString(self, event):
@@ -172,7 +171,7 @@ def FindFrom(self, currentColumn, currentRow, reverseDirection):
     currentLine = self.editor.GetLineText(currentRow)
     searchForward = self.forward != reverseDirection
     if searchForward:
-        matchObject = self.regex.search(currentLine[currentColumn + 1:])
+        matchObject = self.regex.search(currentLine[currentColumn + 1 :])
         if matchObject:
             self.MoveTo(currentRow, currentColumn + 1 + matchObject.start())
             return

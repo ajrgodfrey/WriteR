@@ -1,4 +1,3 @@
-
 # this file has the settings bneeded for all the apps.
 
 import wx

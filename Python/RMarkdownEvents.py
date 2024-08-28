@@ -30,10 +30,8 @@ def OnProcess(self, event, whichcmd):
         [
             self.settings["RDirectory"],
             "-e",
-            """if (!is.element('rmarkdown', installed.packages()[,1])){{""".format()
-            + """install.packages('rmarkdown', repos="{0}")}};require(rmarkdown);""".format(
-                hardsettings["repo"]
-            )
+            "if (!is.element('rmarkdown', installed.packages()[,1])){{"
+            + f"install.packages('rmarkdown', repos='{hardsettings['repo']}')}};require(rmarkdown);"
             + hardsettings[whichcmd].format(
                 join(self.dirname, self.filename).replace("\\", "\\\\"), quiet
             ),
