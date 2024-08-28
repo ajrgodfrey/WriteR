@@ -31,8 +31,8 @@ CommonBasicHelpText = """This editor was designed for use with a screen reader a
             All hot keys are indicated in the menus.\n
             The file you create here will be converted to HTML if you press the f5 key.\n
             A new window will open which will tell you if the processing was successful.\n
-            If you have success, then the resulting file will be read in your browser; 
-            you may need to refresh the browser using the f5 key while in the browser.\n
+            N.B. If you have success, then the resulting file will need to be read in your browser; you will need to open it manually.
+            You will need to refresh the browser using the f5 key while in the browser to observe the changes you make in the editor.\n
             Once you review the processing, hit the f4 key to return to the original window.\n
             Use Alt+tab to switch between applications."""
 
@@ -86,4 +86,5 @@ CommonHelpText = """This software was created using wxPython. \nDevelopment star
             Development continued with Timothy Bilton in 2016.\n
             Marshall Flax then made major progress on the find/replace features and more in 2018.\n
             The assistance of these contributors is hugely appreciated. \n
-            Send all feedback to Jonathan Godfrey at a.j.godfrey@massey.ac.nz\n"""
+In 2023 and 2024, Jonathan had to rely on ChatGPT to help improve the code base; human offers are most welcome.\n
+            Please send all feedback to Jonathan Godfrey at a.j.godfrey@massey.ac.nz\n"""
