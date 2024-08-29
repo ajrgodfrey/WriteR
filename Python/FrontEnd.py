@@ -37,6 +37,7 @@ display_rscript_cmd = True
 beep = "winsound" in sys.modules
 system_tray = True
 
+
 def dcf_dumps(data, sort_keys=True):
     string = ""
     for k, v in sorted(iteritems(data)):
@@ -92,6 +93,7 @@ class BashProcessThread(Thread):
         except Exception as error:
             del busy
             doneFunc(f"\nCaught error {error} for {input_list}")
+
 
 # get on with the program
 class MainWindow(wx.Frame):

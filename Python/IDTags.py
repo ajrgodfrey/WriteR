@@ -24,7 +24,6 @@ ID_SELECTTOMARK = wx.Window.NewControlId()
 ID_ALTERNATE_FOCUS = wx.Window.NewControlId()
 
 
-
 ID_DIRECTORY_CHANGE = wx.NewIdRef()
 ID_CRAN = wx.NewIdRef()
 
@@ -33,15 +32,13 @@ ID_NEWTEXT = wx.NewIdRef()
 
 
 # set up some ID tags
-#ID_SETTINGS = wx.NewIdRef()
-#ID_FINDONLY = wx.NewIdRef()
-#ID_FINDNEXT = wx.NewIdRef()
-#ID_FINDPREV = wx.NewIdRef()
-#ID_FINDREPLACE = wx.NewIdRef()
-#ID_GOTO = wx.NewIdRef()
-#ID_WORDCOUNT = wx.NewIdRef()
-#ID_SETMARK = wx.NewIdRef()
-#ID_SELECTTOMARK = wx.NewIdRef()
-#ID_ALTERNATE_FOCUS = wx.NewIdRef()
-
-
+# ID_SETTINGS = wx.NewIdRef()
+# ID_FINDONLY = wx.NewIdRef()
+# ID_FINDNEXT = wx.NewIdRef()
+# ID_FINDPREV = wx.NewIdRef()
+# ID_FINDREPLACE = wx.NewIdRef()
+# ID_GOTO = wx.NewIdRef()
+# ID_WORDCOUNT = wx.NewIdRef()
+# ID_SETMARK = wx.NewIdRef()
+# ID_SELECTTOMARK = wx.NewIdRef()
+# ID_ALTERNATE_FOCUS = wx.NewIdRef()
