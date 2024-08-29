@@ -21,7 +21,6 @@ from Settings import (
     FileExtension,
     StartingText,
 )  # for making sure the correct app is being opened.
-from IDTags import *  # hopefully redundant
 import FileMenuEvents  # for opening and closing files
 import EditMenuEvents  # for editing content
 import ViewMenuEvents  # for managing the main window
@@ -37,19 +36,6 @@ print_option = False
 display_rscript_cmd = True
 beep = "winsound" in sys.modules
 system_tray = True
-
-# set up some ID tags
-ID_SETTINGS = wx.NewIdRef()
-ID_FINDONLY = wx.NewIdRef()
-ID_FINDNEXT = wx.NewIdRef()
-ID_FINDPREV = wx.NewIdRef()
-ID_FINDREPLACE = wx.NewIdRef()
-ID_GOTO = wx.NewIdRef()
-ID_WORDCOUNT = wx.NewIdRef()
-ID_SETMARK = wx.NewIdRef()
-ID_SELECTTOMARK = wx.NewIdRef()
-ID_ALTERNATE_FOCUS = wx.NewIdRef()
-
 
 def dcf_dumps(data, sort_keys=True):
     string = ""
@@ -107,14 +93,6 @@ class BashProcessThread(Thread):
             del busy
             doneFunc(f"\nCaught error {error} for {input_list}")
 
-
-ID_DIRECTORY_CHANGE = wx.NewIdRef()
-ID_CRAN = wx.NewIdRef()
-
-ID_KNIT2PDF_COMMAND = wx.NewIdRef()
-ID_NEWTEXT = wx.NewIdRef()
-
-
 # get on with the program
 class MainWindow(wx.Frame):
     """This is the front facing document editor space and all its menus and events"""
@@ -137,8 +115,7 @@ class MainWindow(wx.Frame):
         self.font = wx.Font(
             self.ChosenFontSize, wx.MODERN, wx.NORMAL, wx.NORMAL, False, "Consolas"
         )
-        self.settings = {  #'dirname': 'none',
-            #                         'templates': 'none',
+        self.settings = {
             "lastdir": ".",
             "filename": "none",
             "newText": StartingText,  # set in GlobalSettings modules
@@ -247,48 +224,48 @@ class MainWindow(wx.Frame):
             ),
             (wx.ID_DELETE, "&Delete", "Delete highlighted text", self.OnDelete),
             (
-                ID_WORDCOUNT,
+                wx.ID_ANY,
                 "Word count\tCtrl+w",
                 "get a word count of the entire text",
                 self.OnWordCount,
             ),
             (None,) * 4,
             (
-                ID_FINDONLY,
+                wx.ID_FIND,
                 "Find\tCtrl+F",
                 "Open a standard find dialog box",
                 self.OnShowFind,
             ),
-            (ID_FINDNEXT, "FindNext\tF3", "FindNext", self.F3Next),
-            (ID_FINDPREV, "FindPrevious\tShift+F3", "FindPrev", self.ShiftF3Previous),
+            (wx.ID_ANY, "FindNext\tF3", "FindNext", self.F3Next),
+            (wx.ID_ANY, "FindPrevious\tShift+F3", "FindPrev", self.ShiftF3Previous),
             (
-                ID_GOTO,
+                wx.ID_ANY,
                 "Go to line\tCtrl+g",
                 "Open a dialog box to choose a line number",
                 self.OnGoToLine,
             ),
             (
-                ID_FINDREPLACE,
+                wx.ID_REPLACE,
                 "Find/replace\tCtrl+H",
                 "Open a find/replace dialog box",
                 self.OnShowFindReplace,
             ),
-            (ID_SETMARK, "Set Mark\tCtrl+SPACE", "Set Mark", self.OnSetMark),
+            (wx.ID_ANY, "Set Mark\tCtrl+SPACE", "Set Mark", self.OnSetMark),
             (
-                ID_SELECTTOMARK,
+                wx.ID_ANY,
                 "Select To Mark\tAlt+Ctrl+SPACE",
                 "Select To Mark",
                 self.OnSelectToMark,
             ),
             (
-                ID_ALTERNATE_FOCUS,
+                wx.ID_ANY,
                 "Alternate Focus\tF4",
                 "Alternate Focus",
                 self.AlternateFocus,
             ),
             (None,) * 4,
             (
-                ID_SETTINGS,
+                wx.ID_PREFERENCES,
                 "Settings",
                 "Setup the editor to your liking",
                 self.OnSettings,
@@ -825,7 +802,7 @@ class MainWindow(wx.Frame):
     def SetTitle(self, *args, **kwargs):
         # MainWindow.SetTitle overrides wx.Frame.SetTitle, so we have to
         # call it using super:
-        super(MainWindow, self).SetTitle(AppName + " -  %s" % self.filename)
+        super(MainWindow, self).SetTitle(AppName + f" -  {self.filename}")
 
     # Helper methods:
     def defaultFileDialogOptions(self):
@@ -850,7 +827,7 @@ class MainWindow(wx.Frame):
             return
         if self.comp_thread is not None:
             self.sub_flag.set()
-            while self.comp_thread.isAlive():
+            while self.comp_thread.is_alive():
                 sleep(1)
             self.sub_flag.clear()
             self.console.Reset()

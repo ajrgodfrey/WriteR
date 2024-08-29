@@ -34,7 +34,7 @@ def OnProcess(self, event, whichcmd):
             + f"install.packages('rmarkdown', repos='{hardsettings['repo']}')}};require(rmarkdown);"
             + hardsettings[whichcmd].format(
                 join(self.dirname, self.filename).replace("\\", "\\\\"), quiet
-            ),
+            ) + "}",
         ]
     )
 

@@ -113,7 +113,6 @@ def OnFind(self, event):
         self.console.write(f"unexpected eventType {et} -- {event}\n")
 
 
-
 def ComputeFindString(self, event):
     if event.GetFlags() & wx.FR_WHOLEWORD:
         return "".join([r"\b", re.escape(event.GetFindString()), r"\b"])
