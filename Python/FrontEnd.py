@@ -1043,8 +1043,6 @@ class MainWindow(wx.Frame):
             else:
                 print(warn)
                 return
-        else:
-            "something to get the information out of the settings file."
         return choice
 
     def GetStartPosition(self):

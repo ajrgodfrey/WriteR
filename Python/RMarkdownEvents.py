@@ -137,7 +137,7 @@ def CurrentMarkdown(self):
                 state = STATE_SINGLE_LINE_LATEX
             elif line.startswith("$$"):
                 state = STATE_START_LATEX_DOLLAR
-            elif line.startswith("\["):
+            elif line.startswith("\\["):
                 state = STATE_START_LATEX_BRACKET
             else:
                 state = STATE_NORMAL
@@ -157,7 +157,7 @@ def CurrentMarkdown(self):
             else:
                 state = STATE_IN_LATEX_DOLLAR
         elif state is STATE_START_LATEX_BRACKET or state is STATE_IN_LATEX_BRACKET:
-            if line.startswith("\]"):
+            if line.startswith("\\]"):
                 state = STATE_END_LATEX_BRACKET
             else:
                 state = STATE_IN_LATEX_BRACKET
