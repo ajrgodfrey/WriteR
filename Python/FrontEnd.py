@@ -26,11 +26,10 @@ import RCodeEvents  # for code inserts
 import MarkdownEvents  # for formatting and inserts in text
 import MathInserts  # for equations
 import HelpMenuEvents  # for help with the specific apps
-from BackEnd import printing
+from BackEnd import printing, TellUser 
 
-display_rscript_cmd = True
+display_rscript_cmd = False  # change this for checking we get it right
 beep = "winsound" in sys.modules
-system_tray = True
 
 
 class BashProcessThread(Thread):
@@ -911,7 +910,6 @@ class MainWindow(wx.Frame):
     OnGoToLine = EditMenuEvents.OnGoToLine
     OnSettings = EditMenuEvents.OnSettings
     OnWordCount = EditMenuEvents.OnWordCount
-    #    TellUser = EditMenuEvents.TellUser
     OnShowFind = EditMenuEvents.OnShowFind
     OnSetMark = EditMenuEvents.OnSetMark
     F3Next = EditMenuEvents.F3Next
@@ -1022,29 +1020,18 @@ class MainWindow(wx.Frame):
     def AlternateFocus(self, event):
         self.ActuallyAlternateFocus()
 
+    TellUser = TellUser 
+
+
     def ActuallyAlternateFocus(self):
         if self.focusConsole:
             self.editor.SetFocus()
             self.TellUser("editor")
             if beep:
-                winsound.PlaySound('e10.wav', winsound.SND_FILENAME)
+                winsound.PlaySound("e10.wav", winsound.SND_FILENAME)
         else:
             self.console.SetFocus()
             self.TellUser("console")
             if beep:
-                winsound.PlaySound('s8.wav', winsound.SND_FILENAME)
+                winsound.PlaySound("s8.wav", winsound.SND_FILENAME)
         self.focusConsole = not self.focusConsole
-
-    def TellUser(self, text):
-        self.SetStatusText(text)
-        if system_tray:
-            try:
-                nm = wx.adv.NotificationMessage()
-                nm.SetMessage(text)
-                nm.SetParent(self)
-                nm.SetTitle("")
-                nm.SetFlags(wx.ICON_INFORMATION)
-                nm.Show(1)
-            except Exception as error:
-                print(f"Problem setting notification {error}")
-                pass
