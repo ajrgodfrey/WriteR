@@ -19,7 +19,6 @@ class MyConsole:
             .CloseButton(True)
             .MinimizeButton(True),
         )
-        # parent._mgr.GetPane("console").Bottom().Layer(0).Row(0).Position(0)
         self.console.SetValue("")
         self.console.write("Render output goes here\n\n")
 

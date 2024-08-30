@@ -2,13 +2,16 @@
 # first set are needed for processing
 # second set are for development only
 
+import wx
+
 
 ## processing functions
 
 ## development functions
 
-print_option = False
-system_tray = True
+# these sswitches are only needed in testing
+print_option = False  # for checking details
+system_tray = False  # for notifications which are pop ups
 
 
 def printing(*args):
@@ -28,4 +31,3 @@ def TellUser(self, text):
             nm.Show(1)
         except Exception as error:
             print(f"Problem setting notification {error}")
-            pass

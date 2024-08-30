@@ -26,7 +26,7 @@ import RCodeEvents  # for code inserts
 import MarkdownEvents  # for formatting and inserts in text
 import MathInserts  # for equations
 import HelpMenuEvents  # for help with the specific apps
-from BackEnd import printing, TellUser 
+from BackEnd import printing, TellUser
 
 display_rscript_cmd = False  # change this for checking we get it right
 beep = "winsound" in sys.modules
@@ -131,7 +131,6 @@ class MainWindow(wx.Frame):
         self.priorMatchCol = 0
         self.priorMatchRow = 0
         self._mgr.Update()
-        # self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE)
 
     def CreateExteriorWindowComponents(self):
         self.CreateMenu()
@@ -139,6 +138,7 @@ class MainWindow(wx.Frame):
         self.SetTitle()
 
     def CreateMenu(self):
+        menuBar = wx.MenuBar()  # create the menu bar object and add menus to it
         fileMenu = wx.Menu()
         for id, label, helpText, handler in [
             (wx.ID_NEW, "New file\tCtrl+N", "Start a new file", self.OnNewFile),
@@ -163,7 +163,6 @@ class MainWindow(wx.Frame):
             else:
                 item = fileMenu.Append(id, label, helpText)
                 self.Bind(wx.EVT_MENU, handler, item)
-        menuBar = wx.MenuBar()  # create the menu bar object
         menuBar.Append(fileMenu, "&File")  # Add the fileMenu to the MenuBar
 
         editMenu = wx.Menu()
@@ -244,32 +243,32 @@ class MainWindow(wx.Frame):
         menuBar.Append(editMenu, "&Edit")  # Add the editMenu to the MenuBar
 
         viewMenu = wx.Menu()
-        self.ShowStatusBar = viewMenu.Append(
+        ShowStatusBarMenu = viewMenu.Append(
             wx.ID_ANY, "Show status bar", "Show Status bar", kind=wx.ITEM_CHECK
         )
-        viewMenu.Check(self.ShowStatusBar.GetId(), True)
-        self.Bind(wx.EVT_MENU, self.ToggleStatusBar, self.ShowStatusBar)
-        self.IncreaseFont = viewMenu.Append(
+        viewMenu.Check(ShowStatusBarMenu.GetId(), True)
+        self.Bind(wx.EVT_MENU, self.ToggleStatusBar, ShowStatusBarMenu)
+        IncreaseFontMenu = viewMenu.Append(
             wx.ID_ANY, "Increase the font size\tCtrl+=", "Increase the font size"
         )
-        self.Bind(wx.EVT_MENU, self.OnIncreaseFontSize, self.IncreaseFont)
-        self.DecreaseFont = viewMenu.Append(
+        self.Bind(wx.EVT_MENU, self.OnIncreaseFontSize, IncreaseFontMenu)
+        DecreaseFontMenu = viewMenu.Append(
             wx.ID_ANY, "Decrease the font size\tCtrl+-", "Decrease the font size"
         )
-        self.Bind(wx.EVT_MENU, self.OnDecreaseFontSize, self.DecreaseFont)
-        self.ChooseFont = viewMenu.Append(
+        self.Bind(wx.EVT_MENU, self.OnDecreaseFontSize, DecreaseFontMenu)
+        ChooseFontMenu = viewMenu.Append(
             wx.ID_ANY, "Choose font\tCtrl+D", "Choose the font size and other details"
         )
-        self.Bind(wx.EVT_MENU, self.OnSelectFont, self.ChooseFont)
+        self.Bind(wx.EVT_MENU, self.OnSelectFont, ChooseFontMenu)
         menuBar.Append(viewMenu, "View")  # Add the view Menu to the MenuBar
 
         buildMenu = wx.Menu()
-        self.Render = buildMenu.Append(
+        RenderFastMenu = buildMenu.Append(
             wx.ID_ANY,
             "Render the document\tF5",
             "Use the rmarkdown package to render the current file",
         )
-        self.Bind(wx.EVT_MENU, self.OnRenderNull, self.Render)
+        self.Bind(wx.EVT_MENU, self.OnRenderNull, RenderFastMenu)
         # Create render menu for WriteR
         if AppName != "ScriptR":
             renderMenu = wx.Menu()
@@ -1020,8 +1019,7 @@ class MainWindow(wx.Frame):
     def AlternateFocus(self, event):
         self.ActuallyAlternateFocus()
 
-    TellUser = TellUser 
-
+    TellUser = TellUser
 
     def ActuallyAlternateFocus(self):
         if self.focusConsole:
