@@ -9,13 +9,9 @@ import winsound
 
 import wx
 import wx.adv
-
 from wx.aui import AuiManager, AuiPaneInfo
-from six import iteritems
-
 
 # import our modules
-# first bring in modules used for all versions
 from Settings import (
     AppName,
     FileExtension,
@@ -30,43 +26,11 @@ import RCodeEvents  # for code inserts
 import MarkdownEvents  # for formatting and inserts in text
 import MathInserts  # for equations
 import HelpMenuEvents  # for help with the specific apps
+from BackEnd import printing
 
-
-print_option = False
 display_rscript_cmd = True
 beep = "winsound" in sys.modules
 system_tray = True
-
-
-def dcf_dumps(data, sort_keys=True):
-    string = ""
-    for k, v in sorted(iteritems(data)):
-        if v is None:
-            v = "None"
-        string += "{:}: {:}\n".format(k, v.replace("\n", "\n "))
-    return string
-
-
-def dcf_loads(string):
-    dictionary = {}
-    last_key = None
-    for l in string.split("\n"):
-        if l == "":
-            continue
-        elif l[0] == " ":
-            dictionary[last_key] += "\n{:}".format(l[1:])
-        else:
-            k, v = l.split(": ")
-            if v == "None":
-                v = None
-            dictionary[k] = v
-            last_key = k
-    return dictionary
-
-
-def printing(*args):
-    if print_option:
-        print(args)
 
 
 class BashProcessThread(Thread):
@@ -1063,12 +1027,12 @@ class MainWindow(wx.Frame):
             self.editor.SetFocus()
             self.TellUser("editor")
             if beep:
-                winsound.Beep(2000, 250)
+                winsound.PlaySound('e10.wav', winsound.SND_FILENAME)
         else:
             self.console.SetFocus()
             self.TellUser("console")
             if beep:
-                winsound.Beep(3000, 250)
+                winsound.PlaySound('s8.wav', winsound.SND_FILENAME)
         self.focusConsole = not self.focusConsole
 
     def TellUser(self, text):
@@ -1084,6 +1048,3 @@ class MainWindow(wx.Frame):
             except Exception as error:
                 print(f"Problem setting notification {error}")
                 pass
-
-
-# end of file

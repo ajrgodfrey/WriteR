@@ -21,7 +21,7 @@ class MyConsole:
         )
         # parent._mgr.GetPane("console").Bottom().Layer(0).Row(0).Position(0)
         self.console.SetValue("")
-        self.console.write("Render output goes here")
+        self.console.write("Render output goes here\n\n")
 
     def Reset(self):
         self.console.SetValue("")
