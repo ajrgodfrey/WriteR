@@ -2,8 +2,7 @@
 import sys
 from threading import Thread, Event
 from subprocess import Popen, PIPE, STDOUT
-from os.path import join, split, isdir, realpath
-from os import walk
+from os.path import split, realpath
 from time import sleep
 import winsound
 
@@ -963,48 +962,7 @@ class MainWindow(wx.Frame):
     OnIndent = MarkdownEvents.OnIndent
 
     # processing events (all apps)
-    # move    GetRDirectory = GetRDirectory
-    def GetRDirectory(self):
-        def splitter(path, interest):
-            look = split(path)
-            if interest in look[1]:
-                return look[1]
-            if len(look[0]) == 0:
-                return None
-            return splitter(look[0], interest)
-
-        rscript = "Rscript.exe"
-        warn = f"Cannot find {rscript} in default install location."
-        version = "R-0.0.0"
-        choice = None
-        if "No settings file reference to settings":
-            if isdir("C:\\Program Files\\R"):
-                hold = "C:\\Program Files\\R"
-            elif isdir("C:\\Program Files (x86)\\R"):
-                hold = "C:\\Program Files (x86)\\R"
-            else:
-                print(warn)
-                return
-            options = [join(r, rscript) for r, d, f in walk(hold) if rscript in f]
-            printing("options", options)
-            if len(options) > 0:
-                choice = options[0]
-                for op in options[1:]:
-                    vv = splitter(op, "R-")
-                    if vv >= version:
-                        if "x64" in op:
-                            choice = op
-                            version = vv
-                        elif "i386" in op and "x64" not in choice:
-                            choice = op
-                            version = vv
-                        elif "i386" not in choice and "x64" not in choice:
-                            choice = op
-                            version = vv
-            else:
-                print(warn)
-                return
-        return choice
+    GetRDirectory = RMarkdownEvents.GetRDirectory
 
     def GetStartPosition(self):
         self.x = self.x + 20
