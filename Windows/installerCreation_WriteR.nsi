@@ -32,7 +32,10 @@ SetOutPath $INSTDIR\Source
 file ..\PackageFiles\Python\*.py
 file ..\PackageFiles\Python\*.pyw
 SetOutPath $INSTDIR\bin
-file WriteR.exe 
+file WriteR.dist\*.*
+SetOutPath $INSTDIR\bin\wx
+file WriteR.dist\wx\*.*
+
 SetOutPath $INSTDIR\doc
 file ..\PackageFiles\documentation\*.*
 
@@ -52,6 +55,8 @@ Delete $INSTDIR\version.txt
 Delete $INSTDIR\warning.txt
 Delete $INSTDIR\Source\*.*
 RMDir $INSTDIR\Source
+Delete $INSTDIR\bin\wx\*.*
+RMDir $INSTDIR\bin\wx
 Delete $INSTDIR\bin\*.*
 RMDir $INSTDIR\bin
 Delete $INSTDIR\doc\*.*
