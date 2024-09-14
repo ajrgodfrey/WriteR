@@ -13,14 +13,7 @@ from Settings import AppName
 
 
 def OnBasicHelp(self, event):
-    if AppName == "ScriptR":
-        Text = CommonBasicHelpText + BasicTextS
-    elif AppName == "mdWriter":
-        Text = CommonBasicHelpText + BasicTextM
-    elif AppName == "WriteR":
-        Text = CommonBasicHelpText + BasicTextR
-    else:
-        Text = CommonBasicHelpText + BasicTextQ
+    Text = CommonBasicHelpText + BasicText[AppName]
     dialog = wx.MessageDialog(self, Text, f"Basic help for the {AppName} Editor", wx.OK)
     dialog.ShowModal()
     dialog.Destroy()
@@ -36,18 +29,17 @@ CommonBasicHelpText = """This editor was designed for use with a screen reader a
             Once you review the processing, hit the f4 key to return to the original window.\n
             Use Alt+tab to switch between applications."""
 
-BasicTextM = """mdWriter has fewer features than WriteR and QuartoWriter.\n
+BasicText = {
+    "mdWriter": """mdWriter has fewer features than WriteR and QuartoWriter.\n
             It was designed to be used by people wanting to work with simple markdown. \n
-            You should move to using WriteR or QuartoWriter when you want to take advantage of code embedded in your markdown.\n"""
-
-BasicTextQ = "QuartoWriter is designed for people wanting to process R and Python commands in their markdown files.\n"
-
-BasicTextR = "WriteR was designed specifically for processing R markdown files.\n"
-
-BasicTextS = """ScriptR has fewer features than WriteR and QuartoWriter.\n
+            You should move to using WriteR or QuartoWriter when you want to take advantage of code embedded in your markdown.\n""",
+    "QuartoWriter": "QuartoWriter is designed for people wanting to process R and Python commands in their markdown files.\n",
+    "WriteR": "WriteR was designed specifically for processing R markdown files.\n",
+    "ScriptR": """ScriptR has fewer features than WriteR and QuartoWriter.\n
             It was designed to be used by people wanting to work with simple R scripts.\n
             You should move to using WriteR or QuartoWriter when you want to take advantage of markdown.\n
-            Each line of the file being edited must start with a # symbol if it is not valid R code.\n"""
+            Each line of the file being edited must start with a # symbol if it is not valid R code.\n""",
+}
 
 
 # About the editors
@@ -55,7 +47,7 @@ BasicTextS = """ScriptR has fewer features than WriteR and QuartoWriter.\n
 
 def OnAbout(self, event):
     WholeText = AboutText[AppName] + CommonHelpText + "\nVersion: " + VersionNo[AppName]
-    dialog = wx.MessageDialog(self, WholeText, "About this editor", wx.OK)
+    dialog = wx.MessageDialog(self, WholeText, f"About the {AppName} Editor", wx.OK)
     dialog.ShowModal()
     dialog.Destroy()
 

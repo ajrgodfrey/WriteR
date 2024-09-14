@@ -1,7 +1,7 @@
 # View menu events
 
 import wx
-from Settings import StatusBarText
+from Settings import AppName, AppSettings
 
 
 def ToggleStatusBar(self, event):
@@ -9,14 +9,14 @@ def ToggleStatusBar(self, event):
         self.statusbar.Hide()
     else:
         self.statusbar.Show()
-        self.SetStatusText(StatusBarText)
+        self.SetStatusText(AppSettings["statusBarText"][AppName])
 
 
 def StatusBar(self):
     self.statusbar = self.CreateStatusBar()
     self.statusbar.SetFieldsCount(3)
     self.statusbar.SetStatusWidths([-5, -2, -1])
-    self.SetStatusText(StatusBarText)
+    self.SetStatusText(AppSettings["statusBarText"][AppName])
 
 
 def OnIncreaseFontSize(self, event):
