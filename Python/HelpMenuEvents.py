@@ -54,32 +54,19 @@ BasicTextS = """ScriptR has fewer features than WriteR and QuartoWriter.\n
 
 
 def OnAbout(self, event):
-    if AppName == "ScriptR":
-        WholeText = AboutScriptR + CommonHelpText + "\nVersion: " + ScriptR_version
-    elif AppName == "mdWriter":
-        WholeText = AboutMDWriter + CommonHelpText + "\nVersion: " + mdWriter_version
-    elif AppName == "WriteR":
-        WholeText = AboutWriteR + CommonHelpText + "\nVersion: " + WriteR_version
-    else:
-        WholeText = (
-            AboutQuartoWriter + CommonHelpText + "\nVersion: " + QuartoWriter_version
-        )
-    dialog = wx.MessageDialog(self, WholeText, "About this R script Editor", wx.OK)
+    WholeText = AboutText[AppName] + CommonHelpText + "\nVersion: " + VersionNo[AppName]
+    dialog = wx.MessageDialog(self, WholeText, "About this editor", wx.OK)
     dialog.ShowModal()
     dialog.Destroy()
 
 
-AboutMDWriter = (
-    "This cut back version of WriteR is designed for use with plain markdown files.\n"
-)
-
-AboutQuartoWriter = "This new implementation of WriteR is designed to work with Quarto, the next generation of R markdown documents.\n"
-
-AboutWriteR = "WriteR is an app for writing and processing R markdown documents.\n"
-
-AboutScriptR = """ScriptR is an attempt  at developing an accessible editor for R scripts.\n
-            This cut back version of WriteR was developed in 2023 due to ongoing accessibility issues with RStudio, 
-            and user feedback on difficulty reading output in both the GUI and terminal.\n"""
+AboutText = {
+    "mdWriter": "This cut back version of WriteR is designed for use with plain markdown files.\n",
+    "QuartoWriter": "This new implementation of WriteR is designed to work with Quarto, the next generation of R markdown documents.\n",
+    "WriteR": "WriteR is an app for writing and processing R markdown documents.\n",
+    "ScriptR": """ScriptR is an attempt  at developing an accessible editor for R scripts.\n
+            This cut back version of WriteR was developed in 2023 due to ongoing accessibility issues with RStudio, and user feedback on difficulty reading output in both the GUI and terminal.\n""",
+}
 
 
 CommonHelpText = """This software was created using wxPython. \nDevelopment started by Jonathan Godfrey and James Curtis in 2015.\n
@@ -88,3 +75,10 @@ CommonHelpText = """This software was created using wxPython. \nDevelopment star
             The assistance of these contributors is hugely appreciated. \n
 In 2023 and 2024, Jonathan had to rely on ChatGPT to help improve the code base; human offers are most welcome.\n
             Please send all feedback to Jonathan Godfrey at a.j.godfrey@massey.ac.nz\n"""
+
+VersionNo = {
+    "mdWriter": mdWriter_version,
+    "QuartoWriter": QuartoWriter_version,
+    "ScriptR": ScriptR_version,
+    "WriteR": WriteR_version,
+}

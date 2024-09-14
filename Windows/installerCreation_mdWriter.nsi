@@ -26,13 +26,14 @@ MessageBox MB_OK "You are about to install mdWriter. $\nBefore you use mdWriter 
 # messagebox mb_ok '$R0'
 
 SetOutPath $INSTDIR
-File ..\PackageFiles\Install\version.txt
-File ..\PackageFiles\Install\warning.txt
+File version.txt
+File warning.txt
 SetOutPath $INSTDIR\Source
 file ..\PackageFiles\Python\*.py
 file ..\PackageFiles\Python\*.pyw
 SetOutPath $INSTDIR\bin
 file mdWriter.dist\*.*
+file ..\PackageFiles\Python\*.wav
 SetOutPath $INSTDIR\bin\wx
 file mdWriter.dist\wx\*.*
 SetOutPath $INSTDIR\doc

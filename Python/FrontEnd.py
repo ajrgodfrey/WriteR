@@ -13,8 +13,7 @@ from wx.aui import AuiManager, AuiPaneInfo
 # import our modules
 from Settings import (
     AppName,
-    FileExtension,
-    StartingText,
+    AppSettings,
 )  # for making sure the correct app is being opened.
 import FileMenuEvents  # for opening and closing files
 import EditMenuEvents  # for editing content
@@ -69,7 +68,7 @@ class MainWindow(wx.Frame):
         pos=wx.DefaultPosition,
         size=(1200, 700),
         style=wx.DEFAULT_FRAME_STYLE | wx.SUNKEN_BORDER | wx.CLIP_CHILDREN,
-        filename="untitled." + FileExtension,
+        filename="untitled." + AppSettings["extension"][AppName],
     ):
         super(MainWindow, self).__init__(parent, id, title, pos, size, style)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
@@ -82,7 +81,7 @@ class MainWindow(wx.Frame):
         self.settings = {
             "lastdir": ".",
             "filename": "none",
-            "newText": StartingText,  # set in GlobalSettings modules
+            "newText": AppSettings["startingText"][AppName],
             "RDirectory": self.GetRDirectory(),
         }
         if len(sys.argv) > 1:
@@ -268,6 +267,12 @@ class MainWindow(wx.Frame):
             "Use the rmarkdown package to render the current file",
         )
         self.Bind(wx.EVT_MENU, self.OnRenderNull, RenderFastMenu)
+        # Create menu item to re-install rmarkdown package
+        if AppName != "mdWriter":
+            FixRMenu = buildMenu.Append(
+                wx.ID_ANY, "Fix R packages", "reinstall the rmarkdown package "
+            )
+            self.Bind(wx.EVT_MENU, self.OnFixR, FixRMenu)
         # Create render menu for WriteR
         if AppName != "ScriptR":
             renderMenu = wx.Menu()
@@ -814,6 +819,7 @@ class MainWindow(wx.Frame):
     OnSafeExit = FileMenuEvents.OnSafeExit
 
     # Build Menu events # conditioning needed for apps is done in RMarkdownEvents.py or in menu construction
+    OnFixR = RMarkdownEvents.OnFixR
     OnRenderNull = RMarkdownEvents.OnRenderNull
     OnProcess = RMarkdownEvents.OnProcess
     OnRenderHtml = RMarkdownEvents.OnRenderHtml

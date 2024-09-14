@@ -10,7 +10,7 @@ import wx
 ## development functions
 
 # these sswitches are only needed in testing
-print_option = False  # for checking details
+print_option = True  # for checking details
 system_tray = False  # for notifications which are pop ups
 
 

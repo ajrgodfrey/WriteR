@@ -26,13 +26,14 @@ MessageBox MB_OK "You are about to install ScriptR. $\nBefore you use ScriptR th
 # messagebox mb_ok '$R0'
 
 SetOutPath $INSTDIR
-File ..\PackageFiles\Install\version.txt
-File ..\PackageFiles\Install\warning.txt
+File version.txt
+File warning.txt
 SetOutPath $INSTDIR\Source
 file ..\PackageFiles\Python\*.py
 file ..\PackageFiles\Python\*.pyw
 SetOutPath $INSTDIR\bin
 file ScriptR.dist\*.*
+file ..\PackageFiles\Python\*.wav
 SetOutPath $INSTDIR\bin\wx
 file ScriptR.dist\wx\*.*
 

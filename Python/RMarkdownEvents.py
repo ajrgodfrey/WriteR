@@ -27,19 +27,24 @@ def OnProcess(self, event, whichcmd):
     self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
     self._mgr.Update()
     self.SetFocusConsole(False)
-    self.OnSave(event)  # This allows the file to be up to date for the build
+    self.OnSave(event)  # This ensures the file is up to date for the build
     self.StartThread(
         [
             self.settings["RDirectory"],
             "-e",
-            "{if (!is.element('rmarkdown', installed.packages()[,1])){"
-            + f"install.packages('rmarkdown', repos='{hardsettings['repo']}')}};require(rmarkdown);"
+            "{if (!require(rmarkdown)){"
+            + "chooseCRANmirror(ind=1); install.packages('rmarkdown')}; require(rmarkdown);"
             + hardsettings[whichcmd].format(
                 join(self.dirname, self.filename).replace("\\", "\\\\"), quiet
             )
             + "}",
         ]
     )
+
+
+def OnFixR(self, event):
+    cmd = "if(!require(rmarkdown)){chooseCRANmirror(ind=1); install.packages('rmarkdown')}"
+    self.StartThread([self.settings["RDirectory"], "-e", cmd])
 
 
 def OnRenderNull(self, event):
