@@ -15,41 +15,34 @@ def OnRRAssign(self, event):
 
 
 def OnPythonChunk(self, event):
-    frm, to = self.editor.GetSelection()
-    self.editor.SetInsertionPoint(to)
-    self.editor.WriteText("\n```\n\n")
-    self.editor.SetInsertionPoint(frm)
-    self.editor.WriteText("\n```{python}\n")
-    self.editor.SetInsertionPoint(frm + 14)
+    Add2bits(self, event, fromText="\n```{python}\n", toText="\n```\n\n", newPos=14)
 
 
 def OnRChunk(self, event):
-    frm, to = self.editor.GetSelection()
-    self.editor.SetInsertionPoint(to)
-    self.editor.WriteText("\n```\n\n")
-    self.editor.SetInsertionPoint(frm)
-    self.editor.WriteText("\n```{r }\n")
-    self.editor.SetInsertionPoint(frm + 8)
+    Add2bits(self, event, fromText="\n```{r }\n", toText="\n```\n\n", newPos=8)
 
 
 def OnRGraph(self, event):
-    frm, to = self.editor.GetSelection()
-    self.editor.SetInsertionPoint(to)
-    self.editor.WriteText("\n```\n\n")
-    self.editor.SetInsertionPoint(frm)
-    self.editor.WriteText(
-        '\n```{r , fig.height=5, fig.width=5, fig.alt=" ", fig.cap=""}\n'
+    Add2bits(
+        self,
+        event,
+        fromText='\n```{r , fig.height=5, fig.width=7, fig.alt=" ", fig.cap=""}\n',
+        toText="\n```\n\n",
+        newPos=8,
     )
-    self.editor.SetInsertionPoint(frm + 8)
 
 
 def OnRCommand(self, event):
+    Add2bits(self, event, fromText="`r ", toText="`", newPos=3)
+
+
+def Add2bits(self, event, fromText="", toText="", newPos=0):
     frm, to = self.editor.GetSelection()
     self.editor.SetInsertionPoint(to)
-    self.editor.WriteText("`")
+    self.editor.WriteText(toText)
     self.editor.SetInsertionPoint(frm)
-    self.editor.WriteText("`r ")
-    self.editor.SetInsertionPoint(frm + 3)
+    self.editor.WriteText(fromText)
+    self.editor.SetInsertionPoint(frm + newPos)
 
 
 # end of file
