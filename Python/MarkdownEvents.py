@@ -1,39 +1,29 @@
-# 2022.11.29 this file is for the processing of files using markdown
-#      It is therefore intended for both WriteR, and WriteQuarto
-# N.B. need to bring standard markdown actions into here; Might still be lurking in WriteR.pyw
-
+# basic markdown and formatting
 
 import re
-
 
 from Settings import AppName
 
 
-def OnSquareBrack(self, event):
+def Add2bits(self, event, fromText="", toText="", newPos=0):
     frm, to = self.editor.GetSelection()
     self.editor.SetInsertionPoint(to)
-    self.editor.WriteText("]")
+    self.editor.WriteText(toText)
     self.editor.SetInsertionPoint(frm)
-    self.editor.WriteText("[")
-    self.editor.SetInsertionPoint(to + 2)
+    self.editor.WriteText(fromText)
+    self.editor.SetInsertionPoint(frm + newPos)
+
+
+def OnSquareBrack(self, event):
+    Add2bits(self, event, fromText="[", toText="]", newPos=2)
 
 
 def OnCurlyBrack(self, event):
-    frm, to = self.editor.GetSelection()
-    self.editor.SetInsertionPoint(to)
-    self.editor.WriteText("}")
-    self.editor.SetInsertionPoint(frm)
-    self.editor.WriteText("{")
-    self.editor.SetInsertionPoint(to + 2)
+    Add2bits(self, event, fromText="{", toText="}", newPos=2)
 
 
 def OnRoundBrack(self, event):
-    frm, to = self.editor.GetSelection()
-    self.editor.SetInsertionPoint(to)
-    self.editor.WriteText(")")
-    self.editor.SetInsertionPoint(frm)
-    self.editor.WriteText("(")
-    self.editor.SetInsertionPoint(to + 2)
+    Add2bits(self, event, fromText="(", toText=")", newPos=2)
 
 
 def OnAddHeadBlock(self, event):
@@ -88,48 +78,23 @@ def OnHeading6(self, event):
 
 
 def OnMath(self, event):
-    frm, to = self.editor.GetSelection()
-    self.editor.SetInsertionPoint(to)
-    self.editor.WriteText("$")
-    self.editor.SetInsertionPoint(frm)
-    self.editor.WriteText("$")
-    self.editor.SetInsertionPoint(to + 2)
+    Add2bits(self, event, fromText="$", toText="$", newPos=2)
 
 
 def OnItalic(self, event):
-    frm, to = self.editor.GetSelection()
-    self.editor.SetInsertionPoint(to)
-    self.editor.WriteText("*")
-    self.editor.SetInsertionPoint(frm)
-    self.editor.WriteText("*")
-    self.editor.SetInsertionPoint(to + 2)
+    Add2bits(self, event, fromText="*", toText="*", newPos=2)
 
 
 def OnBold(self, event):
-    frm, to = self.editor.GetSelection()
-    self.editor.SetInsertionPoint(to)
-    self.editor.WriteText("**")
-    self.editor.SetInsertionPoint(frm)
-    self.editor.WriteText("**")
-    self.editor.SetInsertionPoint(to + 4)
+    Add2bits(self, event, fromText="**", toText="**", newPos=4)
 
 
 def OnCode(self, event):
-    frm, to = self.editor.GetSelection()
-    self.editor.SetInsertionPoint(to)
-    self.editor.WriteText("`")
-    self.editor.SetInsertionPoint(frm)
-    self.editor.WriteText("`")
-    self.editor.SetInsertionPoint(to + 2)
+    Add2bits(self, event, fromText="`", toText="`", newPos=2)
 
 
 def OnHTMLComment(self, event):
-    frm, to = self.editor.GetSelection()
-    self.editor.SetInsertionPoint(to)
-    self.editor.WriteText(" -->\n\n")
-    self.editor.SetInsertionPoint(frm)
-    self.editor.WriteText("\n<!-- ")
-    self.editor.SetInsertionPoint(to + 15)
+    Add2bits(self, event, fromText="<!--\n", toText="\n-->", newPos=15)
 
 
 def OnAddSeparator(self, event):
