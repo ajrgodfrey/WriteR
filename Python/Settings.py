@@ -1,8 +1,8 @@
 # this file has the settings needed for all the apps.
 
-from wx import App
+import wx
 
-AppName = App(False).GetAppName()
+AppName = wx.App(False).GetAppName()
 
 GlobalSettings = {}
 
