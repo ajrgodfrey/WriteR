@@ -4,9 +4,10 @@ InstallDir "C:\Program files\openAccessWare\mdWriter"
 #LicenseText "Warnings:"
 caption "Installer for mdWriter"
 CompletedText "Installation of mdWriter is completed."
-LicenseData ..\PackageFiles\install\warning.txt
+LicenseData warning.txt
 UninstallCaption "Uninstall the mdWriter app."
-UninstallText "Hopefully we will completely remove everythiung created when you installed mdWriter."
+UninstallText "Hopefully we will completely remove everything created when you installed mdWriter."
+SetOverwrite try
 
 Page license
 Page directory

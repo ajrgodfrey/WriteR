@@ -4,9 +4,10 @@ InstallDir "C:\Program files\openAccessWare\WriteR"
 #LicenseText "Warnings:"
 caption "Installer for WriteR"
 CompletedText "Installation of WriteR is completed."
-LicenseData ..\PackageFiles\install\warning.txt
+LicenseData warning.txt
 UninstallCaption "Uninstall the WriteR app."
-UninstallText "Hopefully we will completely remove everythiung created when you installed WriteR."
+UninstallText "Hopefully we will completely remove everything created when you installed WriteR."
+SetOverwrite try
 
 Page license
 Page directory

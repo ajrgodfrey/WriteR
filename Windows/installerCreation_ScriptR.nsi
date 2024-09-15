@@ -4,9 +4,10 @@ InstallDir "C:\Program files\openAccessWare\ScriptR"
 #LicenseText "Warnings:"
 caption "Installer for ScriptR"
 CompletedText "Installation of ScriptR is completed."
-LicenseData ..\PackageFiles\install\warning.txt
+LicenseData warning.txt
 UninstallCaption "Uninstall the ScriptR app."
 UninstallText "Hopefully we will completely remove everything created when you installed ScriptR."
+SetOverwrite try
 
 Page license
 Page directory

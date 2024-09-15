@@ -1,5 +1,5 @@
-WriteR is supplied with no guarantees or warranties. 
+WriteR and its spin-offs are supplied with no guarantees or warranties. 
 
-Development efforts try to keep WriteR functional. Please do report issues, being as informative as you possibly can. You might be asked to supply details of your version of Windows, Python, Pandoc, R, and WriteR.
+Development efforts try to keep the apps functional. Please do report issues, being as informative as you possibly can. You might be asked to supply details of your version of Windows, Python, Pandoc, R, and WriteR.
 
 Accepting these simple terms shows you understand what you're in for.
