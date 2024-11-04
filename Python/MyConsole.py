@@ -25,8 +25,8 @@ class MyConsole:
     def Reset(self):
         self.console.SetValue("")
 
-    def write(self, text):
-        self.console.write(text)
+    #    def write(self, text):
+    #        self.console.write(text)
 
     def CreateWriteText(self, text):
         self.console.write(text)

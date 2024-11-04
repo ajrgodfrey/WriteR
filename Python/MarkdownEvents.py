@@ -28,9 +28,14 @@ def OnRoundBrack(self, event):
 
 def OnAddHeadBlock(self, event):
     self.editor.SetInsertionPoint(0)
-    self.editor.WriteText(
-        '---\ntitle: ""\nauthor: ""\ndate: ""\noutput: html_document\n---\n'
-    )
+    self.editor.WriteText('---\ntitle: ""\nauthor: ""\ndate: ""\n')
+    if AppName == "WriteR":
+        self.editor.WriteText("output: html_document\n")
+    elif AppName == "QuartoWriter":
+        self.editor.WriteText(
+            'bibliography: foo.bib\ntoc: true\nnumber-sections: true\nreference-location: document\nhighlight-style: pygments\nmermaid-format: png\ncode-line-numbers: true\ntidy: true\nfig-align: center\nexecute:\n  echo: true\nformat:\n  html:\n    anchor-sections: false\n    code-tools: true\n    code-fold: show\n    code-summary: "Show the code"\n    code-overflow: wrap\n    code-block-border-left: true\n    code-copy: true\n    mainfont: Source Sans Pro\n    theme: journal\n    toc-depth: 3\n    toc-location: left\n    captions: true\n    cap-location: margin\n    table-captions: true\n    tbl-cap-location: margin\n'
+        )
+    self.editor.WriteText("---\n\n")
     self.editor.SetInsertionPoint(13)
 
 

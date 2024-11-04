@@ -1,7 +1,6 @@
 # import external modules
 import sys
-from threading import Thread, Event
-from subprocess import Popen, PIPE, STDOUT
+from threading import Event
 from os.path import split, realpath
 from time import sleep
 import winsound
@@ -24,36 +23,9 @@ import RCodeEvents  # for code inserts
 import MarkdownEvents  # for formatting and inserts in text
 import MathInserts  # for equations
 import HelpMenuEvents  # for help with the specific apps
-from BackEnd import printing, TellUser
+from BackEnd import BashProcessThread, printing, TellUser
 
-display_rscript_cmd = False  # change this for checking we get it right
 beep = "winsound" in sys.modules
-
-
-class BashProcessThread(Thread):
-    """This is the main document processing workhorse of the apps."""
-
-    def __init__(self, flag, input_list, writelineFunc, doneFunc):
-        Thread.__init__(self)
-        busy = wx.BusyInfo("Please wait")
-        self.flag = flag
-        self.writelineFunc = writelineFunc
-        self.setDaemon(True)
-        self.input_list = input_list
-        printing(input_list)
-        try:
-            self.comp_thread = Popen(input_list, stdout=PIPE, stderr=STDOUT)
-            if display_rscript_cmd:
-                writelineFunc("\n".join(input_list))
-                writelineFunc("\n\n")
-            for line in self.comp_thread.stdout:
-                writelineFunc(line)
-            returnCode = self.comp_thread.wait()
-            del busy
-            doneFunc(returnCode)
-        except Exception as error:
-            del busy
-            doneFunc(f"\nCaught error {error} for {input_list}")
 
 
 # get on with the program
@@ -74,6 +46,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self._mgr = AuiManager()
         self._mgr.SetManagedWindow(self)
+        self.focusConsole = False
         self.ChosenFontSize = 14
         self.font = wx.Font(
             self.ChosenFontSize, wx.MODERN, wx.NORMAL, wx.NORMAL, False, "Consolas"
@@ -106,7 +79,7 @@ class MainWindow(wx.Frame):
             self.CreateExteriorWindowComponents()
             self.CreateInteriorWindowComponents()
             self.fileOpen(self.dirname, self.filename)
-        printing(self.settings["RDirectory"])
+        printing(self.settings["RDirectory"])  # paranoia checking
         self.x = 0
         # create a flag for exiting subthreads
         self.sub_flag = Event()
@@ -125,7 +98,6 @@ class MainWindow(wx.Frame):
         self._mgr.GetPane("editor").Show()
         self.editor.SetFocus()
         self.editor.SelectAll()
-        self.focusConsole = False
         self.priorMatchCol = 0
         self.priorMatchRow = 0
         self._mgr.Update()

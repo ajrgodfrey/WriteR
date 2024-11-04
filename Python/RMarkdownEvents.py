@@ -5,12 +5,14 @@ from os import walk
 
 import wx
 
+from Settings import AppName
+
+
 from BackEnd import printing
 
 quiet = "TRUE"  # or 'FALSE', since these are 'R' constants
 
-hardsettings = {
-    "repo": "https://cloud.r-project.org",
+RcmdSettings = {
     "rendercommand": """rmarkdown::render("{}",quiet={})""",
     "renderallcommand": """rmarkdown::render("{}", output_format="all",quiet={})""",
     "renderslidycommand": """rmarkdown::render("{}", output_format=slidy_presentation(),quiet={})""",
@@ -23,23 +25,44 @@ hardsettings = {
 }
 
 
-def OnProcess(self, event, whichcmd):
-    self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
-    self._mgr.Update()
-    self.SetFocusConsole(False)
-    self.OnSave(event)  # This ensures the file is up to date for the build
+def OnRProcess(self, event, whichcmd):
     self.StartThread(
         [
             self.settings["RDirectory"],
             "-e",
             "{if (!require(rmarkdown)){"
             + "chooseCRANmirror(ind=1); install.packages('rmarkdown')}; require(rmarkdown);"
-            + hardsettings[whichcmd].format(
+            + RcmdSettings[whichcmd].format(
                 join(self.dirname, self.filename).replace("\\", "\\\\"), quiet
             )
             + "}",
         ]
     )
+
+
+def OnQProcess(self, event, whichcmd):
+    FullFilename = join(self.dirname, self.filename)
+    self.StartThread(["quarto", "render", FullFilename])
+
+
+def OnPProcess(self, event, whichcmd):
+    FullFilename = join(self.dirname, self.filename)
+    self.StartThread(
+        ["pandoc", "-s" + FullFilename + " -o " + FullFilename.replace(".md", ".html")]
+    )
+
+
+def OnProcess(self, event, whichcmd):
+    self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
+    self._mgr.Update()
+    self.SetFocusConsole(False)
+    self.OnSave(event)  # This ensures the file is up to date for the build
+    if AppName == "QuartoWriter":
+        OnQProcess(self, event, whichcmd)
+    elif AppName == "mdWriter":
+        OnPProcess(self, event, whichcmd)
+    else:
+        OnRProcess(self, event, whichcmd)
 
 
 def OnFixR(self, event):
@@ -172,6 +195,11 @@ def CurrentMarkdown(self):
 
 
 def GetRDirectory(self):
+    if AppName == "QuartoWriter":
+        return ""
+    elif AppName == "mdWriter":
+        return ""
+
     def splitter(path, interest):
         look = split(path)
         if interest in look[1]:
