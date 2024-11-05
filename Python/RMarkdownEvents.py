@@ -2,11 +2,13 @@
 
 from os.path import join, split, isdir
 from os import walk
+from time import sleep
 
 import wx
 
 from Settings import AppName
 
+from BackEnd import BashProcessThread
 
 from BackEnd import printing
 
@@ -26,7 +28,8 @@ RcmdSettings = {
 
 
 def OnRProcess(self, event, whichcmd):
-    self.StartThread(
+    StartThread(
+        self,
         [
             self.settings["RDirectory"],
             "-e",
@@ -36,19 +39,19 @@ def OnRProcess(self, event, whichcmd):
                 join(self.dirname, self.filename).replace("\\", "\\\\"), quiet
             )
             + "}",
-        ]
+        ],
     )
 
 
 def OnQProcess(self, event, whichcmd):
     FullFilename = join(self.dirname, self.filename)
-    self.StartThread(["quarto", "render", FullFilename])
+    StartThread(self, ["quarto", "render", FullFilename])
 
 
 def OnPProcess(self, event, whichcmd):
-    FullFilename = join(self.dirname, self.filename)
-    self.StartThread(
-        ["pandoc", "-s" + FullFilename + " -o " + FullFilename.replace(".md", ".html")]
+    PartFilename = join(self.dirname, self.filename).replace(".md", "")
+    StartThread(
+        self, ["pandoc", " ", PartFilename + ".md -o " + PartFilename + ".html"]
     )
 
 
@@ -194,20 +197,20 @@ def CurrentMarkdown(self):
     return state
 
 
+def splitter(path, interest):
+    look = split(path)
+    if interest in look[1]:
+        return look[1]
+    if len(look[0]) == 0:
+        return None
+    return splitter(look[0], interest)
+
+
 def GetRDirectory(self):
     if AppName == "QuartoWriter":
         return ""
     elif AppName == "mdWriter":
         return ""
-
-    def splitter(path, interest):
-        look = split(path)
-        if interest in look[1]:
-            return look[1]
-        if len(look[0]) == 0:
-            return None
-        return splitter(look[0], interest)
-
     rscript = "Rscript.exe"
     warn = f"Cannot find {rscript} in default install location."
     version = "R-0.0.0"
@@ -240,3 +243,21 @@ def GetRDirectory(self):
             print(warn)
             return
     return choice
+
+
+def StartThread(self, input_object):
+    if self.sub_flag.isSet():
+        return
+    if self.comp_thread is not None:
+        self.sub_flag.set()
+        while self.comp_thread.is_alive():
+            sleep(1)
+        self.sub_flag.clear()
+        self.console.Reset()
+    self.comp_thread = BashProcessThread(
+        self.sub_flag,
+        input_object,
+        self.console.CreateWriteText,
+        self.console.DoneFunc,
+    )
+    self.comp_thread.start()

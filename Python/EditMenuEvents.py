@@ -71,7 +71,8 @@ def OnWordCount(self, event):
     line_count = self.editor.GetNumberOfLines()
     markdownState = RMarkdownEvents.CurrentMarkdown(self)
     TellUser(
-        f"Line {y}/{line_count}. WordCount {word_count}. State {markdownState}"
+        self,
+        text=f"Line {y}/{line_count}. WordCount {word_count}. State {markdownState}",
     )
 
 

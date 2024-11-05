@@ -2,7 +2,6 @@
 import sys
 from threading import Event
 from os.path import split, realpath
-from time import sleep
 import winsound
 
 import wx
@@ -23,7 +22,7 @@ import RCodeEvents  # for code inserts
 import MarkdownEvents  # for formatting and inserts in text
 import MathInserts  # for equations
 import HelpMenuEvents  # for help with the specific apps
-from BackEnd import BashProcessThread
+
 
 beep = "winsound" in sys.modules
 
@@ -761,22 +760,6 @@ class MainWindow(wx.Frame):
 
     # Event handlers:
     # general events
-    def StartThread(self, input_object):
-        if self.sub_flag.isSet():
-            return
-        if self.comp_thread is not None:
-            self.sub_flag.set()
-            while self.comp_thread.is_alive():
-                sleep(1)
-            self.sub_flag.clear()
-            self.console.Reset()
-        self.comp_thread = BashProcessThread(
-            self.sub_flag,
-            input_object,
-            self.console.CreateWriteText,
-            self.console.DoneFunc,
-        )
-        self.comp_thread.start()
 
     # file menu events
     OnOpen = FileMenuEvents.OnOpen
@@ -953,7 +936,6 @@ class MainWindow(wx.Frame):
 
     def AlternateFocus(self, event):
         self.ActuallyAlternateFocus()
-
 
     def ActuallyAlternateFocus(self):
         if self.focusConsole:
