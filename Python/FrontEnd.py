@@ -23,7 +23,7 @@ import RCodeEvents  # for code inserts
 import MarkdownEvents  # for formatting and inserts in text
 import MathInserts  # for equations
 import HelpMenuEvents  # for help with the specific apps
-from BackEnd import BashProcessThread, printing, TellUser
+from BackEnd import BashProcessThread
 
 beep = "winsound" in sys.modules
 
@@ -79,7 +79,6 @@ class MainWindow(wx.Frame):
             self.CreateExteriorWindowComponents()
             self.CreateInteriorWindowComponents()
             self.fileOpen(self.dirname, self.filename)
-        printing(self.settings["RDirectory"])  # paranoia checking
         self.x = 0
         # create a flag for exiting subthreads
         self.sub_flag = Event()
@@ -955,17 +954,14 @@ class MainWindow(wx.Frame):
     def AlternateFocus(self, event):
         self.ActuallyAlternateFocus()
 
-    TellUser = TellUser
 
     def ActuallyAlternateFocus(self):
         if self.focusConsole:
             self.editor.SetFocus()
-            self.TellUser("editor")
             if beep:
                 winsound.PlaySound("e10.wav", winsound.SND_FILENAME)
         else:
             self.console.SetFocus()
-            self.TellUser("console")
             if beep:
                 winsound.PlaySound("s8.wav", winsound.SND_FILENAME)
         self.focusConsole = not self.focusConsole

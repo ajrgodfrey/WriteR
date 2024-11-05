@@ -13,6 +13,7 @@ import wx
 import wx.stc  # needed for word count and go to line
 
 import RMarkdownEvents
+from BackEnd import TellUser
 
 beep = "winsound" in sys.modules
 
@@ -69,7 +70,7 @@ def OnWordCount(self, event):
     _, _, y = self.editor.PositionToXY(self.editor.GetInsertionPoint())
     line_count = self.editor.GetNumberOfLines()
     markdownState = RMarkdownEvents.CurrentMarkdown(self)
-    self.TellUser(
+    TellUser(
         f"Line {y}/{line_count}. WordCount {word_count}. State {markdownState}"
     )
 
