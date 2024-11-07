@@ -66,9 +66,11 @@ def OnSaveAs(self, event):
 
 
 def OnSave(self, event):
-    textfile = open(join(self.dirname, self.filename), "w")
-    textfile.write(self.editor.GetValue())
-    textfile.close()
+    try:
+        with open(join(self.dirname, self.filename), "w") as textfile:
+            textfile.write(self.editor.GetValue())
+    except Exception as error:
+        self.fatalError(f"An error occurred while saving the file: {error}")
 
 
 def OnExit(self):
