@@ -1,14 +1,11 @@
 # backend  functions
 # first set are needed for processing
 # second set are for development only
-
+import subprocess
 from threading import Thread
-from subprocess import Popen, PIPE, STDOUT
-
 import wx
 
 display_rscript_cmd = True  # change this for checking we get it right
-
 
 ## processing functions
 
@@ -25,18 +22,34 @@ class BashProcessThread(Thread):
         self.input_list = input_list
         printing(input_list)
         try:
-            self.comp_thread = Popen(input_list, stdout=PIPE, stderr=STDOUT)
+            result = subprocess.run(
+                input_list,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,  # Ensure output is returned as a string
+                check=True,  # Raise an exception for non-zero return codes
+            )
+
             if display_rscript_cmd:
                 writelineFunc("\n".join(input_list))
                 writelineFunc("\n\n")
-            for line in self.comp_thread.stdout:
-                writelineFunc(line)
-            returnCode = self.comp_thread.wait()
+
+            # Output to writelineFunc
+            writelineFunc(result.stdout)
+
+            # Get return code
+            returnCode = result.returncode
+
             del busy
             doneFunc(returnCode)
-        except Exception as error:
+
+        except subprocess.CalledProcessError as error:
             del busy
             doneFunc(f"\nCaught error {error} for {input_list}")
+
+        except Exception as error:
+            del busy
+            doneFunc(f"\nUnexpected error {error} for {input_list}")
 
 
 ## development functions
