@@ -41,19 +41,10 @@ def fatalError(self, message):
 def fileOpen(self, dirname, filename):
     path = join(dirname.strip(), filename)
     try:
-        textfile = open(path, "r")
+        with open(path, "r") as textfile:
+            self.editor.SetValue(textfile.read())
     except Exception as error:
-        self.fatalError(f"Unable to open {path} because {error}")
-        self.OnExit()
-    try:
-        self.editor.SetValue(textfile.read())
-    except Exception as error:
-        self.fatalError(f"Unable to read {path} into editor because {error}")
-        self.OnExit()
-    try:
-        textfile.close()
-    except Exception as error:
-        self.fatalError(f"Unable to close {path} because {error}")
+        self.fatalError(f"An error occurred with file '{path}': {error}")
         self.OnExit()
 
 
