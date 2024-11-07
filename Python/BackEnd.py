@@ -7,7 +7,7 @@ from subprocess import Popen, PIPE, STDOUT
 
 import wx
 
-display_rscript_cmd = False  # change this for checking we get it right
+display_rscript_cmd = True  # change this for checking we get it right
 
 
 ## processing functions

@@ -8,9 +8,7 @@ import wx
 
 from Settings import AppName
 
-from BackEnd import BashProcessThread
-
-from BackEnd import printing
+from BackEnd import BashProcessThread, printing
 
 quiet = "TRUE"  # or 'FALSE', since these are 'R' constants
 
@@ -49,10 +47,12 @@ def OnQProcess(self, event, whichcmd):
 
 
 def OnPProcess(self, event, whichcmd):
-    PartFilename = join(self.dirname, self.filename).replace(".md", "")
-    StartThread(
-        self, ["pandoc", " ", PartFilename + ".md -o " + PartFilename + ".html"]
-    )
+    FullFilename = join(self.dirname, self.filename)
+    NewFilename = FullFilename.replace(".md", ".html")
+    StartThread(self, ["pandoc", FullFilename, "-o", NewFilename])
+
+
+#    return
 
 
 def OnProcess(self, event, whichcmd):
@@ -209,39 +209,36 @@ def splitter(path, interest):
 def GetRDirectory(self):
     if AppName == "QuartoWriter":
         return ""
-    elif AppName == "mdWriter":
+    if AppName == "mdWriter":
         return ""
     rscript = "Rscript.exe"
     warn = f"Cannot find {rscript} in default install location."
     version = "R-0.0.0"
     choice = None
-    if "No settings file reference to settings":
-        if isdir("C:\\Program Files\\R"):
-            hold = "C:\\Program Files\\R"
-        elif isdir("C:\\Program Files (x86)\\R"):
-            hold = "C:\\Program Files (x86)\\R"
-        else:
-            print(warn)
-            return
-        options = [join(r, rscript) for r, d, f in walk(hold) if rscript in f]
-        printing("options", options)
-        if len(options) > 0:
-            choice = options[0]
-            for op in options[1:]:
-                vv = splitter(op, "R-")
-                if vv >= version:
-                    if "x64" in op:
-                        choice = op
-                        version = vv
-                    elif "i386" in op and "x64" not in choice:
-                        choice = op
-                        version = vv
-                    elif "i386" not in choice and "x64" not in choice:
-                        choice = op
-                        version = vv
-        else:
-            print(warn)
-            return
+    if isdir("C:\\Program Files\\R"):
+        hold = "C:\\Program Files\\R"
+    else:
+        print(warn)
+        return ""
+    options = [join(r, rscript) for r, d, f in walk(hold) if rscript in f]
+    printing("options", options)
+    if len(options) > 0:
+        choice = options[0]
+        for op in options[1:]:
+            vv = splitter(op, "R-")
+            if vv >= version:
+                if "x64" in op:
+                    choice = op
+                    version = vv
+                elif "i386" in op and "x64" not in choice:
+                    choice = op
+                    version = vv
+                elif "i386" not in choice and "x64" not in choice:
+                    choice = op
+                    version = vv
+    else:
+        print(warn)
+        return ""
     return choice
 
 
