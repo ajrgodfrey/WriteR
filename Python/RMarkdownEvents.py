@@ -52,9 +52,6 @@ def OnPProcess(self, event, whichcmd):
     StartThread(self, ["pandoc", FullFilename, "-o", NewFilename])
 
 
-#    return
-
-
 def OnProcess(self, event, whichcmd):
     self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
     self._mgr.Update()
@@ -68,9 +65,36 @@ def OnProcess(self, event, whichcmd):
         OnRProcess(self, event, whichcmd)
 
 
+def CheckSoftwareVersion(self, event, software):
+    self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
+    self._mgr.Update()
+    self.SetFocusConsole(False)
+    StartThread(self, [software, "--version"])
+
+
+def CheckPandocVersion(self, event):
+    CheckSoftwareVersion(self, event, "pandoc")
+
+
+def CheckQuartoVersion(self, event):
+    CheckSoftwareVersion(self, event, "quarto")
+
+
+def CheckPythonVersion(self, event):
+    CheckSoftwareVersion(self, event, "python")
+
+
+def CheckRVersion(self, event):
+    self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
+    self._mgr.Update()
+    self.SetFocusConsole(False)
+    cmd = "version"
+    StartThread(self, [self.settings["RDirectory"], "-e", cmd])
+
+
 def OnFixR(self, event):
     cmd = "if(!require(rmarkdown)){chooseCRANmirror(ind=1); install.packages('rmarkdown')}"
-    self.StartThread([self.settings["RDirectory"], "-e", cmd])
+    StartThread(self, [self.settings["RDirectory"], "-e", cmd])
 
 
 def OnRenderNull(self, event):
