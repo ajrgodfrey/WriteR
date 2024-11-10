@@ -10,7 +10,7 @@ from Settings import AppName
 
 from BackEnd import BashProcessThread, printing
 
-quiet = "TRUE"  # or 'FALSE', since these are 'R' constants
+quiet = "FALSE"  # or "TRUE"  cos these are 'R' constants
 
 RcmdSettings = {
     "rendercommand": """rmarkdown::render("{}",quiet={})""",
@@ -49,7 +49,7 @@ def OnQProcess(self, event, whichcmd):
 def OnPProcess(self, event, whichcmd):
     FullFilename = join(self.dirname, self.filename)
     NewFilename = FullFilename.replace(".md", ".html")
-    StartThread(self, ["pandoc", FullFilename, "-o", NewFilename])
+    StartThread(self, ["pandoc", FullFilename, "-s", "--mathjax", "-o", NewFilename])
 
 
 def OnProcess(self, event, whichcmd):
@@ -81,20 +81,29 @@ def CheckQuartoVersion(self, event):
 
 
 def CheckPythonVersion(self, event):
-    CheckSoftwareVersion(self, event, "python")
+    if AppName == "QuartoWriter":
+        StartThread(self, ["quarto", "check", "jupyter"])
+    else:
+        CheckSoftwareVersion(self, event, "python")
 
 
 def CheckRVersion(self, event):
     self._mgr.GetPane("console").Show().Bottom().Layer(0).Row(0).Position(0)
     self._mgr.Update()
     self.SetFocusConsole(False)
-    cmd = "version"
-    StartThread(self, [self.settings["RDirectory"], "-e", cmd])
+    if AppName == "QuartoWriter":
+        StartThread(self, ["quarto", "check", "knitr"])
+    else:
+        cmd = "version"
+        StartThread(self, [self.settings["RDirectory"], "-e", cmd])
 
 
 def OnFixR(self, event):
-    cmd = "if(!require(rmarkdown)){chooseCRANmirror(ind=1); install.packages('rmarkdown')}"
-    StartThread(self, [self.settings["RDirectory"], "-e", cmd])
+    if AppName == "QuartoWriter":
+        CheckRVersion(self, event)
+    else:
+        cmd = "if(!require(rmarkdown)){chooseCRANmirror(ind=1); install.packages('rmarkdown')}"
+        StartThread(self, [self.settings["RDirectory"], "-e", cmd])
 
 
 def OnRenderNull(self, event):

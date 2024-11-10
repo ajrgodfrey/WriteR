@@ -243,39 +243,63 @@ class MainWindow(wx.Frame):
                 wx.ID_ANY, "Fix R packages", "reinstall the rmarkdown package "
             )
             self.Bind(wx.EVT_MENU, self.OnFixR, FixRMenu)
-        # Create render menu for WriteR
+            CheckRMenu = buildMenu.Append(
+                wx.ID_ANY, "Check R version", "get the version information from R "
+            )
+            self.Bind(wx.EVT_MENU, self.CheckRVersion, CheckRMenu)
+        if AppName == "QuartoWriter":
+            CheckQuartoMenu = buildMenu.Append(
+                wx.ID_ANY,
+                "Check Quarto version",
+                "get the version information for Quarto ",
+            )
+            self.Bind(wx.EVT_MENU, self.CheckQuartoVersion, CheckQuartoMenu)
+            CheckPythonMenu = buildMenu.Append(
+                wx.ID_ANY,
+                "Check Python version",
+                "get version information for  Python ",
+            )
+            self.Bind(wx.EVT_MENU, self.CheckPythonVersion, CheckPythonMenu)
+        else:
+            CheckPandocMenu = buildMenu.Append(
+                wx.ID_ANY,
+                "Check Pandoc version",
+                "get version information from Pandoc ",
+            )
+            self.Bind(wx.EVT_MENU, self.CheckPandocVersion, CheckPandocMenu)
         if AppName != "ScriptR":
+            # Create render menu for WriteR etc.
             renderMenu = wx.Menu()
             renderMenu = wx.Menu()
             for label, helpText, handler in [
                 (
                     "defaults",
-                    "Use the rmarkdown package and render function to create HTML or only the first of multiple formats specified in YAML header",
+                    "Use the render function to create HTML or only the first of multiple formats specified in YAML header",
                     self.OnSelectRenderNull,
                 ),
                 (
                     "HTML only",
-                    "Use the rmarkdown package and render function to create HTML",
+                    "Use the render function to create HTML",
                     self.OnSelectRenderHtml,
                 ),
                 (
                     "Microsoft &Word only",
-                    "Use the rmarkdown package and render function to create Microsoft Word",
+                    "Use the render function to create Microsoft Word",
                     self.OnSelectRenderWord,
                 ),
                 (
                     "slidy only",
-                    "Use the rmarkdown package and render function to create a slidy presentation",
+                    "Use the render function to create a slidy presentation",
                     self.OnSelectRenderSlidy,
                 ),
                 (
                     "pdf only",
-                    "Use the rmarkdown package and render function to create pdf",
+                    "Use the render function to create pdf",
                     self.OnSelectRenderPdf,
                 ),
                 (
                     "all specified formats",
-                    "Use the rmarkdown package and render function to create multiple output documents",
+                    "Use the render function to create multiple output documents",
                     self.OnSelectRenderAll,
                 ),
             ]:
@@ -773,7 +797,11 @@ class MainWindow(wx.Frame):
     OnSafeExit = FileMenuEvents.OnSafeExit
 
     # Build Menu events # conditioning needed for apps is done in RMarkdownEvents.py or in menu construction
+    CheckRVersion = RMarkdownEvents.CheckRVersion
     OnFixR = RMarkdownEvents.OnFixR
+    CheckQuartoVersion = RMarkdownEvents.CheckQuartoVersion
+    CheckPythonVersion = RMarkdownEvents.CheckPythonVersion
+    CheckPandocVersion = RMarkdownEvents.CheckPandocVersion
     OnRenderNull = RMarkdownEvents.OnRenderNull
     OnProcess = RMarkdownEvents.OnProcess
     OnRenderHtml = RMarkdownEvents.OnRenderHtml
