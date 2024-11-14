@@ -17,7 +17,7 @@ Page instfiles
 
 Section
 
-MessageBox MB_OK "You are about to install mdWriter. $\nBefore you use mdWriter though, you will need an installation of Pandoc. $\nWriteR will open without this tool, but you get minimal benefit from its use until you do install Pandoc. $\n$\nWriteR is not currently added to the system path."
+MessageBox MB_OK "You are about to install mdWriter. $\nBefore you use mdWriter though, you will need an installation of Pandoc. $\nmdWriter will open without this tool, but you get minimal benefit from its use until you do install Pandoc. $\n$\nmdWriter is not currently added to the system path."
 
 #ReadEnvStr $R0 "PATH"
 #messagebox mb_ok '$R0'

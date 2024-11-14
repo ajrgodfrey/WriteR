@@ -49,7 +49,9 @@ def OnQProcess(self, event, whichcmd):
 def OnPProcess(self, event, whichcmd):
     FullFilename = join(self.dirname, self.filename)
     NewFilename = FullFilename.replace(".md", ".html")
-    StartThread(self, ["pandoc", FullFilename, "-s", "--mathjax", "-o", NewFilename])
+    StartThread(
+        self, ["pandoc", "--standalone", "--mathjax", "-o", NewFilename, FullFilename]
+    )
 
 
 def OnProcess(self, event, whichcmd):

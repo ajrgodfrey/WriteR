@@ -78,7 +78,6 @@ class MainWindow(wx.Frame):
             self.CreateExteriorWindowComponents()
             self.CreateInteriorWindowComponents()
             self.fileOpen(self.dirname, self.filename)
-        self.x = 0
         # create a flag for exiting subthreads
         self.sub_flag = Event()
         self.comp_thread = None
@@ -951,12 +950,6 @@ class MainWindow(wx.Frame):
 
     # processing events (all apps)
     GetRDirectory = RMarkdownEvents.GetRDirectory
-
-    def GetStartPosition(self):
-        self.x = self.x + 20
-        x = self.x
-        pt = self.ClientToScreen(wx.Point(0, 0))
-        return wx.Point(pt.x + x, pt.y + x)
 
     def SetFocusConsole(self, toConsole):
         if toConsole != self.focusConsole:
