@@ -67,7 +67,7 @@ def OnSaveAs(self, event):
 
 def OnSave(self, event):
     try:
-        with open(join(self.dirname, self.filename), "w") as textfile:
+        with open(join(self.dirname, self.filename), "w", encoding="utf-8") as textfile:
             textfile.write(self.editor.GetValue())
     except Exception as error:
         self.fatalError(f"An error occurred while saving the file: {error}")
